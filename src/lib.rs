@@ -99,4 +99,15 @@ mod test {
         assert_eq!(SORTED_CONST_ARRAY, [2, 2, 2]);
         assert_eq!(SORTED_ARRAY_WITH_NEGATIVES, [-1, 0, 2]);
     }
+
+    #[test]
+    fn test_sort_u32() {
+        const REV_ARRAY: [u32; 3] = [3, 2, 1];
+        const SORTED_REV_ARRAY: [u32; 3] = const_sort_u32(REV_ARRAY);
+        const CONST_ARRAY: [u32; 3] = [2, 2, 2];
+        const SORTED_CONST_ARRAY: [u32; 3] = const_sort_u32(CONST_ARRAY);
+
+        assert_eq!(SORTED_REV_ARRAY, [1, 2, 3]);
+        assert_eq!(SORTED_CONST_ARRAY, [2, 2, 2]);
+    }
 }
