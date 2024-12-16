@@ -1,5 +1,9 @@
 # compile_time_sort
 
+[![Crates.io Version](https://img.shields.io/crates/v/compile_time_sort?logo=rust)](https://crates.io/crates/compile_time_sort)
+[![Docs.rs Documentation](https://img.shields.io/docsrs/compile_time_sort?logo=docs.rs)](https://docs.rs/compile_time_sort/latest/compile_time_sort/)
+[![Github Repository Link](https://img.shields.io/badge/github-JSorngard%2Fcompile__time__sort-8da0cb?logo=github)](https://github.com/JSorngard/compile_time_sort)
+
 This crate provides functions for sorting arrays and slices of primitives in `const` contexts.
 
 Arrays and slices of `bool`s, `u8`s, and `i8`s are sorted with counting sort while arrays of other types
