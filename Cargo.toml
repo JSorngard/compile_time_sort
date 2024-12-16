@@ -8,5 +8,6 @@ categories = ["algorithms"]
 rust-version = "1.83.0"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/JSorngard/const_sort"
+documentation = "https://docs.rs/const_sort/latest/const_sort/"
 
 [dependencies]
