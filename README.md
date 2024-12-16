@@ -13,10 +13,10 @@ and functions with the naming convention `sort_*_slice` take a mutable reference
 Sort an array by value:
 
 ```rust
-use const_sort::sort_i32_array;
+use const_sort::into_sorted_i32_array;
 
 const ARRAY: [i32; 5] = [-3, 3, 2, i32::MAX, 0];
-const SORTED_ARRAY: [i32; 5] = sort_i32_array(ARRAY);
+const SORTED_ARRAY: [i32; 5] = into_sorted_i32_array(ARRAY);
 
 assert_eq!(SORTED_ARRAY, [-3, 0, 2, 3, i32::MAX]);
 ```
