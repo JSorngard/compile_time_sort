@@ -6,5 +6,6 @@ description = "Sort arrays and slices of primitives in const contexts."
 keywords = ["const", "sort"]
 categories = ["algorithms"]
 rust-version = "1.83.0"
+license = "MIT OR Apache-2.0"
 
 [dependencies]
