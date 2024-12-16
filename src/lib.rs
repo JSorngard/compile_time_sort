@@ -35,48 +35,48 @@
 macro_rules! impl_const_quicksort {
     ($pub_name_array:ident, $pub_name_slice:ident, $qsort_name:ident, $tpe:ty, $tpe_name: literal) => {
         const fn $qsort_name(slice: &mut [$tpe], left: usize, right: usize) {
-            let mut l = left;
-            let mut r = right;
-
-            let p1_i = left;
-            let p2_i = left + (right - left) / 2;
-            let p3_i = right;
-            let mut pivot_i = if slice[p1_i] < slice[p2_i] {
-                if slice[p3_i] < slice[p2_i] {
-                    if slice[p1_i] < slice[p3_i] {
-                        p3_i
+            let pivot_candidate_1 = left;
+            let pivot_candidate_2 = left + (right - left) / 2;
+            let pivot_candidate_3 = right;
+            let mut pivot_index = if slice[pivot_candidate_1] < slice[pivot_candidate_2] {
+                if slice[pivot_candidate_3] < slice[pivot_candidate_2] {
+                    if slice[pivot_candidate_1] < slice[pivot_candidate_3] {
+                        pivot_candidate_3
                     } else {
-                        p1_i
+                        pivot_candidate_1
                     }
                 } else {
-                    p2_i
+                    pivot_candidate_2
                 }
             } else {
-                if slice[p3_i] < slice[p1_i] {
-                    if slice[p2_i] < slice[p3_i] {
-                        p3_i
+                if slice[pivot_candidate_3] < slice[pivot_candidate_1] {
+                    if slice[pivot_candidate_2] < slice[pivot_candidate_3] {
+                        pivot_candidate_3
                     } else {
-                        p2_i
+                        pivot_candidate_2
                     }
                 } else {
-                    p1_i
+                    pivot_candidate_1
                 }
             };
 
+            let mut l = left;
+            let mut r = right;
+
             while l < r {
-                while (slice[pivot_i] < slice[r]) && (l < r) {
+                while (slice[pivot_index] < slice[r]) && (l < r) {
                     r -= 1;
                 }
                 if l != r {
-                    (slice[pivot_i], slice[r]) = (slice[r], slice[pivot_i]);
-                    pivot_i = r;
+                    (slice[pivot_index], slice[r]) = (slice[r], slice[pivot_index]);
+                    pivot_index = r;
                 }
-                while (slice[l] < slice[pivot_i]) && (l < r) {
+                while (slice[l] < slice[pivot_index]) && (l < r) {
                     l += 1;
                 }
                 if l != r {
-                    (slice[pivot_i], slice[l]) = (slice[l], slice[pivot_i]);
-                    pivot_i = l;
+                    (slice[pivot_index], slice[l]) = (slice[l], slice[pivot_index]);
+                    pivot_index = l;
                 }
                 if l != r && slice[l] == slice[r] {
                     // Break out of infinite loops
