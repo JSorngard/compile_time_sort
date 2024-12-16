@@ -110,6 +110,7 @@ macro_rules! impl_const_quicksort {
     };
 }
 
+impl_const_quicksort!(sort_char_array, sort_char_slice, qsort_char, char, "char");
 impl_const_quicksort!(sort_u16_array, sort_u16_slice, qsort_u16, u16, "u16");
 impl_const_quicksort!(sort_i16_array, sort_i16_slice, qsort_i16, i16, "i16");
 impl_const_quicksort!(sort_u32_array, sort_u32_slice, qsort_u32, u32, "u32");
