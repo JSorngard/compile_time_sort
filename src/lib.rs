@@ -107,7 +107,6 @@ macro_rules! impl_const_quicksort {
     };
 }
 
-impl_const_quicksort!(sort_i8_array, sort_i8_slice, qsort_i8, i8, "i8");
 impl_const_quicksort!(sort_u16_array, sort_u16_slice, qsort_u16, u16, "u16");
 impl_const_quicksort!(sort_i16_array, sort_i16_slice, qsort_i16, i16, "i16");
 impl_const_quicksort!(sort_u32_array, sort_u32_slice, qsort_u32, u32, "u32");
@@ -128,6 +127,36 @@ impl_const_quicksort!(
     isize,
     "isize"
 );
+
+/// Sorts the given slice of `i8`s using the counting sort algorithm.
+pub const fn sort_i8_slice(slice: &mut [i8]) {
+    let mut counts = [0_usize; u8::MAX as usize + 1];
+    let mut i = 0;
+    let n = slice.len();
+    while i < n {
+        counts[(slice[i] as i16 + i8::MIN.unsigned_abs() as i16) as usize] += 1;
+        i += 1;
+    }
+    i = 0;
+    let mut j = 0;
+    'outer: while i < n {
+        while counts[j] == 0 {
+            if j + 1 > u8::MAX as usize {
+                break 'outer;
+            }
+            j += 1;
+        }
+        slice[i] = (j as i16 + i8::MIN.unsigned_abs() as i16) as i8;
+        counts[j] -= 1;
+        i += 1;
+    }
+}
+
+/// Sorts the given array of `i8`s using the counting sort algorithm.
+pub const fn sort_i8_array<const N: usize>(mut array: [i8; N]) -> [i8; N] {
+    sort_i8_slice(&mut array);
+    array
+}
 
 /// Sorts the given slice of `u8`s using the counting sort algorithm.
 pub const fn sort_u8_slice(slice: &mut [u8]) {
@@ -253,5 +282,20 @@ mod test {
         const SORTED_ARR: [u8; 5] = sort_u8_array(ARR);
 
         assert_eq!(SORTED_ARR, [0, 1, 5, 8, u8::MAX]);
+    }
+
+    #[test]
+    fn test_i8_sort() {
+        const ARR: [i8; 5] = [-2, 50, 0, 5, -50];
+        const SORTED_ARR: [i8; 5] = sort_i8_array(ARR);
+
+        let sorted_arr = const {
+            let mut arr = [i8::MIN; 100];
+            sort_i8_slice(&mut arr);
+            arr
+        };
+
+        assert_eq!(SORTED_ARR, [-50, -2, 0, 5, 50]);
+        assert_eq!(sorted_arr, [i8::MIN; 100]);
     }
 }
