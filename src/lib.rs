@@ -1,11 +1,9 @@
 /// # const_sort
 ///
-/// Small crate that provides functions for sorting arrays in const contexts.
+/// Small crate that provides functions for sorting arrays of primitives in const contexts.
 ///
 /// Depending on how you are doing const evaluation, sorting an array by value
 /// or by reference might be useful. This crate provides functions for both.
-///
-/// The sorting algorithm used is currently quick-sort.
 ///
 /// # Examples
 ///
@@ -25,13 +23,13 @@
 /// ```
 /// use const_sort::sort_i32_slice;
 ///
-/// let sorted_array = const {
+/// const SORTED_ARRAY: [i32; 5] = {
 ///     let mut arr = [5, i32::MIN, 0, -2, 0];
 ///     sort_i32_slice(&mut arr);
 ///     arr
 /// };
 ///
-/// assert_eq!(sorted_array, [i32::MIN, -2, 0, 0, 5]);
+/// assert_eq!(SORTED_ARRAY, [i32::MIN, -2, 0, 0, 5]);
 /// ```
 
 macro_rules! impl_const_quicksort {
@@ -54,7 +52,6 @@ macro_rules! impl_const_quicksort {
                     p2_i
                 }
             } else {
-                // slice[p2_i] <= slice[p1_i]
                 if slice[p3_i] < slice[p1_i] {
                     if slice[p2_i] < slice[p3_i] {
                         p3_i
@@ -103,7 +100,7 @@ macro_rules! impl_const_quicksort {
         }
 
         #[doc = concat!("Sorts the given slice of `", $tpe_name, "`s using the quicksort algorithm")]
-        pub const fn $pub_name_ref<const N: usize>(slice: &mut [$tpe; N]) {
+        pub const fn $pub_name_ref(slice: &mut [$tpe]) {
             let last_index = slice.len() - 1;
             $qsort_name(slice, 0, last_index);
         }
@@ -124,7 +121,7 @@ impl_const_quicksort!(
     isize,
     "isize"
 );
-impl_const_quicksort!(sort_u8_array, sort_u8_slice, qsort_u8, u8, "u8");
+//impl_const_quicksort!(sort_u8_array, sort_u8_slice, qsort_u8, u8, "u8");
 impl_const_quicksort!(sort_i8_array, sort_i8_slice, qsort_i8, i8, "i8");
 impl_const_quicksort!(sort_u16_array, sort_u16_slice, qsort_u16, u16, "u16");
 impl_const_quicksort!(sort_i16_array, sort_i16_slice, qsort_i16, i16, "i16");
@@ -133,11 +130,42 @@ impl_const_quicksort!(sort_i32_array, sort_i32_slice, qsort_i32, i32, "i32");
 impl_const_quicksort!(sort_u64_array, sort_u64_slice, qsort_u64, u64, "u64");
 impl_const_quicksort!(sort_i64_array, sort_i64_slice, qsort_i64, i64, "i64");
 
+/// Sorts the given slice of `u8`s using the counting sort algorithm.
+pub const fn sort_u8_slice(slice: &mut [u8]) {
+    let mut counts = [0_usize; u8::MAX as usize + 1];
+    let mut i = 0;
+    let n = slice.len();
+    while i < n {
+        counts[slice[i] as usize] += 1;
+        i += 1;
+    }
+    i = 0;
+    let mut j = 0;
+    'outer: while i < n {
+        while counts[j] == 0 {
+            if j + 1 > u8::MAX as usize {
+                break 'outer;
+            }
+            j += 1;
+        }
+        slice[i] = j as u8;
+        counts[j] -= 1;
+        i += 1;
+    }
+}
+
+/// Sorts the given array of `u8`s using the counting sort algorithm.
+pub const fn sort_u8_array<const N: usize>(mut array: [u8; N]) -> [u8; N] {
+    sort_u8_slice(&mut array);
+    array
+}
+
 /// Sorts the given slice of `bool`s using the counting sort algorithm.
-pub const fn sort_bool_slice<const N: usize>(slice: &mut [bool; N]) {
+pub const fn sort_bool_slice(slice: &mut [bool]) {
     let mut falses = 0;
     let mut i = 0;
-    while i < N {
+    let n = slice.len();
+    while i < n {
         if !slice[i] {
             falses += 1;
         }
@@ -145,7 +173,7 @@ pub const fn sort_bool_slice<const N: usize>(slice: &mut [bool; N]) {
     }
 
     i = 0;
-    while i < N {
+    while i < n {
         if falses > 0 {
             slice[i] = false;
             falses -= 1;
@@ -218,5 +246,13 @@ mod test {
 
         assert_eq!(SORTED_ARR, [false, false, true, true]);
         assert_eq!(arr, [false, false, true, true]);
+    }
+
+    #[test]
+    fn test_u8_sort() {
+        const ARR: [u8; 5] = [8, 1, u8::MAX, 5, 0];
+        const SORTED_ARR: [u8; 5] = sort_u8_array(ARR);
+
+        assert_eq!(SORTED_ARR, [0, 1, 5, 8, u8::MAX]);
     }
 }
