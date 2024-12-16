@@ -3,11 +3,11 @@ name = "compile_time_sort"
 version = "0.1.0"
 edition = "2021"
 description = "Sort arrays and slices of primitives in const contexts."
-keywords = ["const", "sort"]
+keywords = ["const", "sort", "const-sort"]
 categories = ["algorithms"]
 rust-version = "1.83.0"
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/JSorngard/const_sort"
+repository = "https://github.com/JSorngard/compile_time_sort"
 documentation = "https://docs.rs/compile_time_sort/latest/compile_time_sort/"
 
 [dependencies]
