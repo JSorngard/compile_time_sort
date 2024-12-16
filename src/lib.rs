@@ -121,7 +121,7 @@ impl_const_quicksort!(
     isize,
     "isize"
 );
-//impl_const_quicksort!(sort_u8_array, sort_u8_slice, qsort_u8, u8, "u8");
+
 impl_const_quicksort!(sort_i8_array, sort_i8_slice, qsort_i8, i8, "i8");
 impl_const_quicksort!(sort_u16_array, sort_u16_slice, qsort_u16, u16, "u16");
 impl_const_quicksort!(sort_i16_array, sort_i16_slice, qsort_i16, i16, "i16");
