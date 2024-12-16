@@ -13,10 +13,10 @@
 //! Sort an array by value:
 //!
 //! ```
-//! use compile_time_sort::sort_i32_array;
+//! use compile_time_sort::into_sorted_i32_array;
 //!
 //! const ARRAY: [i32; 5] = [-3, 3, 2, i32::MAX, 0];
-//! const SORTED_ARRAY: [i32; 5] = sort_i32_array(ARRAY);
+//! const SORTED_ARRAY: [i32; 5] = into_sorted_i32_array(ARRAY);
 //!
 //! assert_eq!(SORTED_ARRAY, [-3, 0, 2, 3, i32::MAX]);
 //! ```
@@ -110,22 +110,28 @@ macro_rules! impl_const_quicksort {
     };
 }
 
-impl_const_quicksort!(sort_char_array, sort_char_slice, qsort_char, char, "char");
-impl_const_quicksort!(sort_u16_array, sort_u16_slice, qsort_u16, u16, "u16");
-impl_const_quicksort!(sort_i16_array, sort_i16_slice, qsort_i16, i16, "i16");
-impl_const_quicksort!(sort_u32_array, sort_u32_slice, qsort_u32, u32, "u32");
-impl_const_quicksort!(sort_i32_array, sort_i32_slice, qsort_i32, i32, "i32");
-impl_const_quicksort!(sort_u64_array, sort_u64_slice, qsort_u64, u64, "u64");
-impl_const_quicksort!(sort_i64_array, sort_i64_slice, qsort_i64, i64, "i64");
 impl_const_quicksort!(
-    sort_usize_array,
+    into_sorted_char_array,
+    sort_char_slice,
+    qsort_char,
+    char,
+    "char"
+);
+impl_const_quicksort!(into_sorted_u16_array, sort_u16_slice, qsort_u16, u16, "u16");
+impl_const_quicksort!(into_sorted_i16_array, sort_i16_slice, qsort_i16, i16, "i16");
+impl_const_quicksort!(into_sorted_u32_array, sort_u32_slice, qsort_u32, u32, "u32");
+impl_const_quicksort!(into_sorted_i32_array, sort_i32_slice, qsort_i32, i32, "i32");
+impl_const_quicksort!(into_sorted_u64_array, sort_u64_slice, qsort_u64, u64, "u64");
+impl_const_quicksort!(into_sorted_i64_array, sort_i64_slice, qsort_i64, i64, "i64");
+impl_const_quicksort!(
+    into_sorted_usize_array,
     sort_usize_slice,
     qsort_usize,
     usize,
     "usize"
 );
 impl_const_quicksort!(
-    sort_isize_array,
+    into_sorted_isize_array,
     sort_isize_slice,
     qsort_isize,
     isize,
@@ -157,7 +163,7 @@ pub const fn sort_i8_slice(slice: &mut [i8]) {
 }
 
 /// Sorts the given array of `i8`s using the counting sort algorithm.
-pub const fn sort_i8_array<const N: usize>(mut array: [i8; N]) -> [i8; N] {
+pub const fn into_sorted_i8_array<const N: usize>(mut array: [i8; N]) -> [i8; N] {
     sort_i8_slice(&mut array);
     array
 }
@@ -187,7 +193,7 @@ pub const fn sort_u8_slice(slice: &mut [u8]) {
 }
 
 /// Sorts the given array of `u8`s using the counting sort algorithm.
-pub const fn sort_u8_array<const N: usize>(mut array: [u8; N]) -> [u8; N] {
+pub const fn into_sorted_u8_array<const N: usize>(mut array: [u8; N]) -> [u8; N] {
     sort_u8_slice(&mut array);
     array
 }
@@ -217,7 +223,7 @@ pub const fn sort_bool_slice(slice: &mut [bool]) {
 }
 
 /// Sorts the given array of `bool`s using the counting sort algorithm.
-pub const fn sort_bool_array<const N: usize>(mut array: [bool; N]) -> [bool; N] {
+pub const fn into_sorted_bool_array<const N: usize>(mut array: [bool; N]) -> [bool; N] {
     sort_bool_slice(&mut array);
     array
 }
@@ -229,11 +235,11 @@ mod test {
     #[test]
     fn test_sort_i32() {
         const REV_ARRAY: [i32; 3] = [3, 2, 1];
-        const SORTED_REV_ARRAY: [i32; 3] = sort_i32_array(REV_ARRAY);
+        const SORTED_REV_ARRAY: [i32; 3] = into_sorted_i32_array(REV_ARRAY);
         const CONST_ARRAY: [i32; 3] = [2, 2, 2];
-        const SORTED_CONST_ARRAY: [i32; 3] = sort_i32_array(CONST_ARRAY);
+        const SORTED_CONST_ARRAY: [i32; 3] = into_sorted_i32_array(CONST_ARRAY);
         const ARRAY_WITH_NEGATIVES: [i32; 3] = [0, -1, 2];
-        const SORTED_ARRAY_WITH_NEGATIVES: [i32; 3] = sort_i32_array(ARRAY_WITH_NEGATIVES);
+        const SORTED_ARRAY_WITH_NEGATIVES: [i32; 3] = into_sorted_i32_array(ARRAY_WITH_NEGATIVES);
 
         let arr = const {
             let mut arr = REV_ARRAY;
@@ -250,9 +256,9 @@ mod test {
     #[test]
     fn test_sort_u32() {
         const REV_ARRAY: [u32; 3] = [3, 2, 1];
-        const SORTED_REV_ARRAY: [u32; 3] = sort_u32_array(REV_ARRAY);
+        const SORTED_REV_ARRAY: [u32; 3] = into_sorted_u32_array(REV_ARRAY);
         const CONST_ARRAY: [u32; 3] = [2, 2, 2];
-        const SORTED_CONST_ARRAY: [u32; 3] = sort_u32_array(CONST_ARRAY);
+        const SORTED_CONST_ARRAY: [u32; 3] = into_sorted_u32_array(CONST_ARRAY);
 
         let arr = const {
             let mut arr = REV_ARRAY;
@@ -268,7 +274,7 @@ mod test {
     #[test]
     fn test_sort_bool() {
         const ARR: [bool; 4] = [false, true, false, true];
-        const SORTED_ARR: [bool; 4] = sort_bool_array(ARR);
+        const SORTED_ARR: [bool; 4] = into_sorted_bool_array(ARR);
 
         let arr = {
             let mut arr = [true, false, true, false];
@@ -283,7 +289,7 @@ mod test {
     #[test]
     fn test_u8_sort() {
         const ARR: [u8; 5] = [8, 1, u8::MAX, 5, 0];
-        const SORTED_ARR: [u8; 5] = sort_u8_array(ARR);
+        const SORTED_ARR: [u8; 5] = into_sorted_u8_array(ARR);
 
         assert_eq!(SORTED_ARR, [0, 1, 5, 8, u8::MAX]);
     }
@@ -291,7 +297,7 @@ mod test {
     #[test]
     fn test_i8_sort() {
         const ARR: [i8; 5] = [-2, 50, 0, 5, -50];
-        const SORTED_ARR: [i8; 5] = sort_i8_array(ARR);
+        const SORTED_ARR: [i8; 5] = into_sorted_i8_array(ARR);
 
         let sorted_arr = const {
             let mut arr = [i8::MIN; 100];
@@ -306,7 +312,7 @@ mod test {
     #[test]
     fn test_char_sort() {
         const ARR: [char; 4] = ['a', '#', '\n', 'A'];
-        const SORTED_ARR: [char; 4] = sort_char_array(ARR);
+        const SORTED_ARR: [char; 4] = into_sorted_char_array(ARR);
 
         assert_eq!(SORTED_ARR, ['\n', '#', 'A', 'a'])
     }
