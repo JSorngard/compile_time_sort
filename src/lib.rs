@@ -107,6 +107,13 @@ macro_rules! impl_const_quicksort {
     };
 }
 
+impl_const_quicksort!(sort_i8_array, sort_i8_slice, qsort_i8, i8, "i8");
+impl_const_quicksort!(sort_u16_array, sort_u16_slice, qsort_u16, u16, "u16");
+impl_const_quicksort!(sort_i16_array, sort_i16_slice, qsort_i16, i16, "i16");
+impl_const_quicksort!(sort_u32_array, sort_u32_slice, qsort_u32, u32, "u32");
+impl_const_quicksort!(sort_i32_array, sort_i32_slice, qsort_i32, i32, "i32");
+impl_const_quicksort!(sort_u64_array, sort_u64_slice, qsort_u64, u64, "u64");
+impl_const_quicksort!(sort_i64_array, sort_i64_slice, qsort_i64, i64, "i64");
 impl_const_quicksort!(
     sort_usize_array,
     sort_usize_slice,
@@ -121,14 +128,6 @@ impl_const_quicksort!(
     isize,
     "isize"
 );
-
-impl_const_quicksort!(sort_i8_array, sort_i8_slice, qsort_i8, i8, "i8");
-impl_const_quicksort!(sort_u16_array, sort_u16_slice, qsort_u16, u16, "u16");
-impl_const_quicksort!(sort_i16_array, sort_i16_slice, qsort_i16, i16, "i16");
-impl_const_quicksort!(sort_u32_array, sort_u32_slice, qsort_u32, u32, "u32");
-impl_const_quicksort!(sort_i32_array, sort_i32_slice, qsort_i32, i32, "i32");
-impl_const_quicksort!(sort_u64_array, sort_u64_slice, qsort_u64, u64, "u64");
-impl_const_quicksort!(sort_i64_array, sort_i64_slice, qsort_i64, i64, "i64");
 
 /// Sorts the given slice of `u8`s using the counting sort algorithm.
 pub const fn sort_u8_slice(slice: &mut [u8]) {
