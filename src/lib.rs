@@ -33,13 +33,13 @@
 /// ```
 
 macro_rules! impl_const_quicksort {
-    ($pub_name:ident, $pub_name_ref:ident, $qsort_name:ident, $tpe:ty, $tpe_name: literal) => {
+    ($pub_name_array:ident, $pub_name_slice:ident, $qsort_name:ident, $tpe:ty, $tpe_name: literal) => {
         const fn $qsort_name(slice: &mut [$tpe], left: usize, right: usize) {
             let mut l = left;
             let mut r = right;
 
             let p1_i = left;
-            let p2_i = (left + right) / 2;
+            let p2_i = left + (right - left) / 2;
             let p3_i = right;
             let mut pivot_i = if slice[p1_i] < slice[p2_i] {
                 if slice[p3_i] < slice[p2_i] {
@@ -93,14 +93,14 @@ macro_rules! impl_const_quicksort {
         }
 
         #[doc = concat!("Sorts the given array of `", $tpe_name, "`s using the quicksort algorithm")]
-        pub const fn $pub_name<const N: usize>(mut arr: [$tpe; N]) -> [$tpe; N] {
+        pub const fn $pub_name_array<const N: usize>(mut arr: [$tpe; N]) -> [$tpe; N] {
             let last_index = arr.len() - 1;
             $qsort_name(&mut arr, 0, last_index);
             arr
         }
 
         #[doc = concat!("Sorts the given slice of `", $tpe_name, "`s using the quicksort algorithm")]
-        pub const fn $pub_name_ref(slice: &mut [$tpe]) {
+        pub const fn $pub_name_slice(slice: &mut [$tpe]) {
             let last_index = slice.len() - 1;
             $qsort_name(slice, 0, last_index);
         }
