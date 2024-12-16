@@ -5,8 +5,8 @@
 //! Arrays and slices of `bool`s, `u8`s, and `i8`s are sorted with counting sort while arrays of other types
 //! are sorted with quicksort.
 //!
-//! Functions with the naming convention `into_sorted_*_array` take an array of a specific type by value,
-//! and functions with the naming convention `sort_*_slice` take a mutable reference to a slice of the same type.
+//! Functions with the naming convention `into_sorted_*_array` take an array by value,
+//! and functions with the naming convention `sort_*_slice` take a mutable reference to a slice.
 //!
 //! # Examples
 //!
