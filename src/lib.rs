@@ -1,9 +1,12 @@
 //! # const_sort
 //!
-//! This crate provides functions for sorting arrays of primitives in const contexts.
+//! This crate provides functions for sorting arrays and slices of primitives in `const` contexts.
 //!
-//! Depending on how you are doing const evaluation, sorting an array by value
+//! Depending on how you are doing `const` evaluation, sorting an array by value
 //! or by reference might be useful. This crate provides functions for both.
+//!
+//! Arrays of `bool`s, `u8`s, and `i8`s are sorted with counting sort while arrays of other types
+//! are sorted with quicksort.
 //!
 //! # Examples
 //!
@@ -17,7 +20,7 @@
 //!
 //! assert_eq!(SORTED_ARRAY, [-3, 0, 2, 3, i32::MAX]);
 //! ```
-//! 
+//!
 //! Sort an array by reference:
 //!
 //! ```
