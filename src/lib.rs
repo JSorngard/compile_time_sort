@@ -2,11 +2,11 @@
 //!
 //! This crate provides functions for sorting arrays and slices of primitives in `const` contexts.
 //!
-//! Depending on how you are doing `const` evaluation, sorting an array by value
-//! or by reference might be useful. This crate provides functions for both.
-//!
-//! Arrays of `bool`s, `u8`s, and `i8`s are sorted with counting sort while arrays of other types
+//! Arrays and slices of `bool`s, `u8`s, and `i8`s are sorted with counting sort while arrays of other types
 //! are sorted with quicksort.
+//!
+//! Functions with the naming convention `into_sorted_*_array` take an array of a specific type by value,
+//! and functions with the naming convention `sort_*_slice` take a mutable reference to a slice of the same type.
 //!
 //! # Examples
 //!
