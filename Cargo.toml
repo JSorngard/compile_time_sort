@@ -2,6 +2,9 @@
 name = "const_sort"
 version = "0.1.0"
 edition = "2021"
+description = "Sort arrays and slices of primitives in const contexts."
+keywords = ["const", "sort"]
+categories = ["algorithms"]
 rust-version = "1.83.0"
 
 [dependencies]
