@@ -1,4 +1,4 @@
-# const_sort
+# compile_time_sort
 
 This crate provides functions for sorting arrays and slices of primitives in `const` contexts.
 
