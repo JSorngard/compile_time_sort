@@ -24,6 +24,14 @@ fn test_sort_i32() {
 }
 
 #[test]
+fn test_edge_cases() {
+    const EMPTY_ARRAY: [i32; 0] = [];
+    const SORTED_EMPTY_ARRAY: [i32; 0] = into_sorted_i32_array(EMPTY_ARRAY);
+
+    assert_eq!(SORTED_EMPTY_ARRAY, []);
+}
+
+#[test]
 fn test_sort_u32() {
     const REV_ARRAY: [u32; 3] = [3, 2, 1];
     const SORTED_REV_ARRAY: [u32; 3] = into_sorted_u32_array(REV_ARRAY);

@@ -186,13 +186,18 @@ macro_rules! impl_const_quicksort {
 
         #[doc = concat!("Sorts the given array of `", $tpe_name, "`s using the quicksort algorithm")]
         pub const fn $pub_name_array<const N: usize>(array: [$tpe; N]) -> [$tpe; N] {
-            let last_index = array.len() - 1;
-            $qsort_array_name(array, 0, last_index)
+            if N == 0 {
+                return array;
+            }
+            $qsort_array_name(array, 0, N - 1)
         }
 
         #[cfg(feature = "sort_slices")]
         #[doc = concat!("Sorts the given slice of `", $tpe_name, "`s using the quicksort algorithm")]
         pub const fn $pub_name_slice(slice: &mut [$tpe]) {
+            if slice.is_empty() {
+                return;
+            }
             let last = slice.len() - 1;
             $qsort_slice_name(slice, 0, last);
         }
