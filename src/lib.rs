@@ -185,9 +185,9 @@ macro_rules! impl_const_quicksort {
         const_array_quicksort!{$qsort_array_name, $tpe}
 
         #[doc = concat!("Sorts the given array of `", $tpe_name, "`s using the quicksort algorithm")]
-        pub const fn $pub_name_array<const N: usize>(arr: [$tpe; N]) -> [$tpe; N] {
-            let last_index = arr.len() - 1;
-            $qsort_array_name(arr, 0, last_index)
+        pub const fn $pub_name_array<const N: usize>(array: [$tpe; N]) -> [$tpe; N] {
+            let last_index = array.len() - 1;
+            $qsort_array_name(array, 0, last_index)
         }
 
         #[cfg(feature = "sort_slices")]
