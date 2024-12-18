@@ -296,6 +296,9 @@ impl_const_quicksort!(
 #[cfg(feature = "sort_slices")]
 /// Sorts the given slice of `i8`s using the counting sort algorithm.
 pub const fn sort_i8_slice(slice: &mut [i8]) {
+    if slice.is_empty() || slice.len() == 1 {
+        return;
+    }
     let mut counts = [0_usize; u8::MAX as usize + 1];
     let mut i = 0;
     let n = slice.len();
@@ -320,6 +323,9 @@ pub const fn sort_i8_slice(slice: &mut [i8]) {
 
 /// Sorts the given array of `i8`s using the counting sort algorithm.
 pub const fn into_sorted_i8_array<const N: usize>(mut array: [i8; N]) -> [i8; N] {
+    if N == 0 || N == 1 {
+        return array;
+    }
     let mut counts = [0_usize; u8::MAX as usize + 1];
     let mut i = 0;
     while i < N {
@@ -347,6 +353,9 @@ pub const fn into_sorted_i8_array<const N: usize>(mut array: [i8; N]) -> [i8; N]
 #[cfg(feature = "sort_slices")]
 /// Sorts the given slice of `u8`s using the counting sort algorithm.
 pub const fn sort_u8_slice(slice: &mut [u8]) {
+    if slice.is_empty() || slice.len() == 1 {
+        return;
+    }
     let mut counts = [0_usize; u8::MAX as usize + 1];
     let mut i = 0;
     let n = slice.len();
@@ -371,6 +380,9 @@ pub const fn sort_u8_slice(slice: &mut [u8]) {
 
 /// Sorts the given array of `u8`s using the counting sort algorithm.
 pub const fn into_sorted_u8_array<const N: usize>(mut array: [u8; N]) -> [u8; N] {
+    if N == 0 || N == 1 {
+        return array;
+    }
     let mut counts = [0_usize; u8::MAX as usize + 1];
     let mut i = 0;
     while i < N {
@@ -396,6 +408,9 @@ pub const fn into_sorted_u8_array<const N: usize>(mut array: [u8; N]) -> [u8; N]
 #[cfg(feature = "sort_slices")]
 /// Sorts the given slice of `bool`s using the counting sort algorithm.
 pub const fn sort_bool_slice(slice: &mut [bool]) {
+    if slice.is_empty() || slice.len() == 1 {
+        return;
+    }
     let mut falses = 0;
     let mut i = 0;
     let n = slice.len();
@@ -420,6 +435,9 @@ pub const fn sort_bool_slice(slice: &mut [bool]) {
 
 /// Sorts the given array of `bool`s using the counting sort algorithm.
 pub const fn into_sorted_bool_array<const N: usize>(mut array: [bool; N]) -> [bool; N] {
+    if N == 0 || N == 1 {
+        return array;
+    }
     let mut falses = 0;
     let mut i = 0;
     while i < N {

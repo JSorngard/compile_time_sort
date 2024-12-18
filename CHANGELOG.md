@@ -2,6 +2,10 @@
 
 This file contains all changes to the crate since version v0.1.0.
 
+## 0.2.4
+
+- Fixed the panic bug also in the sorting functions of `bool`, `i8`, and `u8` arrays and slices.
+
 ## v0.2.3
 
 - Fixed a bug where the sorting functions would panic if they were given an empty array or slice.
