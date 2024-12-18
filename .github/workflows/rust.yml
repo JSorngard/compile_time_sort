@@ -67,5 +67,7 @@ jobs:
         components: clippy
     - name: install cargo-msrv
       run: cargo install cargo-msrv
-    - name: verify msrv
+    - name: verify default msrv
       run: cargo msrv verify
+    - name: verify raised msrv
+      run: cargo msrv verify --rust-version 1.83.0 --features sort_slices
