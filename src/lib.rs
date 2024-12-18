@@ -23,7 +23,7 @@
 //!
 //! Sort an array by reference:
 #![cfg_attr(
-    feature = "mut_refs",
+    feature = "const_mut_refs",
     doc = r"```
 use compile_time_sort::sort_i32_slice;
 
@@ -39,14 +39,14 @@ assert_eq!(SORTED_ARRAY, [i32::MIN, -2, 0, 0, 5]);
 //!
 //! # Features
 //!
-//! `mut_refs`: enables the `sort_*_slice` functions and raises the MSRV of the crate to 1.83.0.
+//! `const_mut_refs`: enables the `sort_*_slice` functions and raises the MSRV of the crate to 1.83.0.
 
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
 
 #[cfg(test)]
 mod tests;
 
-#[cfg(feature = "mut_refs")]
+#[cfg(feature = "const_mut_refs")]
 /// Defines a `const` function with the given name that takes in a mutable reference to a slice of the given type
 /// and sorts it using the quicksort algorithm.
 macro_rules! const_slice_quicksort {
@@ -179,7 +179,7 @@ macro_rules! const_array_quicksort {
 
 macro_rules! impl_const_quicksort {
     ($pub_name_array:ident, $pub_name_slice:ident, $qsort_slice_name:ident, $qsort_array_name:ident, $tpe:ty, $tpe_name: literal) => {
-        #[cfg(feature = "mut_refs")]
+        #[cfg(feature = "const_mut_refs")]
         const_slice_quicksort!{$qsort_slice_name, $tpe}
 
         const_array_quicksort!{$qsort_array_name, $tpe}
@@ -190,7 +190,7 @@ macro_rules! impl_const_quicksort {
             $qsort_array_name(arr, 0, last_index)
         }
 
-        #[cfg(feature = "mut_refs")]
+        #[cfg(feature = "const_mut_refs")]
         #[doc = concat!("Sorts the given slice of `", $tpe_name, "`s using the quicksort algorithm")]
         pub const fn $pub_name_slice(slice: &mut [$tpe]) {
             let last = slice.len() - 1;
@@ -272,7 +272,7 @@ impl_const_quicksort!(
     "isize"
 );
 
-#[cfg(feature = "mut_refs")]
+#[cfg(feature = "const_mut_refs")]
 /// Sorts the given slice of `i8`s using the counting sort algorithm.
 pub const fn sort_i8_slice(slice: &mut [i8]) {
     let mut counts = [0_usize; u8::MAX as usize + 1];
@@ -323,7 +323,7 @@ pub const fn into_sorted_i8_array<const N: usize>(mut array: [i8; N]) -> [i8; N]
     array
 }
 
-#[cfg(feature = "mut_refs")]
+#[cfg(feature = "const_mut_refs")]
 /// Sorts the given slice of `u8`s using the counting sort algorithm.
 pub const fn sort_u8_slice(slice: &mut [u8]) {
     let mut counts = [0_usize; u8::MAX as usize + 1];
@@ -372,7 +372,7 @@ pub const fn into_sorted_u8_array<const N: usize>(mut array: [u8; N]) -> [u8; N]
     array
 }
 
-#[cfg(feature = "mut_refs")]
+#[cfg(feature = "const_mut_refs")]
 /// Sorts the given slice of `bool`s using the counting sort algorithm.
 pub const fn sort_bool_slice(slice: &mut [bool]) {
     let mut falses = 0;
