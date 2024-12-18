@@ -1,4 +1,4 @@
-//! # compile_time_sort
+//! # Description
 //!
 //! This crate provides functions for sorting arrays and slices of primitives in `const` contexts.
 //!
