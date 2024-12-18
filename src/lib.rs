@@ -35,6 +35,8 @@
 //! assert_eq!(SORTED_ARRAY, [i32::MIN, -2, 0, 0, 5]);
 //! ```
 
+/// Defines a `const` function with the given name that takes in a mutable reference to a slice of the given type
+/// and sorts it using the quicksort algorithm.
 macro_rules! const_slice_quicksort {
     ($name:ident, $tpe:ty) => {
         const fn $name(slice: &mut [$tpe], left: usize, right: usize) {
@@ -97,6 +99,7 @@ macro_rules! const_slice_quicksort {
     };
 }
 
+/// Defines a `const` function with the given name that sorts an array of the given type with the quicksort algorithm.
 macro_rules! const_array_quicksort {
     ($name:ident, $tpe:ty) => {
         const fn $name<const N: usize>(
@@ -148,8 +151,6 @@ macro_rules! const_array_quicksort {
                     pivot_index = l;
                 }
                 if l != r && array[l] == array[r] {
-                    // Break out of infinite loops
-                    // if the elements at l and r are the same.
                     break;
                 }
             }
