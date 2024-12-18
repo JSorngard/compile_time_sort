@@ -29,9 +29,12 @@ fn test_edge_cases() {
     const SORTED_EMPTY_ARRAY: [i32; 0] = into_sorted_i32_array(EMPTY_ARRAY);
     const SINGLETON_ARRAY: [i32; 1] = [1];
     const SORTED_SINGLETON_ARRAY: [i32; 1] = into_sorted_i32_array(SINGLETON_ARRAY);
+    const ARRAY_WITH_NEGATIVES: [i32; 3] = [0, -1, 2];
+    const SORTED_ARRAY_WITH_NEGATIVES: [i32; 3] = into_sorted_i32_array(ARRAY_WITH_NEGATIVES);
 
     assert_eq!(SORTED_EMPTY_ARRAY, []);
     assert_eq!(SORTED_SINGLETON_ARRAY, [1]);
+    assert_eq!(SORTED_ARRAY_WITH_NEGATIVES, [-1, 0, 2]);
 }
 
 #[test]
