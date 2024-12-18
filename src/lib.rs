@@ -186,7 +186,7 @@ macro_rules! impl_const_quicksort {
 
         #[doc = concat!("Sorts the given array of `", $tpe_name, "`s using the quicksort algorithm")]
         pub const fn $pub_name_array<const N: usize>(array: [$tpe; N]) -> [$tpe; N] {
-            if N == 0 {
+            if N == 0 || N == 1 {
                 return array;
             }
             $qsort_array_name(array, 0, N - 1)
@@ -195,7 +195,7 @@ macro_rules! impl_const_quicksort {
         #[cfg(feature = "sort_slices")]
         #[doc = concat!("Sorts the given slice of `", $tpe_name, "`s using the quicksort algorithm")]
         pub const fn $pub_name_slice(slice: &mut [$tpe]) {
-            if slice.is_empty() {
+            if slice.is_empty() || slice.len() == 1 {
                 return;
             }
             let last = slice.len() - 1;
