@@ -8,7 +8,7 @@ categories = ["algorithms"]
 license = "MIT OR Apache-2.0"
 rust-version = "1.59.0"
 repository = "https://github.com/JSorngard/compile_time_sort"
-documentation = "https://docs.rs/compile_time_sort/latest/compile_time_sort/"
+documentation = "https://docs.rs/compile_time_sort/"
 
 [dependencies]
 
