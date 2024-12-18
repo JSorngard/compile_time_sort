@@ -27,8 +27,11 @@ fn test_sort_i32() {
 fn test_edge_cases() {
     const EMPTY_ARRAY: [i32; 0] = [];
     const SORTED_EMPTY_ARRAY: [i32; 0] = into_sorted_i32_array(EMPTY_ARRAY);
+    const SINGLETON_ARRAY: [i32; 1] = [1];
+    const SORTED_SINGLETON_ARRAY: [i32; 1] = into_sorted_i32_array(SINGLETON_ARRAY);
 
     assert_eq!(SORTED_EMPTY_ARRAY, []);
+    assert_eq!(SORTED_SINGLETON_ARRAY, [1]);
 }
 
 #[test]
