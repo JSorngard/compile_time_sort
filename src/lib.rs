@@ -35,9 +35,9 @@
 //! assert_eq!(SORTED_ARRAY, [i32::MIN, -2, 0, 0, 5]);
 //! ```
 
-macro_rules! impl_const_quicksort {
-    ($pub_name_array:ident, $pub_name_slice:ident, $qsort_name:ident, $tpe:ty, $tpe_name: literal) => {
-        const fn $qsort_name(slice: &mut [$tpe], left: usize, right: usize) {
+macro_rules! const_slice_quicksort {
+    ($name:ident, $tpe:ty) => {
+        const fn $name(slice: &mut [$tpe], left: usize, right: usize) {
             let pivot_candidate_1 = left;
             let pivot_candidate_2 = left + (right - left) / 2;
             let pivot_candidate_3 = right;
@@ -88,24 +88,98 @@ macro_rules! impl_const_quicksort {
                 }
             }
             if left < l {
-                $qsort_name(slice, left, l - 1);
+                $name(slice, left, l - 1);
             }
             if right > l {
-                $qsort_name(slice, l + 1, right);
+                $name(slice, l + 1, right);
             }
         }
+    };
+}
+
+macro_rules! const_array_quicksort {
+    ($name:ident, $tpe:ty) => {
+        const fn $name<const N: usize>(
+            mut array: [$tpe; N],
+            left: usize,
+            right: usize,
+        ) -> [$tpe; N] {
+            let pivot_candidate_1 = left;
+            let pivot_candidate_2 = left + (right - left) / 2;
+            let pivot_candidate_3 = right;
+            let mut pivot_index = if array[pivot_candidate_1] < array[pivot_candidate_2] {
+                if array[pivot_candidate_3] < array[pivot_candidate_2] {
+                    if array[pivot_candidate_1] < array[pivot_candidate_3] {
+                        pivot_candidate_3
+                    } else {
+                        pivot_candidate_1
+                    }
+                } else {
+                    pivot_candidate_2
+                }
+            } else {
+                if array[pivot_candidate_3] < array[pivot_candidate_1] {
+                    if array[pivot_candidate_2] < array[pivot_candidate_3] {
+                        pivot_candidate_3
+                    } else {
+                        pivot_candidate_2
+                    }
+                } else {
+                    pivot_candidate_1
+                }
+            };
+
+            let mut l = left;
+            let mut r = right;
+
+            while l < r {
+                while (array[pivot_index] < array[r]) && (l < r) {
+                    r -= 1;
+                }
+                if l != r {
+                    (array[pivot_index], array[r]) = (array[r], array[pivot_index]);
+                    pivot_index = r;
+                }
+                while (array[l] < array[pivot_index]) && (l < r) {
+                    l += 1;
+                }
+                if l != r {
+                    (array[pivot_index], array[l]) = (array[l], array[pivot_index]);
+                    pivot_index = l;
+                }
+                if l != r && array[l] == array[r] {
+                    // Break out of infinite loops
+                    // if the elements at l and r are the same.
+                    break;
+                }
+            }
+            if left < l {
+                array = $name(array, left, l - 1);
+            }
+            if right > l {
+                array = $name(array, l + 1, right);
+            }
+            array
+        }
+    };
+}
+
+macro_rules! impl_const_quicksort {
+    ($pub_name_array:ident, $pub_name_slice:ident, $qsort_slice_name:ident, $qsort_array_name:ident, $tpe:ty, $tpe_name: literal) => {
+        const_slice_quicksort!{$qsort_slice_name, $tpe}
+
+        const_array_quicksort!{$qsort_array_name, $tpe}
 
         #[doc = concat!("Sorts the given array of `", $tpe_name, "`s using the quicksort algorithm")]
-        pub const fn $pub_name_array<const N: usize>(mut arr: [$tpe; N]) -> [$tpe; N] {
+        pub const fn $pub_name_array<const N: usize>(arr: [$tpe; N]) -> [$tpe; N] {
             let last_index = arr.len() - 1;
-            $qsort_name(&mut arr, 0, last_index);
-            arr
+            $qsort_array_name(arr, 0, last_index)
         }
 
         #[doc = concat!("Sorts the given slice of `", $tpe_name, "`s using the quicksort algorithm")]
         pub const fn $pub_name_slice(slice: &mut [$tpe]) {
-            let last_index = slice.len() - 1;
-            $qsort_name(slice, 0, last_index);
+            let last = slice.len() - 1;
+            $qsort_slice_name(slice, 0, last);
         }
     };
 }
@@ -113,27 +187,72 @@ macro_rules! impl_const_quicksort {
 impl_const_quicksort!(
     into_sorted_char_array,
     sort_char_slice,
-    qsort_char,
+    qsort_char_slice,
+    qsort_char_array,
     char,
     "char"
 );
-impl_const_quicksort!(into_sorted_u16_array, sort_u16_slice, qsort_u16, u16, "u16");
-impl_const_quicksort!(into_sorted_i16_array, sort_i16_slice, qsort_i16, i16, "i16");
-impl_const_quicksort!(into_sorted_u32_array, sort_u32_slice, qsort_u32, u32, "u32");
-impl_const_quicksort!(into_sorted_i32_array, sort_i32_slice, qsort_i32, i32, "i32");
-impl_const_quicksort!(into_sorted_u64_array, sort_u64_slice, qsort_u64, u64, "u64");
-impl_const_quicksort!(into_sorted_i64_array, sort_i64_slice, qsort_i64, i64, "i64");
+impl_const_quicksort!(
+    into_sorted_u16_array,
+    sort_u16_slice,
+    qsort_u16_slice,
+    qsort_u16_array,
+    u16,
+    "u16"
+);
+impl_const_quicksort!(
+    into_sorted_i16_array,
+    sort_i16_slice,
+    qsort_i16_slice,
+    qsort_i16_array,
+    i16,
+    "i16"
+);
+impl_const_quicksort!(
+    into_sorted_u32_array,
+    sort_u32_slice,
+    qsort_u32_slice,
+    qsort_u32_array,
+    u32,
+    "u32"
+);
+impl_const_quicksort!(
+    into_sorted_i32_array,
+    sort_i32_slice,
+    qsort_i32_slice,
+    qsort_i32_array,
+    i32,
+    "i32"
+);
+impl_const_quicksort!(
+    into_sorted_u64_array,
+    sort_u64_slice,
+    qsort_u64_slice,
+    qsort_u64_array,
+    u64,
+    "u64"
+);
+impl_const_quicksort!(
+    into_sorted_i64_array,
+    sort_i64_slice,
+    qsort_i64_slice,
+    qsort_i64_array,
+    i64,
+    "i64"
+);
 impl_const_quicksort!(
     into_sorted_usize_array,
     sort_usize_slice,
-    qsort_usize,
+    qsort_usize_slice,
+    qsort_usize_array,
     usize,
     "usize"
 );
 impl_const_quicksort!(
     into_sorted_isize_array,
     sort_isize_slice,
-    qsort_isize,
+    qsort_isize_slice,
+    qsort_isize_array,
     isize,
     "isize"
 );
