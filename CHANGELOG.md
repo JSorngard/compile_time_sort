@@ -2,6 +2,10 @@
 
 This file contains all changes to the crate since version v0.1.0.
 
+## v0.2.3
+
+- Fixed a bug where the sorting functions would panic if they were given an empty array or slice.
+
 ## v0.2.2
 
 - Added sorting functions for `u128` and `i128`.
