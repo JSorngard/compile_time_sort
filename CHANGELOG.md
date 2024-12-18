@@ -2,6 +2,10 @@
 
 This file contains all changes to the crate since version v0.1.0.
 
+## v0.2.1
+
+- Added a gihub actions workflow status badge to the README and corrected the link to the docs in Cargo.toml.
+
 ## v0.2.0
 
 - Added the `sort_slices` feature and gated the functions that utilize mutable references behind it.
