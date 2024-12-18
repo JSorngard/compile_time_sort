@@ -22,19 +22,23 @@
 //! ```
 //!
 //! Sort an array by reference:
-//!
-//! ```
-//! use compile_time_sort::sort_i32_slice;
-//!
-//! const SORTED_ARRAY: [i32; 5] = {
-//!     let mut arr = [5, i32::MIN, 0, -2, 0];
-//!     sort_i32_slice(&mut arr);
-//!     arr
-//! };
-//!
-//! assert_eq!(SORTED_ARRAY, [i32::MIN, -2, 0, 0, 5]);
-//! ```
+#![cfg_attr(
+    feature = "mut_refs",
+    doc = r"```
+use compile_time_sort::sort_i32_slice;
 
+const SORTED_ARRAY: [i32; 5] = {
+    let mut arr = [5, i32::MIN, 0, -2, 0];
+    sort_i32_slice(&mut arr);
+    arr
+};
+
+assert_eq!(SORTED_ARRAY, [i32::MIN, -2, 0, 0, 5]);
+```"
+)]
+#![cfg_attr(docsrs, feature(doc_auto_cfg))]
+
+#[cfg(feature = "mut_refs")]
 /// Defines a `const` function with the given name that takes in a mutable reference to a slice of the given type
 /// and sorts it using the quicksort algorithm.
 macro_rules! const_slice_quicksort {
@@ -167,6 +171,7 @@ macro_rules! const_array_quicksort {
 
 macro_rules! impl_const_quicksort {
     ($pub_name_array:ident, $pub_name_slice:ident, $qsort_slice_name:ident, $qsort_array_name:ident, $tpe:ty, $tpe_name: literal) => {
+        #[cfg(feature = "mut_refs")]
         const_slice_quicksort!{$qsort_slice_name, $tpe}
 
         const_array_quicksort!{$qsort_array_name, $tpe}
@@ -177,6 +182,7 @@ macro_rules! impl_const_quicksort {
             $qsort_array_name(arr, 0, last_index)
         }
 
+        #[cfg(feature = "mut_refs")]
         #[doc = concat!("Sorts the given slice of `", $tpe_name, "`s using the quicksort algorithm")]
         pub const fn $pub_name_slice(slice: &mut [$tpe]) {
             let last = slice.len() - 1;
@@ -258,6 +264,7 @@ impl_const_quicksort!(
     "isize"
 );
 
+#[cfg(feature = "mut_refs")]
 /// Sorts the given slice of `i8`s using the counting sort algorithm.
 pub const fn sort_i8_slice(slice: &mut [i8]) {
     let mut counts = [0_usize; u8::MAX as usize + 1];
@@ -284,10 +291,31 @@ pub const fn sort_i8_slice(slice: &mut [i8]) {
 
 /// Sorts the given array of `i8`s using the counting sort algorithm.
 pub const fn into_sorted_i8_array<const N: usize>(mut array: [i8; N]) -> [i8; N] {
-    sort_i8_slice(&mut array);
+    let mut counts = [0_usize; u8::MAX as usize + 1];
+    let mut i = 0;
+    while i < N {
+        counts[(array[i] as i16 + i8::MIN.unsigned_abs() as i16) as usize] += 1;
+        i += 1;
+    }
+
+    i = 0;
+    let mut j = 0;
+    'outer: while i < N {
+        while counts[j] == 0 {
+            if j + 1 > u8::MAX as usize {
+                break 'outer;
+            }
+            j += 1;
+        }
+        array[i] = (j as i16 + i8::MIN.unsigned_abs() as i16) as i8;
+        counts[j] -= 1;
+        i += 1;
+    }
+
     array
 }
 
+#[cfg(feature = "mut_refs")]
 /// Sorts the given slice of `u8`s using the counting sort algorithm.
 pub const fn sort_u8_slice(slice: &mut [u8]) {
     let mut counts = [0_usize; u8::MAX as usize + 1];
@@ -314,10 +342,29 @@ pub const fn sort_u8_slice(slice: &mut [u8]) {
 
 /// Sorts the given array of `u8`s using the counting sort algorithm.
 pub const fn into_sorted_u8_array<const N: usize>(mut array: [u8; N]) -> [u8; N] {
-    sort_u8_slice(&mut array);
+    let mut counts = [0_usize; u8::MAX as usize + 1];
+    let mut i = 0;
+    while i < N {
+        counts[array[i] as usize] += 1;
+        i += 1;
+    }
+    i = 0;
+    let mut j = 0;
+    'outer: while i < N {
+        while counts[j] == 0 {
+            if j + 1 > u8::MAX as usize {
+                break 'outer;
+            }
+            j += 1;
+        }
+        array[i] = j as u8;
+        counts[j] -= 1;
+        i += 1;
+    }
     array
 }
 
+#[cfg(feature = "mut_refs")]
 /// Sorts the given slice of `bool`s using the counting sort algorithm.
 pub const fn sort_bool_slice(slice: &mut [bool]) {
     let mut falses = 0;
@@ -344,7 +391,26 @@ pub const fn sort_bool_slice(slice: &mut [bool]) {
 
 /// Sorts the given array of `bool`s using the counting sort algorithm.
 pub const fn into_sorted_bool_array<const N: usize>(mut array: [bool; N]) -> [bool; N] {
-    sort_bool_slice(&mut array);
+    let mut falses = 0;
+    let mut i = 0;
+    while i < N {
+        if !array[i] {
+            falses += 1;
+        }
+        i += 1;
+    }
+
+    i = 0;
+    while i < N {
+        if falses > 0 {
+            array[i] = false;
+            falses -= 1;
+        } else {
+            array[i] = true;
+        }
+        i += 1;
+    }
+
     array
 }
 
@@ -361,7 +427,8 @@ mod test {
         const ARRAY_WITH_NEGATIVES: [i32; 3] = [0, -1, 2];
         const SORTED_ARRAY_WITH_NEGATIVES: [i32; 3] = into_sorted_i32_array(ARRAY_WITH_NEGATIVES);
 
-        let arr = const {
+        #[cfg(feature = "mut_refs")]
+        const SORTED_SLICE: [i32; 3] = {
             let mut arr = REV_ARRAY;
             sort_i32_slice(&mut arr);
             arr
@@ -370,7 +437,8 @@ mod test {
         assert_eq!(SORTED_REV_ARRAY, [1, 2, 3]);
         assert_eq!(SORTED_CONST_ARRAY, [2, 2, 2]);
         assert_eq!(SORTED_ARRAY_WITH_NEGATIVES, [-1, 0, 2]);
-        assert_eq!(arr, SORTED_REV_ARRAY);
+        #[cfg(feature = "mut_refs")]
+        assert_eq!(SORTED_SLICE, SORTED_REV_ARRAY);
     }
 
     #[test]
@@ -380,7 +448,8 @@ mod test {
         const CONST_ARRAY: [u32; 3] = [2, 2, 2];
         const SORTED_CONST_ARRAY: [u32; 3] = into_sorted_u32_array(CONST_ARRAY);
 
-        let arr = const {
+        #[cfg(feature = "mut_refs")]
+        const SORTED_SLICE: [u32; 3] = {
             let mut arr = REV_ARRAY;
             sort_u32_slice(&mut arr);
             arr
@@ -388,7 +457,8 @@ mod test {
 
         assert_eq!(SORTED_REV_ARRAY, [1, 2, 3]);
         assert_eq!(SORTED_CONST_ARRAY, [2, 2, 2]);
-        assert_eq!(arr, SORTED_REV_ARRAY)
+        #[cfg(feature = "mut_refs")]
+        assert_eq!(SORTED_SLICE, SORTED_REV_ARRAY)
     }
 
     #[test]
@@ -396,14 +466,16 @@ mod test {
         const ARR: [bool; 4] = [false, true, false, true];
         const SORTED_ARR: [bool; 4] = into_sorted_bool_array(ARR);
 
-        let arr = {
+        #[cfg(feature = "mut_refs")]
+        const SORTED_SLICE: [bool; 4] = {
             let mut arr = [true, false, true, false];
             sort_bool_slice(&mut arr);
             arr
         };
 
         assert_eq!(SORTED_ARR, [false, false, true, true]);
-        assert_eq!(arr, [false, false, true, true]);
+        #[cfg(feature = "mut_refs")]
+        assert_eq!(SORTED_SLICE, [false, false, true, true]);
     }
 
     #[test]
@@ -419,14 +491,16 @@ mod test {
         const ARR: [i8; 5] = [-2, 50, 0, 5, -50];
         const SORTED_ARR: [i8; 5] = into_sorted_i8_array(ARR);
 
-        let sorted_arr = const {
+        #[cfg(feature = "mut_refs")]
+        const SORTED_SLICE: [i32; 100] = {
             let mut arr = [i8::MIN; 100];
             sort_i8_slice(&mut arr);
             arr
         };
 
         assert_eq!(SORTED_ARR, [-50, -2, 0, 5, 50]);
-        assert_eq!(sorted_arr, [i8::MIN; 100]);
+        #[cfg(feature = "mut_refs")]
+        assert_eq!(SORTED_SLICE, [i8::MIN; 100]);
     }
 
     #[test]

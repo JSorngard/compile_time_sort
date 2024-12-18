@@ -1,13 +1,21 @@
 [package]
 name = "compile_time_sort"
-version = "0.1.2"
+version = "0.2.0"
 edition = "2021"
 description = "Sort arrays and slices of primitives in const contexts."
 keywords = ["const", "sort", "const-sort"]
 categories = ["algorithms"]
-rust-version = "1.83.0"
 license = "MIT OR Apache-2.0"
+rust-version = "1.59.0"
 repository = "https://github.com/JSorngard/compile_time_sort"
 documentation = "https://docs.rs/compile_time_sort/latest/compile_time_sort/"
 
 [dependencies]
+
+[features]
+# Enables the `sort_*_slice` functions. This feature raises the MSRV of the crate to 1.83.0.
+mut_refs = []
+
+[package.metadata.docs.rs]
+# Document all features.
+all-features = true
