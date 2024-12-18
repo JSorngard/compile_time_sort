@@ -256,6 +256,22 @@ impl_const_quicksort!(
     "i64"
 );
 impl_const_quicksort!(
+    into_sorted_u128_array,
+    sort_u128_slice,
+    qsort_u128_slice,
+    qsort_u128_array,
+    u128,
+    "u128"
+);
+impl_const_quicksort!(
+    into_sorted_i128_array,
+    sort_i128_slice,
+    qsort_i128_slice,
+    qsort_i128_array,
+    i128,
+    "i128"
+);
+impl_const_quicksort!(
     into_sorted_usize_array,
     sort_usize_slice,
     qsort_usize_slice,
