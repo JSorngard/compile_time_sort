@@ -36,6 +36,11 @@ const SORTED_ARRAY: [i32; 5] = {
 assert_eq!(SORTED_ARRAY, [i32::MIN, -2, 0, 0, 5]);
 ```"
 )]
+//!
+//! # Features
+//!
+//! `mut_refs`: enables the `sort_*_slice` functions and raises the MSRV of the crate to 1.83.0.
+
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
 
 #[cfg(feature = "mut_refs")]
