@@ -492,7 +492,7 @@ mod test {
         const SORTED_ARR: [i8; 5] = into_sorted_i8_array(ARR);
 
         #[cfg(feature = "mut_refs")]
-        const SORTED_SLICE: [i32; 100] = {
+        const SORTED_SLICE: [i8; 100] = {
             let mut arr = [i8::MIN; 100];
             sort_i8_slice(&mut arr);
             arr
