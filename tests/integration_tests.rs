@@ -3,6 +3,9 @@ use compile_time_sort::{
     into_sorted_i8_array, into_sorted_u32_array, into_sorted_u64_array, into_sorted_u8_array,
 };
 
+#[cfg(feature = "sort_slices")]
+use compile_time_sort::{sort_bool_slice, sort_i32_slice, sort_i8_slice, sort_u32_slice};
+
 #[test]
 fn test_sort_u64() {
     const REV_ARRAY: [u64; 3] = [3, 2, 1];
