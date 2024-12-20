@@ -10,12 +10,12 @@ This crate provides functions for sorting arrays and slices of primitives in `co
 Arrays and slices of `bool`s, `u8`s, and `i8`s are sorted with counting sort while arrays of other types
 are sorted with quicksort.
 
-Functions with the naming convention `into_sorted_*_array` take an array by value,
-and functions with the naming convention `sort_*_slice` take a mutable reference to a slice.
-
-This crate has an implementation that is usable on stable before `const`-traits hit,
+This implementation is usable on stable before `const`-traits hit,
 but that means that it unfortunately can not be generic,
 and so there are separate functions for every primitive type.
+
+Functions with the naming convention `into_sorted_*_array` take an array by value,
+and functions with the naming convention `sort_*_slice` take a mutable reference to a slice.
 
 ## Examples
 
