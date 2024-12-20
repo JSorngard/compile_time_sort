@@ -43,9 +43,6 @@ assert_eq!(SORTED_ARRAY, [i32::MIN, -2, 0, 0, 5]);
 
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
 
-#[cfg(test)]
-mod tests;
-
 #[cfg(feature = "sort_slices")]
 /// Defines a `const` function with the given name that takes in a mutable reference to a slice of the given type
 /// and sorts it using the quicksort algorithm.

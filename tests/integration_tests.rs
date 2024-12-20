@@ -1,4 +1,32 @@
-use super::*;
+use compile_time_sort::{
+    into_sorted_bool_array, into_sorted_char_array, into_sorted_i128_array, into_sorted_i32_array,
+    into_sorted_i8_array, into_sorted_u32_array, into_sorted_u64_array, into_sorted_u8_array,
+};
+
+#[test]
+fn test_sort_u64() {
+    const REV_ARRAY: [u64; 3] = [3, 2, 1];
+    const SORTED_REV_ARRAY: [u64; 3] = into_sorted_u64_array(REV_ARRAY);
+    const CONST_ARRAY: [u64; 3] = [2, 2, 2];
+    const SORTED_CONST_ARRAY: [u64; 3] = into_sorted_u64_array(CONST_ARRAY);
+
+    assert_eq!(SORTED_REV_ARRAY, [1, 2, 3]);
+    assert_eq!(SORTED_CONST_ARRAY, [2, 2, 2]);
+}
+
+#[test]
+fn test_sort_i128() {
+    const REV_ARRAY: [i128; 3] = [3, 2, 1];
+    const SORTED_REV_ARRAY: [i128; 3] = into_sorted_i128_array(REV_ARRAY);
+    const CONST_ARRAY: [i128; 3] = [2, 2, 2];
+    const SORTED_CONST_ARRAY: [i128; 3] = into_sorted_i128_array(CONST_ARRAY);
+    const ARRAY_WITH_NEGATIVES: [i128; 3] = [0, -1, 2];
+    const SORTED_ARRAY_WITH_NEGATIVES: [i128; 3] = into_sorted_i128_array(ARRAY_WITH_NEGATIVES);
+
+    assert_eq!(SORTED_REV_ARRAY, [1, 2, 3]);
+    assert_eq!(SORTED_CONST_ARRAY, [2, 2, 2]);
+    assert_eq!(SORTED_ARRAY_WITH_NEGATIVES, [-1, 0, 2]);
+}
 
 #[test]
 fn test_sort_i32() {
