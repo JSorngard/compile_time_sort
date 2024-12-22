@@ -2,6 +2,10 @@
 
 This file contains all changes to the crate since version v0.1.0.
 
+## 0.2.5
+
+- Add some information about the structure of the crate to the README and docs.
+
 ## 0.2.4
 
 - Fixed the panic bug also in the sorting functions of `bool`, `i8`, and `u8` arrays and slices.
