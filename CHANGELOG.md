@@ -2,6 +2,10 @@
 
 This file contains all changes to the crate since version v0.1.0.
 
+## 0.2.7
+
+- Added teh "sorting" keyword.
+
 ## 0.2.6
 
 - Made the crate `no_std` compatible.

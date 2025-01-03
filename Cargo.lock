@@ -4,4 +4,4 @@ version = 3
 
 [[package]]
 name = "compile_time_sort"
-version = "0.2.6"
+version = "0.2.7"
