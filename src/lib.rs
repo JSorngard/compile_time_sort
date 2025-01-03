@@ -45,6 +45,7 @@ assert_eq!(SORTED_ARRAY, [i32::MIN, -2, 0, 0, 5]);
 //!
 //! `sort_slices`: enables the `sort_*_slice` functions and raises the MSRV of the crate to 1.83.0.
 
+#![no_std]
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
 
 #[cfg(feature = "sort_slices")]
