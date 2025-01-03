@@ -5,6 +5,7 @@ This file contains all changes to the crate since version v0.1.0.
 ## 0.2.6
 
 - Made the crate `no_std` compatible.
+- Added the "no-std" and "no-alloc" categories to the crate.
 
 ## 0.2.5
 
