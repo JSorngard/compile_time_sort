@@ -4,7 +4,7 @@ This file contains all changes to the crate since version v0.1.0.
 
 ## 0.2.7
 
-- Added teh "sorting" keyword.
+- Added the "sorting" keyword.
 
 ## 0.2.6
 
