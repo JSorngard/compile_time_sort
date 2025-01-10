@@ -1,6 +1,6 @@
 [package]
 name = "compile_time_sort"
-version = "0.2.7"
+version = "0.2.8"
 edition = "2021"
 description = "Sort arrays and slices of primitives in const contexts."
 keywords = ["const", "sort", "const-sort", "sorting"]
