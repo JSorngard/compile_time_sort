@@ -10,7 +10,7 @@ This crate provides functions for sorting arrays and slices of primitives in `co
 Arrays and slices of `bool`s, `u8`s, and `i8`s are sorted with counting sort while arrays of other types
 are sorted with quicksort.
 
-This implementation is usable on stable before `const`-traits hit,
+This implementation is usable on stable before [`const_fn_in_trait`](https://github.com/rust-lang/rust/issues/67792) hit,
 but that means that it unfortunately can not be generic,
 and so there are separate functions for every primitive type.
 
