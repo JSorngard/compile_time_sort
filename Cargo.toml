@@ -13,7 +13,7 @@ documentation = "https://docs.rs/compile_time_sort/"
 [dependencies]
 
 [features]
-# Enables the `sort_*_slice` functions and raises the MSRV of the crate to 1.83.0.
+# Enables the `sort_*_slice` functions and raises the MSRV of the crate from 1.59.0 to 1.83.0.
 sort_slices = []
 
 [package.metadata.docs.rs]
