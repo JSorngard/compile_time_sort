@@ -46,7 +46,7 @@ assert_eq!(SORTED_ARRAY, [i32::MIN, -2, 0, 0, 5]);
 
 ## Features
 
-`sort_slices`: enables the `sort_*_slice` functions and raises the MSRV of the crate to 1.83.0.
+`sort_slices`: enables the `sort_*_slice` functions and raises the MSRV of the crate from 1.59.0 to 1.83.0.
 
 <br>
 
