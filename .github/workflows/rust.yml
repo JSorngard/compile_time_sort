@@ -16,7 +16,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: dtolnay/rust-toolchain@stable
-    - name: format
+    - name: Check formatting
       run: cargo fmt --check
 
   check:
@@ -35,7 +35,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: dtolnay/rust-toolchain@stable
-    - name: clippy
+    - name: Run clippy
       run: cargo clippy --all-features -- -D warnings
       
   test:
@@ -57,7 +57,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: dtolnay/rust-toolchain@nightly
-    - name: document
+    - name: Generate documentation
       run: cargo +nightly doc --all-features
 
   verify_rust_version:
@@ -70,9 +70,9 @@ jobs:
     - uses: taiki-e/install-action@v2
       with:
         tool: cargo-msrv
-    - name: verify default msrv
+    - name: Verify default msrv
       run: cargo msrv verify
-    - name: verify raised msrv
+    - name: Verify raised msrv
       run: cargo msrv verify --rust-version 1.83.0 --features sort_slices
 
   coverage:
@@ -82,8 +82,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: llvm-tools-preview
-      - name: Install cargo-llvm-cov
-        uses: taiki-e/install-action@cargo-llvm-cov
+      - uses: taiki-e/install-action@cargo-llvm-cov
       - name: Generate lockfile
         if: hashFiles('Cargo.lock') == ''
         run: cargo generate-lockfile
