@@ -5,7 +5,7 @@
 //! Arrays and slices of `bool`s, `u8`s, and `i8`s are sorted with counting sort while arrays of other types
 //! are sorted with quicksort.
 //!
-//! This implementation is usable on stable before `const`-traits hit,
+//! This implementation is usable on stable before the [`const_trait_impl`](https://github.com/rust-lang/rust/issues/67792) feature is stabilized,
 //! but that means that it unfortunately can not be generic,
 //! and so there are separate functions for every primitive type.
 //!
