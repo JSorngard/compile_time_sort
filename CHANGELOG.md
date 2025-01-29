@@ -2,9 +2,13 @@
 
 This file contains all changes to the crate since version v0.1.0.
 
+## 1.0.0 (Unreleased)
+
+- Stabilized the API of the crate.
+
 ## 0.2.8
 
-- Note original MSRV in feature descriptions.
+- Noted the original MSRV in feature descriptions.
 - Improvements to CI jobs.
 - Improvements to the documentation.
 
