@@ -5,7 +5,7 @@
 [![Github Repository Link](https://img.shields.io/badge/github-JSorngard%2Fcompile__time__sort-8da0cb?logo=github)](https://github.com/JSorngard/compile_time_sort)
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/JSorngard/compile_time_sort/rust.yml?logo=github&label=CI)](https://github.com/JSorngard/compile_time_sort/actions/workflows/rust.yml)
 
-This crate provides functions for sorting arrays and slices of primitives in `const` contexts.
+This small crate provides functions for sorting arrays and slices of primitives in `const` contexts.
 
 Arrays and slices of `bool`s, `u8`s, and `i8`s are sorted with counting sort while arrays of other types
 are sorted with quicksort.

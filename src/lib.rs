@@ -1,6 +1,6 @@
 //! # Description
 //!
-//! This crate provides functions for sorting arrays and slices of primitives in `const` contexts.
+//! This small crate provides functions for sorting arrays and slices of primitives in `const` contexts.
 //!
 //! Arrays and slices of `bool`s, `u8`s, and `i8`s are sorted with counting sort while arrays of other types
 //! are sorted with quicksort.
