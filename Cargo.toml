@@ -12,6 +12,9 @@ documentation = "https://docs.rs/compile_time_sort/"
 
 [dependencies]
 
+[dev-dependencies]
+rand = "0.9.0"
+
 [features]
 # Enables the `sort_*_slice` functions and raises the MSRV of the crate from 1.59.0 to 1.83.0.
 sort_slices = []

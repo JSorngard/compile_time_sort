@@ -4,7 +4,12 @@ use compile_time_sort::{
 };
 
 #[cfg(feature = "sort_slices")]
-use compile_time_sort::{sort_bool_slice, sort_i32_slice, sort_i8_slice, sort_u32_slice};
+use compile_time_sort::{
+    sort_bool_slice, sort_i32_slice, sort_i8_slice, sort_u128_slice, sort_u32_slice,
+};
+
+#[cfg(feature = "sort_slices")]
+use rand::{rngs::SmallRng, Rng, SeedableRng};
 
 #[test]
 fn test_sort_u64() {
@@ -136,4 +141,21 @@ fn test_char_sort() {
     const SORTED_ARR: [char; 4] = into_sorted_char_array(ARR);
 
     assert_eq!(SORTED_ARR, ['\n', '#', 'A', 'a'])
+}
+
+#[cfg(feature = "sort_slices")]
+#[test]
+fn test_big_sort() {
+    const N: usize = 1_000_000;
+
+    let mut rng = SmallRng::from_seed([0b01010101; 32]);
+    let vals: Vec<u128> = (0..N).map(|_| rng.random()).collect();
+
+    let mut sorted_vals = vals.clone();
+    sorted_vals.sort_unstable();
+
+    let mut sorted_slice = vals.clone();
+    sort_u128_slice(&mut sorted_slice);
+
+    assert_eq!(sorted_vals, sorted_slice);
 }
