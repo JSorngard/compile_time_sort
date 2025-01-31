@@ -146,10 +146,8 @@ fn test_char_sort() {
 #[cfg(feature = "sort_slices")]
 #[test]
 fn test_big_sort() {
-    const N: usize = 1_000_000;
-
     let mut rng = SmallRng::from_seed([0b01010101; 32]);
-    let vals: Vec<u128> = (0..N).map(|_| rng.random()).collect();
+    let vals: Vec<u128> = (0..1_000_000).map(|_| rng.random()).collect();
 
     let mut sorted_vals = vals.clone();
     sorted_vals.sort_unstable();
