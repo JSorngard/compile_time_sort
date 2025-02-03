@@ -5,7 +5,8 @@ This file contains all changes to the crate since version v0.1.0.
 ## 1.0.0 (Unreleased)
 
 - Stabilized the API of the crate.
-- Add CI job to test the crate on the Rust beta branch.
+- Added CI job to test the crate on the Rust beta branch.
+- Added CI job to verify sever compatibility.
 
 ## 0.2.8
 
