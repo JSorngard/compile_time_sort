@@ -105,3 +105,10 @@ jobs:
         tool: cargo-all-features 
     - name: Test the crate on rust beta
       run: cargo test-all-features
+
+  check_semver:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check semver compatibility
+        uses: obi1kenobi/cargo-semver-checks-action@v2
