@@ -1,3 +1,6 @@
+#[cfg(feature = "sort_slices")]
+use rand::{rngs::SmallRng, Rng, SeedableRng};
+
 use compile_time_sort::{
     into_sorted_bool_array, into_sorted_char_array, into_sorted_i128_array, into_sorted_i16_array,
     into_sorted_i32_array, into_sorted_i64_array, into_sorted_i8_array, into_sorted_u128_array,
@@ -39,6 +42,30 @@ macro_rules! test_unsigned_integer {
                 };
 
                 assert_eq!(SORTED_SLICE, SORTED_REV_ARRAY);
+
+                let mut rng = SmallRng::from_seed([0b01010101; 32]);
+                let random_vec: Vec<$tpe> = (0..1_000).map(|_| rng.random()).collect();
+                let std_sorted_vec = {
+                    let mut vec = random_vec.clone();
+                    vec.sort_unstable();
+                    vec
+                };
+                let sorted_vec = {
+                    let mut vec = random_vec;
+                    $slice_sort_name(&mut vec);
+                    vec
+                };
+                for (i, (&std, &custom)) in std_sorted_vec.iter().zip(sorted_vec.iter()).enumerate() {
+                    print!("element {i}");
+                    if i > 0 {
+                        print!(", prev: std: {}, custom: {}", std_sorted_vec[i - 1], sorted_vec[i - 1]);
+                    }
+                    if i < std_sorted_vec.len() - 1 {
+                        print!(", next: std: {}, custom: {}", std_sorted_vec[i + 1], sorted_vec[i + 1]);
+                    }
+                    println!();
+                    assert_eq!(std, custom);
+                }
             }
         }
     };
