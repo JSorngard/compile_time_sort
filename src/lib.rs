@@ -138,17 +138,17 @@ macro_rules! impl_const_quicksort {
 
         const_array_quicksort!{$qsort_array_name, $partition_array_name, $tpe}
 
-        #[doc = concat!("Sorts the given array of `", stringify!($tpe), "`s using the quicksort algorithm and returns it.")]
-        /*#[doc = ""]
+        /*#[doc = concat!("Sorts the given array of `", stringify!($tpe), "`s using the quicksort algorithm and returns it.")]
+        #[doc = ""]
         #[doc = "# Example"]
         #[doc = ""]
         #[doc = "```"]
         #[doc = concat!("use compile_time_sort::into_sorted_", stringify!($tpe), "_array;")]
         #[doc = ""]
-        #[doc = concat!("const ARRAY: [", stringify!($tpe), "; 5] = [3, 3, 2, ", stringify!($tpe), "::MAX, 0];")]
+        #[doc = concat!("const ARRAY: [", stringify!($tpe), "; 5] = [3, 3, 2, ", stringify!($tpe), "::MAX, ", stringify!($tpe), "::MIN];")]
         #[doc = concat!("const SORTED_ARRAY: [", stringify!($tpe), "; 5] = into_sorted_", stringify!($tpe), "_array(ARRAY);")]
         #[doc = ""]
-        #[doc = concat!("assert_eq!(SORTED_ARRAY, [0, 2, 3, 3, ", stringify!($tpe), "::MAX]);")]*/
+        #[doc = concat!("assert_eq!(SORTED_ARRAY, [", stringify!($tpe), "::MIN, 2, 3, 3, ", stringify!($tpe), "::MAX]);")]*/
         pub const fn $pub_name_array<const N: usize>(array: [$tpe; N]) -> [$tpe; N] {
             if N <= 1 {
                 return array;
