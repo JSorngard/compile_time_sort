@@ -56,6 +56,8 @@ macro_rules! test_unsigned_integer {
                     vec
                 };
 
+                println!("{:?}", sorted_vec.iter().position(|&x| x == 26).map(|i| &sorted_vec[i - 1..=i + 2]));
+
                 for (i, (&std, &custom)) in std_sorted_vec
                     .iter()
                     .zip(sorted_vec.iter())
