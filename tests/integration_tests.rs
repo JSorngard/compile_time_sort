@@ -1,4 +1,3 @@
-#[cfg(feature = "sort_slices")]
 use rand::{rngs::SmallRng, Rng, SeedableRng};
 
 use compile_time_sort::{
@@ -42,6 +41,23 @@ macro_rules! test_unsigned_integer {
 
             assert_eq!(SORTED_JUST_ZEROS_ARRAY, [0; 100]);
 
+            let mut rng = SmallRng::from_seed([0b01010101; 32]);
+
+            let random_array: [$tpe; 1_000] = {
+                let mut arr = [0; 1_000];
+                for i in 0..10_000 {
+                    arr[i] = rng.random();
+                }
+                arr
+            };
+            let std_sorted_array = {
+                let mut arr = random_array;
+                arr.sort_unstable();
+                arr
+            };
+            let sorted_array = $array_sort_name(random_array);
+            assert_eq!(std_sorted_array, sorted_array);
+
             #[cfg(feature = "sort_slices")]
             {
                 const SORTED_SLICE: [$tpe; 3] = {
@@ -52,36 +68,26 @@ macro_rules! test_unsigned_integer {
 
                 assert_eq!(SORTED_SLICE, SORTED_REV_ARRAY);
 
-                let mut rng = SmallRng::from_seed([0b01010101; 32]);
-                let random_vec: Vec<$tpe> = (0..10_000).map(|_| rng.random()).collect();
-                let std_sorted_vec = {
-                    let mut vec = random_vec.clone();
-                    vec.sort_unstable();
-                    vec
+                let std_sorted_array = {
+                    let mut arr = random_array;
+                    arr.sort_unstable();
+                    arr
                 };
-                let sorted_vec = {
-                    let mut vec = random_vec;
-                    $slice_sort_name(&mut vec);
-                    vec
+                let sorted_array = {
+                    let mut arr = random_array;
+                    $slice_sort_name(&mut arr);
+                    arr
                 };
 
-                println!(
-                    "{:?}",
-                    sorted_vec
-                        .iter()
-                        .position(|&x| x == 26)
-                        .map(|i| &sorted_vec[i - 1..=i + 2])
-                );
-
-                for (i, (&std, &custom)) in std_sorted_vec
+                for (i, (&std, &custom)) in std_sorted_array
                     .iter()
-                    .zip(sorted_vec.iter())
+                    .zip(sorted_array.iter())
                     .enumerate()
                     .skip(1)
-                    .take(std_sorted_vec.len() - 2)
+                    .take(std_sorted_array.len() - 2)
                 {
-                    println!("std:    {:?}", &std_sorted_vec[i - 1..=i + 1]);
-                    println!("custom: {:?}", &sorted_vec[i - 1..=i + 1]);
+                    println!("std:    {:?}", &std_sorted_array[i - 1..=i + 1]);
+                    println!("custom: {:?}", &sorted_array[i - 1..=i + 1]);
                     println!();
                     assert_eq!(std, custom);
                 }
