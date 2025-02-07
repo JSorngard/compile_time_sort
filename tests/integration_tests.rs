@@ -44,7 +44,7 @@ macro_rules! test_unsigned_integer {
                 assert_eq!(SORTED_SLICE, SORTED_REV_ARRAY);
 
                 let mut rng = SmallRng::from_seed([0b01010101; 32]);
-                let random_vec: Vec<$tpe> = (0..1_000).map(|_| rng.random()).collect();
+                let random_vec: Vec<$tpe> = (0..10_000).map(|_| rng.random()).collect();
                 let std_sorted_vec = {
                     let mut vec = random_vec.clone();
                     vec.sort_unstable();
@@ -55,14 +55,16 @@ macro_rules! test_unsigned_integer {
                     $slice_sort_name(&mut vec);
                     vec
                 };
-                for (i, (&std, &custom)) in std_sorted_vec.iter().zip(sorted_vec.iter()).enumerate() {
-                    print!("element {i}");
-                    if i > 0 {
-                        print!(", prev: std: {}, custom: {}", std_sorted_vec[i - 1], sorted_vec[i - 1]);
-                    }
-                    if i < std_sorted_vec.len() - 1 {
-                        print!(", next: std: {}, custom: {}", std_sorted_vec[i + 1], sorted_vec[i + 1]);
-                    }
+
+                for (i, (&std, &custom)) in std_sorted_vec
+                    .iter()
+                    .zip(sorted_vec.iter())
+                    .enumerate()
+                    .skip(1)
+                    .take(std_sorted_vec.len() - 2)
+                {
+                    println!("std:    {:?}", &std_sorted_vec[i - 1..=i + 1]);
+                    println!("custom: {:?}", &sorted_vec[i - 1..=i + 1]);
                     println!();
                     assert_eq!(std, custom);
                 }
