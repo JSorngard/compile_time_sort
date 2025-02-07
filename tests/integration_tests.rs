@@ -97,39 +97,29 @@ macro_rules! test_unsigned_integer {
 }
 
 macro_rules! test_signed_integer {
-    ($tpe:ty, $fn_name:ident, $array_sort_name:ident, $slice_sort_name:ident) => {
+    ($tpe:ty, $negative_fn_name:ident, $fn_name:ident, $array_sort_name:ident, $slice_sort_name:ident) => {
         #[test]
-        fn $fn_name() {
-            const REV_ARRAY: [$tpe; 3] = [3, 2, 1];
-            const SORTED_REV_ARRAY: [$tpe; 3] = $array_sort_name(REV_ARRAY);
-            const CONST_ARRAY: [$tpe; 3] = [2, 2, 2];
-            const SORTED_CONST_ARRAY: [$tpe; 3] = $array_sort_name(CONST_ARRAY);
+        fn $negative_fn_name() {
             const ARRAY_WITH_NEGATIVES: [$tpe; 3] = [0, -1, 2];
             const SORTED_ARRAY_WITH_NEGATIVES: [$tpe; 3] = $array_sort_name(ARRAY_WITH_NEGATIVES);
 
-            const EMPTY_ARRAY: [$tpe; 0] = [];
-            const SORTED_EMPTY_ARRAY: [$tpe; 0] = $array_sort_name(EMPTY_ARRAY);
-            const SINGLETON_ARRAY: [$tpe; 1] = [1];
-            const SORTED_SINGLETON_ARRAY: [$tpe; 1] = $array_sort_name(SINGLETON_ARRAY);
-
-            assert_eq!(SORTED_EMPTY_ARRAY, []);
-            assert_eq!(SORTED_SINGLETON_ARRAY, [1]);
-
-            assert_eq!(SORTED_REV_ARRAY, [1, 2, 3]);
-            assert_eq!(SORTED_CONST_ARRAY, [2, 2, 2]);
             assert_eq!(SORTED_ARRAY_WITH_NEGATIVES, [-1, 0, 2]);
 
             #[cfg(feature = "sort_slices")]
             {
-                const SORTED_SLICE: [$tpe; 3] = {
+                const ARRAY_WITH_NEGATIVES: [$tpe; 3] = [0, -1, 2];
+                const SORTED_ARRAY_WITH_NEGATIVES: [$tpe; 3] = {
                     let mut arr = ARRAY_WITH_NEGATIVES;
                     $slice_sort_name(&mut arr);
                     arr
                 };
 
-                assert_eq!(SORTED_SLICE, SORTED_ARRAY_WITH_NEGATIVES);
+                assert_eq!(SORTED_ARRAY_WITH_NEGATIVES, [-1, 0, 2]);
             }
         }
+
+        // Also run all the tests for unsigned integers on the signed integers
+        test_unsigned_integer! {$tpe, $fn_name, $array_sort_name, $slice_sort_name}
     };
 }
 
@@ -144,13 +134,14 @@ test_unsigned_integer! {
     sort_u128_slice
 }
 
-test_signed_integer! {i8, test_sort_i8, into_sorted_i8_array, sort_i8_slice}
-test_signed_integer! {i16, test_sort_i16, into_sorted_i16_array, sort_i16_slice}
-test_signed_integer! {i32, test_sort_i32, into_sorted_i32_array, sort_i32_slice}
-test_signed_integer! {i64, test_sort_i64, into_sorted_i64_array, sort_i64_slice}
+test_signed_integer! {i8, test_small_negative_sort_i8, test_i8, into_sorted_i8_array, sort_i8_slice}
+test_signed_integer! {i16, test_small_negative_sort_i16, test_i16, into_sorted_i16_array, sort_i16_slice}
+test_signed_integer! {i32, test_small_negative_sort_i32, test_i32, into_sorted_i32_array, sort_i32_slice}
+test_signed_integer! {i64, test_small_negative_sort_i64, test_i64, into_sorted_i64_array, sort_i64_slice}
 test_signed_integer! {
     i128,
-    test_sort_i128,
+    test_small_negative_sort_i128,
+    test_i128,
     into_sorted_i128_array,
     sort_i128_slice
 }
