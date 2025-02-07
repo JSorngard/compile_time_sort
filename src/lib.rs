@@ -55,35 +55,29 @@ macro_rules! const_slice_quicksort {
     ($name:ident, $partition_name:ident, $tpe:ty) => {
         const fn $name(slice: &mut [$tpe], left: usize, right: usize) {
             if right - left > 1 {
-                let pivot_index = $partition_name(slice.split_at_mut(right).0.split_at_mut(left).1);
+                let pivot_index = $partition_name(slice, left, right);
                 $name(slice, left, pivot_index);
                 $name(slice, pivot_index + 1, right);
             }
         }
 
-        const fn $partition_name(slice: &mut [$tpe]) -> usize {
-            let len = slice.len();
+        const fn $partition_name(slice: &mut [$tpe], left: usize, right: usize) -> usize {
+            let len = right - left;
             let pivot_index = len / 2;
             let last_index = len - 1;
 
-            let tmp = slice[pivot_index];
-            slice[pivot_index] = slice[last_index];
-            slice[last_index] = tmp;
+            (slice[pivot_index], slice[last_index]) = (slice[last_index], slice[pivot_index]);
 
-            let mut store_index = 0;
-            let mut i = 0;
+            let mut store_index = left;
+            let mut i = left;
             while i < last_index {
                 if slice[i] < slice[last_index] {
-                    let tmp = slice[store_index];
-                    slice[store_index] = slice[i];
-                    slice[i] = tmp;
+                    (slice[store_index], slice[i]) = (slice[i], slice[store_index]);
                     store_index += 1;
                 }
                 i += 1;
             }
-            let tmp = slice[store_index];
-            slice[store_index] = slice[last_index];
-            slice[last_index] = tmp;
+            (slice[store_index], slice[last_index]) = (slice[last_index], slice[store_index]);
 
             store_index
         }
