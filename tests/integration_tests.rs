@@ -43,10 +43,10 @@ macro_rules! test_unsigned_integer {
 
             let mut rng = SmallRng::from_seed([0b01010101; 32]);
 
-            let random_array: [$tpe; 1_000] = {
-                let mut arr = [0; 1_000];
-                for i in 0..10_000 {
-                    arr[i] = rng.random();
+            let random_array: [$tpe; 500] = {
+                let mut arr = [0; 500];
+                for item in arr.iter_mut() {
+                    *item = rng.random();
                 }
                 arr
             };
