@@ -52,156 +52,117 @@ assert_eq!(SORTED_ARRAY, [i32::MIN, -2, 0, 0, 5]);
 /// Defines a `const` function with the given name that takes in a mutable reference to a slice of the given type
 /// and sorts it using the quicksort algorithm.
 macro_rules! const_slice_quicksort {
-    ($name:ident, $tpe:ty) => {
+    ($name:ident, $partition_name:ident, $tpe:ty) => {
         const fn $name(slice: &mut [$tpe], left: usize, right: usize) {
-            let pivot_candidate_1 = left;
-            let pivot_candidate_2 = left + (right - left) / 2;
-            let pivot_candidate_3 = right;
-            let mut pivot_index = if slice[pivot_candidate_1] < slice[pivot_candidate_2] {
-                if slice[pivot_candidate_3] < slice[pivot_candidate_2] {
-                    if slice[pivot_candidate_1] < slice[pivot_candidate_3] {
-                        pivot_candidate_3
-                    } else {
-                        pivot_candidate_1
-                    }
-                } else {
-                    pivot_candidate_2
-                }
-            } else {
-                if slice[pivot_candidate_3] < slice[pivot_candidate_1] {
-                    if slice[pivot_candidate_2] < slice[pivot_candidate_3] {
-                        pivot_candidate_3
-                    } else {
-                        pivot_candidate_2
-                    }
-                } else {
-                    pivot_candidate_1
-                }
-            };
+            if right - left > 1 {
+                let pivot_index = $partition_name(slice.split_at_mut(right).0.split_at_mut(left).1);
+                $name(slice, left, pivot_index);
+                $name(slice, pivot_index + 1, right);
+            }
+        }
 
-            let mut l = left;
-            let mut r = right;
+        const fn $partition_name(slice: &mut [$tpe]) -> usize {
+            let len = slice.len();
+            let pivot_index = len / 2;
+            let last_index = len - 1;
 
-            while l < r {
-                while (slice[pivot_index] < slice[r]) && (l < r) {
-                    r -= 1;
+            let tmp = slice[pivot_index];
+            slice[pivot_index] = slice[last_index];
+            slice[last_index] = tmp;
+
+            let mut store_index = 0;
+            let mut i = 0;
+            while i < last_index {
+                if slice[i] < slice[last_index] {
+                    let tmp = slice[store_index];
+                    slice[store_index] = slice[i];
+                    slice[i] = tmp;
+                    store_index += 1;
                 }
-                if l != r {
-                    (slice[pivot_index], slice[r]) = (slice[r], slice[pivot_index]);
-                    pivot_index = r;
-                }
-                while (slice[l] < slice[pivot_index]) && (l < r) {
-                    l += 1;
-                }
-                if l != r {
-                    (slice[pivot_index], slice[l]) = (slice[l], slice[pivot_index]);
-                    pivot_index = l;
-                }
-                if l != r && slice[l] == slice[r] {
-                    // Break out of infinite loops
-                    // if the elements at l and r are the same.
-                    break;
-                }
+                i += 1;
             }
-            if left < l {
-                $name(slice, left, l - 1);
-            }
-            if right > l {
-                $name(slice, l + 1, right);
-            }
+            let tmp = slice[store_index];
+            slice[store_index] = slice[last_index];
+            slice[last_index] = tmp;
+
+            store_index
         }
     };
 }
 
 /// Defines a `const` function with the given name that sorts an array of the given type with the quicksort algorithm.
 macro_rules! const_array_quicksort {
-    ($name:ident, $tpe:ty) => {
-        const fn $name<const N: usize>(
-            mut array: [$tpe; N],
+    ($name:ident, $partition_name:ident, $tpe:ty) => {
+        const fn $name<const N: usize>(array: [$tpe; N], left: usize, right: usize) -> [$tpe; N] {
+            if right - left > 1 {
+                let (pivot_index, mut array) = $partition_name(array, left, right);
+                array = $name(array, left, pivot_index);
+                array = $name(array, pivot_index + 1, right);
+                return array;
+            }
+
+            array
+        }
+
+        const fn $partition_name<const N: usize>(
+            mut arr: [$tpe; N],
             left: usize,
             right: usize,
-        ) -> [$tpe; N] {
-            let pivot_candidate_1 = left;
-            let pivot_candidate_2 = left + (right - left) / 2;
-            let pivot_candidate_3 = right;
-            let mut pivot_index = if array[pivot_candidate_1] < array[pivot_candidate_2] {
-                if array[pivot_candidate_3] < array[pivot_candidate_2] {
-                    if array[pivot_candidate_1] < array[pivot_candidate_3] {
-                        pivot_candidate_3
-                    } else {
-                        pivot_candidate_1
-                    }
-                } else {
-                    pivot_candidate_2
-                }
-            } else {
-                if array[pivot_candidate_3] < array[pivot_candidate_1] {
-                    if array[pivot_candidate_2] < array[pivot_candidate_3] {
-                        pivot_candidate_3
-                    } else {
-                        pivot_candidate_2
-                    }
-                } else {
-                    pivot_candidate_1
-                }
-            };
+        ) -> (usize, [$tpe; N]) {
+            let len = right - left;
+            let pivot_index = left + len / 2;
+            let last_index = right - 1;
 
-            let mut l = left;
-            let mut r = right;
+            (arr[pivot_index], arr[last_index]) = (arr[last_index], arr[pivot_index]);
 
-            while l < r {
-                while (array[pivot_index] < array[r]) && (l < r) {
-                    r -= 1;
+            let mut store_index = left;
+            let mut i = left;
+            while i < last_index {
+                if arr[i] < arr[last_index] {
+                    (arr[store_index], arr[i]) = (arr[i], arr[store_index]);
+                    store_index += 1;
                 }
-                if l != r {
-                    (array[pivot_index], array[r]) = (array[r], array[pivot_index]);
-                    pivot_index = r;
-                }
-                while (array[l] < array[pivot_index]) && (l < r) {
-                    l += 1;
-                }
-                if l != r {
-                    (array[pivot_index], array[l]) = (array[l], array[pivot_index]);
-                    pivot_index = l;
-                }
-                if l != r && array[l] == array[r] {
-                    break;
-                }
+                i += 1;
             }
-            if left < l {
-                array = $name(array, left, l - 1);
-            }
-            if right > l {
-                array = $name(array, l + 1, right);
-            }
-            array
+            (arr[store_index], arr[last_index]) = (arr[last_index], arr[store_index]);
+
+            (store_index, arr)
         }
     };
 }
 
 macro_rules! impl_const_quicksort {
-    ($pub_name_array:ident, $pub_name_slice:ident, $qsort_slice_name:ident, $qsort_array_name:ident, $tpe:ty, $tpe_name: literal) => {
+    ($pub_name_array:ident, $pub_name_slice:ident, $qsort_slice_name:ident, $partition_slice_name:ident, $qsort_array_name:ident, $partition_array_name:ident, $tpe:ty) => {
         #[cfg(feature = "sort_slices")]
-        const_slice_quicksort!{$qsort_slice_name, $tpe}
+        const_slice_quicksort!{$qsort_slice_name, $partition_slice_name, $tpe}
 
-        const_array_quicksort!{$qsort_array_name, $tpe}
+        const_array_quicksort!{$qsort_array_name, $partition_array_name, $tpe}
 
-        #[doc = concat!("Sorts the given array of `", $tpe_name, "`s using the quicksort algorithm")]
+        #[doc = concat!("Sorts the given array of `", stringify!($tpe), "`s using the quicksort algorithm and returns it.")]
+        /*#[doc = ""]
+        #[doc = "# Example"]
+        #[doc = ""]
+        #[doc = "```"]
+        #[doc = concat!("use compile_time_sort::into_sorted_", stringify!($tpe), "_array;")]
+        #[doc = ""]
+        #[doc = concat!("const ARRAY: [", stringify!($tpe), "; 5] = [3, 3, 2, ", stringify!($tpe), "::MAX, 0];")]
+        #[doc = concat!("const SORTED_ARRAY: [", stringify!($tpe), "; 5] = into_sorted_", stringify!($tpe), "_array(ARRAY);")]
+        #[doc = ""]
+        #[doc = concat!("assert_eq!(SORTED_ARRAY, [0, 2, 3, 3, ", stringify!($tpe), "::MAX]);")]*/
         pub const fn $pub_name_array<const N: usize>(array: [$tpe; N]) -> [$tpe; N] {
-            if N == 0 || N == 1 {
+            if N <= 1 {
                 return array;
             }
-            $qsort_array_name(array, 0, N - 1)
+            $qsort_array_name(array, 0, N)
         }
 
         #[cfg(feature = "sort_slices")]
-        #[doc = concat!("Sorts the given slice of `", $tpe_name, "`s using the quicksort algorithm")]
+        #[doc = concat!("Sorts the given slice of `", stringify!($tpe), "`s using the quicksort algorithm.")]
         pub const fn $pub_name_slice(slice: &mut [$tpe]) {
-            if slice.is_empty() || slice.len() == 1 {
+            if slice.len() <= 1 {
                 return;
             }
-            let last = slice.len() - 1;
-            $qsort_slice_name(slice, 0, last);
+            $qsort_slice_name(slice, 0, slice.len());
         }
     };
 }
@@ -210,89 +171,100 @@ impl_const_quicksort!(
     into_sorted_char_array,
     sort_char_slice,
     qsort_char_slice,
+    partition_char_slice,
     qsort_char_array,
-    char,
-    "char"
+    partition_char_array,
+    char
 );
 impl_const_quicksort!(
     into_sorted_u16_array,
     sort_u16_slice,
     qsort_u16_slice,
+    partition_u16_slice,
     qsort_u16_array,
-    u16,
-    "u16"
+    partition_u16_array,
+    u16
 );
 impl_const_quicksort!(
     into_sorted_i16_array,
     sort_i16_slice,
     qsort_i16_slice,
+    partition_i16_slice,
     qsort_i16_array,
-    i16,
-    "i16"
+    partition_i16_array,
+    i16
 );
 impl_const_quicksort!(
     into_sorted_u32_array,
     sort_u32_slice,
     qsort_u32_slice,
+    partition_u32_slice,
     qsort_u32_array,
-    u32,
-    "u32"
+    partition_u32_array,
+    u32
 );
 impl_const_quicksort!(
     into_sorted_i32_array,
     sort_i32_slice,
     qsort_i32_slice,
+    partition_i32_slice,
     qsort_i32_array,
-    i32,
-    "i32"
+    partition_i32_array,
+    i32
 );
 impl_const_quicksort!(
     into_sorted_u64_array,
     sort_u64_slice,
     qsort_u64_slice,
+    partition_u64_slice,
     qsort_u64_array,
-    u64,
-    "u64"
+    partition_u64_array,
+    u64
 );
 impl_const_quicksort!(
     into_sorted_i64_array,
     sort_i64_slice,
     qsort_i64_slice,
+    partition_i64_slice,
     qsort_i64_array,
-    i64,
-    "i64"
+    partition_i64_array,
+    i64
 );
 impl_const_quicksort!(
     into_sorted_u128_array,
     sort_u128_slice,
     qsort_u128_slice,
+    partition_u128_slice,
     qsort_u128_array,
-    u128,
-    "u128"
+    partition_u128_array,
+    u128
 );
 impl_const_quicksort!(
     into_sorted_i128_array,
     sort_i128_slice,
     qsort_i128_slice,
+    partition_i128_slice,
     qsort_i128_array,
-    i128,
-    "i128"
+    partition_i128_array,
+    i128
 );
 impl_const_quicksort!(
     into_sorted_usize_array,
     sort_usize_slice,
     qsort_usize_slice,
+    partition_usize_slice,
     qsort_usize_array,
-    usize,
-    "usize"
+    partition_usize_array,
+    usize
 );
 impl_const_quicksort!(
     into_sorted_isize_array,
     sort_isize_slice,
     qsort_isize_slice,
+    partition_isize_slice,
     qsort_isize_array,
-    isize,
-    "isize"
+    partition_isize_array,
+    isize
 );
 
 #[cfg(feature = "sort_slices")]

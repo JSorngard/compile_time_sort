@@ -19,19 +19,28 @@ macro_rules! test_unsigned_integer {
         fn $fn_name() {
             const REV_ARRAY: [$tpe; 3] = [3, 2, 1];
             const SORTED_REV_ARRAY: [$tpe; 3] = $array_sort_name(REV_ARRAY);
+
             const CONST_ARRAY: [$tpe; 3] = [2, 2, 2];
             const SORTED_CONST_ARRAY: [$tpe; 3] = $array_sort_name(CONST_ARRAY);
 
+            const JUST_ZEROS_ARRAY: [$tpe; 100] = [0; 100];
+            const SORTED_JUST_ZEROS_ARRAY: [$tpe; 100] = $array_sort_name(JUST_ZEROS_ARRAY);
+
             const EMPTY_ARRAY: [$tpe; 0] = [];
             const SORTED_EMPTY_ARRAY: [$tpe; 0] = $array_sort_name(EMPTY_ARRAY);
+
             const SINGLETON_ARRAY: [$tpe; 1] = [1];
             const SORTED_SINGLETON_ARRAY: [$tpe; 1] = $array_sort_name(SINGLETON_ARRAY);
 
             assert_eq!(SORTED_EMPTY_ARRAY, []);
+
             assert_eq!(SORTED_SINGLETON_ARRAY, [1]);
 
             assert_eq!(SORTED_REV_ARRAY, [1, 2, 3]);
+
             assert_eq!(SORTED_CONST_ARRAY, [2, 2, 2]);
+
+            assert_eq!(SORTED_JUST_ZEROS_ARRAY, [0; 100]);
 
             #[cfg(feature = "sort_slices")]
             {
@@ -56,7 +65,13 @@ macro_rules! test_unsigned_integer {
                     vec
                 };
 
-                println!("{:?}", sorted_vec.iter().position(|&x| x == 26).map(|i| &sorted_vec[i - 1..=i + 2]));
+                println!(
+                    "{:?}",
+                    sorted_vec
+                        .iter()
+                        .position(|&x| x == 26)
+                        .map(|i| &sorted_vec[i - 1..=i + 2])
+                );
 
                 for (i, (&std, &custom)) in std_sorted_vec
                     .iter()
