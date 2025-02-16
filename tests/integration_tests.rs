@@ -1,4 +1,6 @@
 use rand::{rngs::SmallRng, Rng, SeedableRng};
+#[cfg(feature = "sort_slices")]
+use quickcheck::quickcheck;
 
 use compile_time_sort::{
     into_sorted_bool_array, into_sorted_char_array, into_sorted_i128_array, into_sorted_i16_array,
@@ -11,6 +13,15 @@ use compile_time_sort::{
     sort_bool_slice, sort_i128_slice, sort_i16_slice, sort_i32_slice, sort_i64_slice,
     sort_i8_slice, sort_u128_slice, sort_u16_slice, sort_u32_slice, sort_u64_slice, sort_u8_slice,
 };
+
+#[cfg(feature = "sort_slices")]
+quickcheck! {
+    fn sort_sorts_slices(vec: Vec<i32>) -> bool {
+        let mut vec = vec;
+        sort_i32_slice(&mut vec);
+        vec.is_sorted()
+    }
+}
 
 macro_rules! test_unsigned_integer {
     ($tpe:ty, $fn_name:ident, $array_sort_name:ident, $slice_sort_name:ident) => {
