@@ -52,34 +52,55 @@ assert_eq!(SORTED_ARRAY, [i32::MIN, -2, 0, 0, 5]);
 /// Defines a `const` function with the given name that takes in a mutable reference to a slice of the given type
 /// and sorts it using the quicksort algorithm.
 macro_rules! const_slice_quicksort {
-    ($name:ident, $partition_name:ident, $tpe:ty) => {
-        const fn $name(slice: &mut [$tpe], left: usize, right: usize) {
-            if right - left > 1 {
-                let pivot_index = $partition_name(slice, left, right);
-                $name(slice, left, pivot_index);
-                $name(slice, pivot_index + 1, right);
-            }
-        }
-
-        const fn $partition_name(slice: &mut [$tpe], left: usize, right: usize) -> usize {
-            let len = right - left;
-            let pivot_index = len / 2;
-            let last_index = len - 1;
-
-            (slice[pivot_index], slice[last_index]) = (slice[last_index], slice[pivot_index]);
-
-            let mut store_index = left;
-            let mut i = left;
-            while i < last_index {
-                if slice[i] < slice[last_index] {
-                    (slice[store_index], slice[i]) = (slice[i], slice[store_index]);
-                    store_index += 1;
+    ($name:ident, $tpe:ty) => {
+        const fn $name(slice: &mut [$tpe]) {
+            match slice.len() {
+                0 | 1 => return,
+                2 => {
+                    if slice[0] > slice[1] {
+                        (slice[0], slice[1]) = (slice[1], slice[0]);
+                    }
+                    return;
                 }
-                i += 1;
+                _ => {}
             }
-            (slice[store_index], slice[last_index]) = (slice[last_index], slice[store_index]);
 
-            store_index
+            let (pivot, rest) = slice
+                .split_first_mut()
+                .expect("slice is not empty, as verified above");
+
+            let mut left = 0;
+            let mut right = rest.len() - 1;
+            while left <= right {
+                if rest[left] <= *pivot {
+                    left += 1;
+                } else if rest[right] > *pivot {
+                    if right == 0 {
+                        break;
+                    }
+                    right -= 1;
+                } else {
+                    (rest[left], rest[right]) = (rest[right], rest[left]);
+                    left += 1;
+                    if right == 0 {
+                        break;
+                    }
+                    right -= 1;
+                }
+            }
+
+            let left = left + 1;
+
+            (slice[0], slice[left - 1]) = (slice[left - 1], slice[0]);
+
+            let (left, right) = slice.split_at_mut(left - 1);
+            $name(left);
+            $name(
+                right
+                    .split_first_mut()
+                    .expect("right is not empty, as we moved the pivot into right above")
+                    .1,
+            );
         }
     };
 }
@@ -128,7 +149,7 @@ macro_rules! const_array_quicksort {
 macro_rules! impl_const_quicksort {
     ($pub_name_array:ident, $pub_name_slice:ident, $qsort_slice_name:ident, $partition_slice_name:ident, $qsort_array_name:ident, $partition_array_name:ident, $tpe:ty) => {
         #[cfg(feature = "sort_slices")]
-        const_slice_quicksort!{$qsort_slice_name, $partition_slice_name, $tpe}
+        const_slice_quicksort!{$qsort_slice_name, $tpe}
 
         const_array_quicksort!{$qsort_array_name, $partition_array_name, $tpe}
 
@@ -156,10 +177,7 @@ macro_rules! impl_const_quicksort {
         #[cfg(feature = "sort_slices")]
         #[doc = concat!("Sorts the given slice of `", stringify!($tpe), "`s using the quicksort algorithm.")]
         pub const fn $pub_name_slice(slice: &mut [$tpe]) {
-            if slice.len() <= 1 {
-                return;
-            }
-            $qsort_slice_name(slice, 0, slice.len());
+            $qsort_slice_name(slice);
         }
     };
 }
