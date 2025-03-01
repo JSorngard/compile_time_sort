@@ -59,7 +59,7 @@ macro_rules! test_unsigned_integer {
 
             let mut rng = SmallRng::from_seed([0b01010101; 32]);
 
-            let random_array: [$tpe; 500] = core::array::from_fn(|_| rng.random());
+            let random_array: [$tpe; 500] = core::array::from_fn(|_| rng.gen());
 
             let sorted_array = $array_sort_name(random_array);
             assert!(sorted_array.is_sorted());
