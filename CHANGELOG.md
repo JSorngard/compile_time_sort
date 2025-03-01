@@ -8,6 +8,8 @@ This file contains all changes to the crate since version v0.1.0.
 - Added CI job to test the crate on the Rust beta branch.
 - Added CI job to verify sever compatibility.
 - Added CI job to test the crate on no_std targets.
+- Removed the "no_std" category from the crate since it is already in
+ "no_std::no_alloc", which is a subset of "no_std".
 
 ## 0.2.8
 
