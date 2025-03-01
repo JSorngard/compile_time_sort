@@ -89,18 +89,13 @@ macro_rules! const_slice_quicksort {
                 }
             }
 
-            let left = left + 1;
+            (slice[0], slice[left]) = (slice[left], slice[0]);
 
-            (slice[0], slice[left - 1]) = (slice[left - 1], slice[0]);
-
-            let (left, right) = slice.split_at_mut(left - 1);
+            let (left, right) = slice.split_at_mut(left);
             $name(left);
-            $name(
-                right
-                    .split_first_mut()
-                    .expect("right is not empty, as we moved the pivot into right above")
-                    .1,
-            );
+            if let Some((_pivot, right)) = right.split_first_mut() {
+                $name(right);
+            }
         }
     };
 }

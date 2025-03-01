@@ -38,6 +38,9 @@ macro_rules! test_unsigned_integer {
             const CONST_ARRAY: [$tpe; 3] = [2, 2, 2];
             const SORTED_CONST_ARRAY: [$tpe; 3] = $array_sort_name(CONST_ARRAY);
 
+            const INCORRECT_LAST: [$tpe; 4] = [1, 1, 1, 0];
+            const SORTED_INCORRECT_LAST: [$tpe; 4] = $array_sort_name(INCORRECT_LAST);
+
             const JUST_ZEROS_ARRAY: [$tpe; 100] = [0; 100];
             const SORTED_JUST_ZEROS_ARRAY: [$tpe; 100] = $array_sort_name(JUST_ZEROS_ARRAY);
 
@@ -54,6 +57,8 @@ macro_rules! test_unsigned_integer {
             assert!(SORTED_REV_ARRAY.is_sorted());
 
             assert!(SORTED_CONST_ARRAY.is_sorted());
+
+            assert!(SORTED_INCORRECT_LAST.is_sorted());
 
             assert!(SORTED_JUST_ZEROS_ARRAY.is_sorted());
 
