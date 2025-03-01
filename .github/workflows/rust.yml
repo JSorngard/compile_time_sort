@@ -110,3 +110,19 @@ jobs:
           tool: cargo-semver-checks
       - name: Check semver compatibility
         run: cargo semver-checks
+
+  minimal:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@nightly
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-all-features
+      - name: Set stable Rust as the default
+        run: rustup default stable
+      - name: Use minimal versions of dependencies
+        run: cargo +nightly update -Zminimal-versions
+      - name: Test all feature combinations
+        run: cargo test-all-features --locked
