@@ -11,8 +11,9 @@ This small crate provides functions for sorting arrays and slices of primitives 
 Arrays and slices of `bool`s, `u8`s, and `i8`s are sorted with counting sort while arrays of other types
 are sorted with quicksort.
 
-This implementation is usable on stable before the [`const_trait_impl`](https://github.com/rust-lang/rust/issues/67792) feature is stabilized,
-but that means that it unfortunately can not be generic,
+This implementation is usable on Rust version 1.59.0,
+before the [`const_trait_impl`](https://github.com/rust-lang/rust/issues/67792) feature is stabilized.
+This means that it unfortunately can not be generic,
 and so there are separate functions for every primitive type.
 
 Functions with the naming convention `into_sorted_*_array` take an array by value,
