@@ -1,12 +1,12 @@
 [package]
 name = "compile_time_sort"
-version = "0.2.9"
+version = "0.3.0"
 edition = "2021"
 description = "Sort arrays and slices of primitives in const contexts."
 keywords = ["const", "sort", "const-sort", "sorting"]
 categories = ["algorithms", "no-std", "no-std::no-alloc"]
 license = "MIT OR Apache-2.0"
-rust-version = "1.59.0"
+rust-version = "1.60.0"
 repository = "https://github.com/JSorngard/compile_time_sort"
 documentation = "https://docs.rs/compile_time_sort/"
 
@@ -17,8 +17,8 @@ documentation = "https://docs.rs/compile_time_sort/"
 sort_slices = []
 
 [dev-dependencies]
-rand = {version = "0.8.5", default-features = false, features = ["small_rng"]}
-quickcheck = "1.0"
+rand = { version = "0.8.5", default-features = false, features = ["small_rng"] }
+quickcheck = { version = "1.0", defailt-features = false }
 
 [package.metadata.docs.rs]
 # Document all features.
