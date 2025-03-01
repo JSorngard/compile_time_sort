@@ -1,6 +1,6 @@
-use rand::{rngs::SmallRng, Rng, SeedableRng};
 #[cfg(feature = "sort_slices")]
 use quickcheck::quickcheck;
+use rand::{rngs::SmallRng, Rng, SeedableRng};
 
 use compile_time_sort::{
     into_sorted_bool_array, into_sorted_char_array, into_sorted_i128_array, into_sorted_i16_array,
@@ -10,17 +10,22 @@ use compile_time_sort::{
 
 #[cfg(feature = "sort_slices")]
 use compile_time_sort::{
-    sort_bool_slice, sort_i128_slice, sort_i16_slice, sort_i32_slice, sort_i64_slice,
-    sort_i8_slice, sort_u128_slice, sort_u16_slice, sort_u32_slice, sort_u64_slice, sort_u8_slice,
+    sort_bool_slice, sort_char_slice, sort_i128_slice, sort_i16_slice, sort_i32_slice,
+    sort_i64_slice, sort_i8_slice, sort_isize_slice, sort_u128_slice, sort_u16_slice,
+    sort_u32_slice, sort_u64_slice, sort_u8_slice, sort_usize_slice,
 };
 
 #[cfg(feature = "sort_slices")]
-quickcheck! {
-    fn sort_sorts_slices(vec: Vec<i32>) -> bool {
-        let mut vec = vec;
-        sort_i32_slice(&mut vec);
-        vec.is_sorted()
-    }
+macro_rules! quickcheck_slice_sort {
+    ($tpe:ty, $quickcheck_fn:ident, $sort_fn:ident) => {
+        quickcheck! {
+            fn $quickcheck_fn(vec: Vec<$tpe>) -> bool {
+                let mut vec = vec;
+                $sort_fn(&mut vec);
+                vec.is_sorted()
+            }
+        }
+    };
 }
 
 macro_rules! test_unsigned_integer {
@@ -130,6 +135,35 @@ test_signed_integer! {
     into_sorted_i128_array,
     sort_i128_slice
 }
+
+#[cfg(feature = "sort_slices")]
+quickcheck_slice_sort! {u8, quickcheck_u8_slice, sort_u8_slice}
+#[cfg(feature = "sort_slices")]
+quickcheck_slice_sort! {u16, quickcheck_u16_slice, sort_u16_slice}
+#[cfg(feature = "sort_slices")]
+quickcheck_slice_sort! {u32, quickcheck_u32_slice, sort_u32_slice}
+#[cfg(feature = "sort_slices")]
+quickcheck_slice_sort! {u64, quickcheck_u64_slice, sort_u64_slice}
+#[cfg(feature = "sort_slices")]
+quickcheck_slice_sort! {u128, quickcheck_u128_slice, sort_u128_slice}
+#[cfg(feature = "sort_slices")]
+quickcheck_slice_sort! {usize, quickcheck_usize_slice, sort_usize_slice}
+#[cfg(feature = "sort_slices")]
+quickcheck_slice_sort! {i8, quickcheck_i8_slice, sort_i8_slice}
+#[cfg(feature = "sort_slices")]
+quickcheck_slice_sort! {i16, quickcheck_i16_slice, sort_i16_slice}
+#[cfg(feature = "sort_slices")]
+quickcheck_slice_sort! {i32, quickcheck_i32_slice, sort_i32_slice}
+#[cfg(feature = "sort_slices")]
+quickcheck_slice_sort! {i64, quickcheck_i64_slice, sort_i64_slice}
+#[cfg(feature = "sort_slices")]
+quickcheck_slice_sort! {i128, quickcheck_i128_slice, sort_i128_slice}
+#[cfg(feature = "sort_slices")]
+quickcheck_slice_sort! {isize, quickcheck_isize_slice, sort_isize_slice}
+#[cfg(feature = "sort_slices")]
+quickcheck_slice_sort! {char, quickcheck_char_slice, sort_char_slice}
+#[cfg(feature = "sort_slices")]
+quickcheck_slice_sort! {bool, quickcheck_bool_slice, sort_bool_slice}
 
 #[test]
 fn test_sort_bool() {
