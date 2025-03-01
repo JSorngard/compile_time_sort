@@ -7,6 +7,7 @@ This file contains all changes to the crate since version v0.1.0.
 - Fixed a bug that could lead to improper sorting of slices in some cases.
 - Added CI job to test the crate on the Rust beta branch.
 - Added CI job to verify sever compatibility.
+- Added CI job to test the crate on no_std targets.
 
 ## 0.2.8
 
