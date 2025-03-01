@@ -2,9 +2,9 @@
 
 This file contains all changes to the crate since version v0.1.0.
 
-## 1.0.0 (Unreleased)
+## 0.2.9 (Unreleased)
 
-- Stabilized the API of the crate.
+- Fixed a bug that could lead to improper sorting of slices in some cases.
 - Added CI job to test the crate on the Rust beta branch.
 - Added CI job to verify sever compatibility.
 
