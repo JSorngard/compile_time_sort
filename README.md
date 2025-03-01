@@ -4,6 +4,7 @@
 [![Docs.rs Documentation](https://img.shields.io/docsrs/compile_time_sort?logo=docs.rs)](https://docs.rs/compile_time_sort/latest/compile_time_sort/)
 [![Github Repository Link](https://img.shields.io/badge/github-JSorngard%2Fcompile__time__sort-8da0cb?logo=github)](https://github.com/JSorngard/compile_time_sort)
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/JSorngard/compile_time_sort/rust.yml?logo=github&label=CI)](https://github.com/JSorngard/compile_time_sort/actions/workflows/rust.yml)
+[![Code Coverage](https://codecov.io/gh/JSorngard/compile_time_sort/graph/badge.svg?token=F61FO63ZKW)](https://codecov.io/gh/JSorngard/compile_time_sort)
 
 This small crate provides functions for sorting arrays and slices of primitives in `const` contexts.
 
