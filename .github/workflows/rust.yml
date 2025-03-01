@@ -126,3 +126,18 @@ jobs:
         run: cargo +nightly update -Zminimal-versions
       - name: Test all feature combinations
         run: cargo test-all-features --locked
+
+  no_std:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [thumbv7m-none-eabi, aarch64-unknown-none]
+    steps:
+    - uses: actions/checkout@v4
+    - uses: dtolnay/rust-toolchain@stable
+      with:
+        target: ${{ matrix.target }}
+    - name: Check
+      run: cargo check --target ${{ matrix.target }}
+    - name: Build
+      run: cargo build --target ${{ matrix.target }}
