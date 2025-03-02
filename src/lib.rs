@@ -51,6 +51,7 @@ assert_eq!(SORTED_ARRAY, [i32::MIN, -2, 0, 0, 5]);
 #[cfg(feature = "sort_slices")]
 /// Defines a `const` function with the given name that takes in a mutable reference to a slice of the given type
 /// and sorts it using the quicksort algorithm.
+// This implementation is the one from <https://github.com/jonhoo/orst/blob/master/src/quicksort.rs> but made const.
 macro_rules! const_slice_quicksort {
     ($name:ident, $tpe:ty) => {
         const fn $name(slice: &mut [$tpe]) {
