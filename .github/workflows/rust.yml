@@ -69,9 +69,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+    - uses: dtolnay/rust-toolchain@1.59.0
     - uses: dtolnay/rust-toolchain@stable
-      with:
-        components: clippy
     - uses: taiki-e/install-action@v2
       with:
         tool: cargo-msrv
