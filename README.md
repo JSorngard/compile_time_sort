@@ -32,7 +32,7 @@ const SORTED_ARRAY: [i32; 5] = into_sorted_i32_array(ARRAY);
 assert_eq!(SORTED_ARRAY, [-3, 0, 2, 3, i32::MAX]);
 ```
 
-Sort an array by reference:
+Sort by reference:
 
 ```rust
 use const_sort::sort_i32_slice;
@@ -46,9 +46,7 @@ const SORTED_ARRAY: [i32; 5] = {
 assert_eq!(SORTED_ARRAY, [i32::MIN, -2, 0, 0, 5]);
 ```
 
-## Features
-
-`sort_slices`: enables the `sort_*_slice` functions and raises the MSRV of the crate from 1.59.0 to 1.83.0.
+The functions that sort slices by reference are only available on Rust versions 1.83 and above.
 
 <br>
 

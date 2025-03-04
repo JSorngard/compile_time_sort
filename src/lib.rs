@@ -25,30 +25,26 @@
 //! assert_eq!(SORTED_ARRAY, [-3, 0, 2, 3, i32::MAX]);
 //! ```
 //!
-//! Sort an array by reference:
-#![cfg_attr(
-    feature = "sort_slices",
-    doc = r"```
-use compile_time_sort::sort_i32_slice;
-
-const SORTED_ARRAY: [i32; 5] = {
-    let mut arr = [5, i32::MIN, 0, -2, 0];
-    sort_i32_slice(&mut arr);
-    arr
-};
-
-assert_eq!(SORTED_ARRAY, [i32::MIN, -2, 0, 0, 5]);
-```"
-)]
+//! Sort by reference:
 //!
-//! # Features
+//! ```
+//! use compile_time_sort::sort_i32_slice;
 //!
-//! `sort_slices`: enables the `sort_*_slice` functions and raises the MSRV of the crate from 1.59.0 to 1.83.0.
+//! const SORTED_ARRAY: [i32; 5] = {
+//!     let mut arr = [5, i32::MIN, 0, -2, 0];
+//!     sort_i32_slice(&mut arr);
+//!     arr
+//! };
+//!
+//! assert_eq!(SORTED_ARRAY, [i32::MIN, -2, 0, 0, 5]);
+//! ```
+//!
+//! The functions that sort slices by reference are only available on Rust versions 1.83 and above.
 
 #![no_std]
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
 
-#[cfg(feature = "sort_slices")]
+#[rustversion::since(1.83.0)]
 /// Defines a `const` function with the given name that takes in a mutable reference to a slice of the given type
 /// and sorts it using the quicksort algorithm.
 // This implementation is the one from <https://github.com/jonhoo/orst/blob/master/src/quicksort.rs> but made const.
@@ -144,7 +140,7 @@ macro_rules! const_array_quicksort {
 
 macro_rules! impl_const_quicksort {
     ($pub_name_array:ident, $pub_name_slice:ident, $qsort_slice_name:ident, $partition_slice_name:ident, $qsort_array_name:ident, $partition_array_name:ident, $tpe:ty) => {
-        #[cfg(feature = "sort_slices")]
+        #[rustversion::since(1.83.0)]
         const_slice_quicksort!{$qsort_slice_name, $tpe}
 
         const_array_quicksort!{$qsort_array_name, $partition_array_name, $tpe}
@@ -157,8 +153,10 @@ macro_rules! impl_const_quicksort {
             $qsort_array_name(array, 0, N)
         }
 
-        #[cfg(feature = "sort_slices")]
+        #[rustversion::since(1.83.0)]
         #[doc = concat!("Sorts the given slice of `", stringify!($tpe), "`s using the quicksort algorithm.")]
+        #[doc = ""]
+        #[doc = "This function is only available on Rust versions 1.83 and above."]
         pub const fn $pub_name_slice(slice: &mut [$tpe]) {
             $qsort_slice_name(slice);
         }
@@ -265,8 +263,10 @@ impl_const_quicksort!(
     isize
 );
 
-#[cfg(feature = "sort_slices")]
+#[rustversion::since(1.83.0)]
 /// Sorts the given slice of `i8`s using the counting sort algorithm.
+///
+/// This function is only available on Rust versions 1.83 and above.
 pub const fn sort_i8_slice(slice: &mut [i8]) {
     if slice.is_empty() || slice.len() == 1 {
         return;
@@ -322,8 +322,10 @@ pub const fn into_sorted_i8_array<const N: usize>(mut array: [i8; N]) -> [i8; N]
     array
 }
 
-#[cfg(feature = "sort_slices")]
+#[rustversion::since(1.83.0)]
 /// Sorts the given slice of `u8`s using the counting sort algorithm.
+///
+/// This function is only available on Rust versions 1.83 and above.
 pub const fn sort_u8_slice(slice: &mut [u8]) {
     if slice.is_empty() || slice.len() == 1 {
         return;
@@ -377,8 +379,10 @@ pub const fn into_sorted_u8_array<const N: usize>(mut array: [u8; N]) -> [u8; N]
     array
 }
 
-#[cfg(feature = "sort_slices")]
+#[rustversion::since(1.83.0)]
 /// Sorts the given slice of `bool`s using the counting sort algorithm.
+///
+/// This function is only available on Rust versions 1.83 and above.
 pub const fn sort_bool_slice(slice: &mut [bool]) {
     if slice.is_empty() || slice.len() == 1 {
         return;

@@ -24,11 +24,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: dtolnay/rust-toolchain@stable
-    - uses: taiki-e/install-action@v2
-      with:
-        tool: cargo-all-features
-    - name: Check all feature combinations
-      run: cargo check-all-features
+    - name: Check
+      run: cargo check
 
   clippy:
     runs-on: ubuntu-latest
@@ -48,11 +45,8 @@ jobs:
     - uses: dtolnay/rust-toolchain@master
       with:
         toolchain: ${{ matrix.toolchain }}
-    - uses: taiki-e/install-action@v2
-      with:
-        tool: cargo-all-features
-    - name: Test all feature combinations
-      run: cargo test-all-features
+    - name: Test
+      run: cargo test
       
   doc:
     runs-on: ubuntu-latest
@@ -73,10 +67,8 @@ jobs:
     - uses: taiki-e/install-action@v2
       with:
         tool: cargo-msrv
-    - name: Verify default msrv
+    - name: Verify MSRV
       run: cargo msrv verify
-    - name: Verify raised msrv
-      run: cargo msrv verify --rust-version 1.83.0 --features sort_slices
 
   coverage:
     runs-on: ubuntu-latest
@@ -115,15 +107,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: dtolnay/rust-toolchain@nightly
-      - uses: taiki-e/install-action@v2
-        with:
-          tool: cargo-all-features
       - name: Set stable Rust as the default
         run: rustup default stable
       - name: Use minimal versions of dependencies
         run: cargo +nightly update -Zminimal-versions
-      - name: Test all feature combinations
-        run: cargo test-all-features --locked
+      - name: Test
+        run: cargo test
 
   no_std:
     runs-on: ubuntu-latest
