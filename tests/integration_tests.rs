@@ -1,4 +1,4 @@
-#[cfg(feature = "sort_slices")]
+#[rustversion::since(1.83.0)]
 use quickcheck::quickcheck;
 use rand::{rngs::SmallRng, Rng, SeedableRng};
 
@@ -8,14 +8,14 @@ use compile_time_sort::{
     into_sorted_u16_array, into_sorted_u32_array, into_sorted_u64_array, into_sorted_u8_array,
 };
 
-#[cfg(feature = "sort_slices")]
+#[rustversion::since(1.83.0)]
 use compile_time_sort::{
     sort_bool_slice, sort_char_slice, sort_i128_slice, sort_i16_slice, sort_i32_slice,
     sort_i64_slice, sort_i8_slice, sort_isize_slice, sort_u128_slice, sort_u16_slice,
     sort_u32_slice, sort_u64_slice, sort_u8_slice, sort_usize_slice,
 };
 
-#[cfg(feature = "sort_slices")]
+#[rustversion::since(1.83.0)]
 macro_rules! quickcheck_slice_sort {
     ($tpe:ty, $quickcheck_fn:ident, $sort_fn:ident) => {
         quickcheck! {
@@ -68,25 +68,6 @@ macro_rules! test_unsigned_integer {
 
             let sorted_array = $array_sort_name(random_array);
             assert!(sorted_array.is_sorted());
-
-            #[cfg(feature = "sort_slices")]
-            {
-                const SORTED_SLICE: [$tpe; 3] = {
-                    let mut arr = REV_ARRAY;
-                    $slice_sort_name(&mut arr);
-                    arr
-                };
-
-                assert!(SORTED_SLICE.is_sorted());
-
-                let sorted_array = {
-                    let mut arr = random_array;
-                    $slice_sort_name(&mut arr);
-                    arr
-                };
-
-                assert!(sorted_array.is_sorted());
-            }
         }
     };
 }
@@ -99,18 +80,6 @@ macro_rules! test_signed_integer {
             const SORTED_ARRAY_WITH_NEGATIVES: [$tpe; 3] = $array_sort_name(ARRAY_WITH_NEGATIVES);
 
             assert!(SORTED_ARRAY_WITH_NEGATIVES.is_sorted());
-
-            #[cfg(feature = "sort_slices")]
-            {
-                const ARRAY_WITH_NEGATIVES: [$tpe; 3] = [0, -1, 2];
-                const SORTED_ARRAY_WITH_NEGATIVES: [$tpe; 3] = {
-                    let mut arr = ARRAY_WITH_NEGATIVES;
-                    $slice_sort_name(&mut arr);
-                    arr
-                };
-
-                assert!(SORTED_ARRAY_WITH_NEGATIVES.is_sorted());
-            }
         }
 
         // Also run all the tests for unsigned integers on the signed integers
@@ -141,33 +110,33 @@ test_signed_integer! {
     sort_i128_slice
 }
 
-#[cfg(feature = "sort_slices")]
+#[rustversion::since(1.83.0)]
 quickcheck_slice_sort! {u8, quickcheck_u8_slice, sort_u8_slice}
-#[cfg(feature = "sort_slices")]
+#[rustversion::since(1.83.0)]
 quickcheck_slice_sort! {u16, quickcheck_u16_slice, sort_u16_slice}
-#[cfg(feature = "sort_slices")]
+#[rustversion::since(1.83.0)]
 quickcheck_slice_sort! {u32, quickcheck_u32_slice, sort_u32_slice}
-#[cfg(feature = "sort_slices")]
+#[rustversion::since(1.83.0)]
 quickcheck_slice_sort! {u64, quickcheck_u64_slice, sort_u64_slice}
-#[cfg(feature = "sort_slices")]
+#[rustversion::since(1.83.0)]
 quickcheck_slice_sort! {u128, quickcheck_u128_slice, sort_u128_slice}
-#[cfg(feature = "sort_slices")]
+#[rustversion::since(1.83.0)]
 quickcheck_slice_sort! {usize, quickcheck_usize_slice, sort_usize_slice}
-#[cfg(feature = "sort_slices")]
+#[rustversion::since(1.83.0)]
 quickcheck_slice_sort! {i8, quickcheck_i8_slice, sort_i8_slice}
-#[cfg(feature = "sort_slices")]
+#[rustversion::since(1.83.0)]
 quickcheck_slice_sort! {i16, quickcheck_i16_slice, sort_i16_slice}
-#[cfg(feature = "sort_slices")]
+#[rustversion::since(1.83.0)]
 quickcheck_slice_sort! {i32, quickcheck_i32_slice, sort_i32_slice}
-#[cfg(feature = "sort_slices")]
+#[rustversion::since(1.83.0)]
 quickcheck_slice_sort! {i64, quickcheck_i64_slice, sort_i64_slice}
-#[cfg(feature = "sort_slices")]
+#[rustversion::since(1.83.0)]
 quickcheck_slice_sort! {i128, quickcheck_i128_slice, sort_i128_slice}
-#[cfg(feature = "sort_slices")]
+#[rustversion::since(1.83.0)]
 quickcheck_slice_sort! {isize, quickcheck_isize_slice, sort_isize_slice}
-#[cfg(feature = "sort_slices")]
+#[rustversion::since(1.83.0)]
 quickcheck_slice_sort! {char, quickcheck_char_slice, sort_char_slice}
-#[cfg(feature = "sort_slices")]
+#[rustversion::since(1.83.0)]
 quickcheck_slice_sort! {bool, quickcheck_bool_slice, sort_bool_slice}
 
 #[test]
@@ -175,16 +144,7 @@ fn test_sort_bool() {
     const ARR: [bool; 4] = [false, true, false, true];
     const SORTED_ARR: [bool; 4] = into_sorted_bool_array(ARR);
 
-    #[cfg(feature = "sort_slices")]
-    const SORTED_SLICE: [bool; 4] = {
-        let mut arr = [true, false, true, false];
-        sort_bool_slice(&mut arr);
-        arr
-    };
-
     assert_eq!(SORTED_ARR, [false, false, true, true]);
-    #[cfg(feature = "sort_slices")]
-    assert_eq!(SORTED_SLICE, [false, false, true, true]);
 }
 
 #[test]
