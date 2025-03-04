@@ -46,9 +46,7 @@ const SORTED_ARRAY: [i32; 5] = {
 assert_eq!(SORTED_ARRAY, [i32::MIN, -2, 0, 0, 5]);
 ```
 
-## Features
-
-`sort_slices`: enables the `sort_*_slice` functions and raises the MSRV of the crate from 1.59.0 to 1.83.0.
+The functions that sort slices by reference are only available on Rust version 1.83 and above.
 
 <br>
 
