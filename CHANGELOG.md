@@ -4,7 +4,11 @@ This file contains all changes to the crate since version v0.1.0.
 
 ## 1.0.0 (unreleased)
 
-- Stabilized the API of the crate.
+### Breaking changes
+
+- Removed the `sort_slices` feature.
+ Those functions are now activated automatically on Rust versions 1.83.0 and later by using
+ the [`rustversion`](https://crates.io/crates/rustversion) crate.
 
 ## 0.2.9
 
