@@ -39,7 +39,7 @@
 //! assert_eq!(SORTED_ARRAY, [i32::MIN, -2, 0, 0, 5]);
 //! ```
 //!
-//! The functions that sort slices by reference are only available on Rust version 1.83 and above.
+//! The functions that sort slices by reference are only available on Rust versions 1.83 and above.
 
 #![no_std]
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
