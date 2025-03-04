@@ -25,7 +25,8 @@
 //! assert_eq!(SORTED_ARRAY, [-3, 0, 2, 3, i32::MAX]);
 //! ```
 //!
-//! Sort an array by reference:
+//! Sort by reference:
+//!
 //! ```
 //! use compile_time_sort::sort_i32_slice;
 //!

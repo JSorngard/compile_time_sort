@@ -32,7 +32,7 @@ const SORTED_ARRAY: [i32; 5] = into_sorted_i32_array(ARRAY);
 assert_eq!(SORTED_ARRAY, [-3, 0, 2, 3, i32::MAX]);
 ```
 
-Sort an array by reference:
+Sort by reference:
 
 ```rust
 use const_sort::sort_i32_slice;
