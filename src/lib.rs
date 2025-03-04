@@ -156,6 +156,8 @@ macro_rules! impl_const_quicksort {
 
         #[rustversion::since(1.83.0)]
         #[doc = concat!("Sorts the given slice of `", stringify!($tpe), "`s using the quicksort algorithm.")]
+        #[doc = ""]
+        #[doc = "This function is only available on Rust versions 1.83 and above."]
         pub const fn $pub_name_slice(slice: &mut [$tpe]) {
             $qsort_slice_name(slice);
         }
@@ -264,6 +266,8 @@ impl_const_quicksort!(
 
 #[rustversion::since(1.83.0)]
 /// Sorts the given slice of `i8`s using the counting sort algorithm.
+///
+/// This function is only available on Rust versions 1.83 and above.
 pub const fn sort_i8_slice(slice: &mut [i8]) {
     if slice.is_empty() || slice.len() == 1 {
         return;
@@ -321,6 +325,8 @@ pub const fn into_sorted_i8_array<const N: usize>(mut array: [i8; N]) -> [i8; N]
 
 #[rustversion::since(1.83.0)]
 /// Sorts the given slice of `u8`s using the counting sort algorithm.
+///
+/// This function is only available on Rust versions 1.83 and above.
 pub const fn sort_u8_slice(slice: &mut [u8]) {
     if slice.is_empty() || slice.len() == 1 {
         return;
@@ -376,6 +382,8 @@ pub const fn into_sorted_u8_array<const N: usize>(mut array: [u8; N]) -> [u8; N]
 
 #[rustversion::since(1.83.0)]
 /// Sorts the given slice of `bool`s using the counting sort algorithm.
+///
+/// This function is only available on Rust versions 1.83 and above.
 pub const fn sort_bool_slice(slice: &mut [bool]) {
     if slice.is_empty() || slice.len() == 1 {
         return;
