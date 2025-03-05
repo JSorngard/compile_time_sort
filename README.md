@@ -19,6 +19,8 @@ and so there are separate functions for every primitive type.
 Functions with the naming convention `into_sorted_*_array` take an array by value,
 and functions with the naming convention `sort_*_slice` take a mutable reference to a slice.
 
+The functions that sort slices by reference are only available on Rust versions 1.83 and above.
+
 ## Examples
 
 Sort an array by value:
@@ -45,8 +47,6 @@ const SORTED_ARRAY: [i32; 5] = {
 
 assert_eq!(SORTED_ARRAY, [i32::MIN, -2, 0, 0, 5]);
 ```
-
-The functions that sort slices by reference are only available on Rust versions 1.83 and above.
 
 <br>
 
