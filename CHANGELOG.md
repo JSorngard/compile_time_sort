@@ -4,6 +4,9 @@ This file contains all changes to the crate since version v0.1.0.
 
 ## 1.0.0 (unreleased)
 
+- Stabilized the crate's API.
+- Re-added the "no-std" category, as that seems to be how it's done on crates.io.
+
 ### Breaking changes
 
 - Removed the `sort_slices` feature.
@@ -17,7 +20,7 @@ This file contains all changes to the crate since version v0.1.0.
 - Added CI job to verify sever compatibility.
 - Added CI job to test the crate on no_std targets.
 - Removed the "no_std" category from the crate since it is already in
- "no_std::no_alloc", which is a subset of "no_std".
+ "no-std::no-alloc", which is a subset of "no-std".
 
 ## 0.2.8
 
