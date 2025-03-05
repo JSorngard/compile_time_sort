@@ -42,7 +42,6 @@
 //! ```
 
 #![no_std]
-#![cfg_attr(docsrs, feature(doc_auto_cfg))]
 
 #[rustversion::since(1.83.0)]
 /// Defines a `const` function with the given name that takes in a mutable reference to a slice of the given type
