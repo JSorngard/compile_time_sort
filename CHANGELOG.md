@@ -2,7 +2,7 @@
 
 This file contains all changes to the crate since version v0.1.0.
 
-## 1.0.0 (unreleased)
+## 1.0.0
 
 - Stabilized the crate's API.
 - Re-added the "no-std" category, as that seems to be how it's done on crates.io.
