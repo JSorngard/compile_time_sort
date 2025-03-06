@@ -174,7 +174,7 @@ macro_rules! impl_const_quicksort {
                 #[doc = ""]
                 #[doc = "```"]
                 #[doc = concat!("# use compile_time_sort::", stringify!([<sort_ $tpe _slice>]), ";")]
-                #[doc = concat!("const ARRAY: [", stringify!($tpe), "; 2] = ([", stringify!($tpe),"::MAX, ", stringify!($tpe), "::MIN]);")]
+                #[doc = concat!("const ARRAY: [", stringify!($tpe), "; 2] = [", stringify!($tpe),"::MAX, ", stringify!($tpe), "::MIN];")]
                 #[doc = concat!("const SORTED_ARRAY: [", stringify!($tpe), "; 2]= {\n    let mut arr = ARRAY;\n    ", stringify!([<sort_ $tpe _slice>]), "(&mut arr);\n    arr\n};")]
                 #[doc = ""]
                 #[doc = "assert!(SORTED_ARRAY.is_sorted());"]
