@@ -43,54 +43,58 @@
 
 #![no_std]
 
+use paste::paste;
+
 #[rustversion::since(1.83.0)]
 /// Defines a `const` function with the given name that takes in a mutable reference to a slice of the given type
 /// and sorts it using the quicksort algorithm.
 // This implementation is the one from <https://github.com/jonhoo/orst/blob/master/src/quicksort.rs> but made const.
 macro_rules! const_slice_quicksort {
-    ($name:ident, $tpe:ty) => {
-        const fn $name(slice: &mut [$tpe]) {
-            match slice.len() {
-                0 | 1 => return,
-                2 => {
-                    if slice[0] > slice[1] {
-                        (slice[0], slice[1]) = (slice[1], slice[0]);
+    ($tpe:ty) => {
+        paste! {
+            const fn [<qsort_ $tpe _slice>](slice: &mut [$tpe]) {
+                match slice.len() {
+                    0 | 1 => return,
+                    2 => {
+                        if slice[0] > slice[1] {
+                            (slice[0], slice[1]) = (slice[1], slice[0]);
+                        }
+                        return;
                     }
-                    return;
+                    _ => {}
                 }
-                _ => {}
-            }
 
-            let (pivot, rest) = slice
-                .split_first_mut()
-                .expect("slice is not empty, as verified above");
+                let (pivot, rest) = slice
+                    .split_first_mut()
+                    .expect("slice is not empty, as verified above");
 
-            let mut left = 0;
-            let mut right = rest.len() - 1;
-            while left <= right {
-                if rest[left] <= *pivot {
-                    left += 1;
-                } else if rest[right] > *pivot {
-                    if right == 0 {
-                        break;
+                let mut left = 0;
+                let mut right = rest.len() - 1;
+                while left <= right {
+                    if rest[left] <= *pivot {
+                        left += 1;
+                    } else if rest[right] > *pivot {
+                        if right == 0 {
+                            break;
+                        }
+                        right -= 1;
+                    } else {
+                        (rest[left], rest[right]) = (rest[right], rest[left]);
+                        left += 1;
+                        if right == 0 {
+                            break;
+                        }
+                        right -= 1;
                     }
-                    right -= 1;
-                } else {
-                    (rest[left], rest[right]) = (rest[right], rest[left]);
-                    left += 1;
-                    if right == 0 {
-                        break;
-                    }
-                    right -= 1;
                 }
-            }
 
-            (slice[0], slice[left]) = (slice[left], slice[0]);
+                (slice[0], slice[left]) = (slice[left], slice[0]);
 
-            let (left, right) = slice.split_at_mut(left);
-            $name(left);
-            if let Some((_pivot, right)) = right.split_first_mut() {
-                $name(right);
+                let (left, right) = slice.split_at_mut(left);
+                [<qsort_ $tpe _slice>](left);
+                if let Some((_pivot, right)) = right.split_first_mut() {
+                    [<qsort_ $tpe _slice>](right);
+                }
             }
         }
     };
@@ -98,169 +102,77 @@ macro_rules! const_slice_quicksort {
 
 /// Defines a `const` function with the given name that sorts an array of the given type with the quicksort algorithm.
 macro_rules! const_array_quicksort {
-    ($name:ident, $partition_name:ident, $tpe:ty) => {
-        const fn $name<const N: usize>(array: [$tpe; N], left: usize, right: usize) -> [$tpe; N] {
-            if right - left > 1 {
-                let (pivot_index, mut array) = $partition_name(array, left, right);
-                array = $name(array, left, pivot_index);
-                array = $name(array, pivot_index + 1, right);
-                return array;
-            }
-
-            array
-        }
-
-        const fn $partition_name<const N: usize>(
-            mut arr: [$tpe; N],
-            left: usize,
-            right: usize,
-        ) -> (usize, [$tpe; N]) {
-            let len = right - left;
-            let pivot_index = left + len / 2;
-            let last_index = right - 1;
-
-            (arr[pivot_index], arr[last_index]) = (arr[last_index], arr[pivot_index]);
-
-            let mut store_index = left;
-            let mut i = left;
-            while i < last_index {
-                if arr[i] < arr[last_index] {
-                    (arr[store_index], arr[i]) = (arr[i], arr[store_index]);
-                    store_index += 1;
+    ($tpe:ty) => {
+        paste!{
+            const fn [<qsort_ $tpe _array>]<const N: usize>(array: [$tpe; N], left: usize, right: usize) -> [$tpe; N] {
+                if right - left > 1 {
+                    let (pivot_index, mut array) = [<partition_ $tpe _array>](array, left, right);
+                    array = [<qsort_ $tpe _array>](array, left, pivot_index);
+                    array = [<qsort_ $tpe _array>](array, pivot_index + 1, right);
+                    return array;
                 }
-                i += 1;
-            }
-            (arr[store_index], arr[last_index]) = (arr[last_index], arr[store_index]);
 
-            (store_index, arr)
+                array
+            }
+
+            const fn [<partition_ $tpe _array>]<const N: usize>(
+                mut arr: [$tpe; N],
+                left: usize,
+                right: usize,
+            ) -> (usize, [$tpe; N]) {
+                let len = right - left;
+                let pivot_index = left + len / 2;
+                let last_index = right - 1;
+
+                (arr[pivot_index], arr[last_index]) = (arr[last_index], arr[pivot_index]);
+
+                let mut store_index = left;
+                let mut i = left;
+                while i < last_index {
+                    if arr[i] < arr[last_index] {
+                        (arr[store_index], arr[i]) = (arr[i], arr[store_index]);
+                        store_index += 1;
+                    }
+                    i += 1;
+                }
+                (arr[store_index], arr[last_index]) = (arr[last_index], arr[store_index]);
+
+                (store_index, arr)
+            }
         }
     };
 }
 
 macro_rules! impl_const_quicksort {
-    ($pub_name_array:ident, $pub_name_slice:ident, $qsort_slice_name:ident, $partition_slice_name:ident, $qsort_array_name:ident, $partition_array_name:ident, $tpe:ty) => {
-        #[rustversion::since(1.83.0)]
-        const_slice_quicksort!{$qsort_slice_name, $tpe}
+    ($($tpe:ty),*) => {
+        $(
+            #[rustversion::since(1.83.0)]
+            const_slice_quicksort!{$tpe}
 
-        const_array_quicksort!{$qsort_array_name, $partition_array_name, $tpe}
+            const_array_quicksort!{$tpe}
 
-        #[doc = concat!("Sorts the given array of `", stringify!($tpe), "`s using the quicksort algorithm and returns it.")]
-        pub const fn $pub_name_array<const N: usize>(array: [$tpe; N]) -> [$tpe; N] {
-            if N <= 1 {
-                return array;
+            paste! {
+                #[doc = concat!("Sorts the given array of `", stringify!($tpe), "`s using the quicksort algorithm and returns it.")]
+                pub const fn [<into_sorted_ $tpe _array>]<const N: usize>(array: [$tpe; N]) -> [$tpe; N] {
+                    if N <= 1 {
+                        return array;
+                    }
+                    [<qsort_ $tpe _array>](array, 0, N)
+                }
+
+                #[rustversion::since(1.83.0)]
+                #[doc = concat!("Sorts the given slice of `", stringify!($tpe), "`s using the quicksort algorithm.")]
+                #[doc = ""]
+                #[doc = "This function is only available on Rust versions 1.83 and above."]
+                pub const fn [<sort_ $tpe _slice>](slice: &mut [$tpe]) {
+                    [<qsort_ $tpe _slice>](slice);
+                }
             }
-            $qsort_array_name(array, 0, N)
-        }
-
-        #[rustversion::since(1.83.0)]
-        #[doc = concat!("Sorts the given slice of `", stringify!($tpe), "`s using the quicksort algorithm.")]
-        #[doc = ""]
-        #[doc = "This function is only available on Rust versions 1.83 and above."]
-        pub const fn $pub_name_slice(slice: &mut [$tpe]) {
-            $qsort_slice_name(slice);
-        }
+        )+
     };
 }
 
-impl_const_quicksort!(
-    into_sorted_char_array,
-    sort_char_slice,
-    qsort_char_slice,
-    partition_char_slice,
-    qsort_char_array,
-    partition_char_array,
-    char
-);
-impl_const_quicksort!(
-    into_sorted_u16_array,
-    sort_u16_slice,
-    qsort_u16_slice,
-    partition_u16_slice,
-    qsort_u16_array,
-    partition_u16_array,
-    u16
-);
-impl_const_quicksort!(
-    into_sorted_i16_array,
-    sort_i16_slice,
-    qsort_i16_slice,
-    partition_i16_slice,
-    qsort_i16_array,
-    partition_i16_array,
-    i16
-);
-impl_const_quicksort!(
-    into_sorted_u32_array,
-    sort_u32_slice,
-    qsort_u32_slice,
-    partition_u32_slice,
-    qsort_u32_array,
-    partition_u32_array,
-    u32
-);
-impl_const_quicksort!(
-    into_sorted_i32_array,
-    sort_i32_slice,
-    qsort_i32_slice,
-    partition_i32_slice,
-    qsort_i32_array,
-    partition_i32_array,
-    i32
-);
-impl_const_quicksort!(
-    into_sorted_u64_array,
-    sort_u64_slice,
-    qsort_u64_slice,
-    partition_u64_slice,
-    qsort_u64_array,
-    partition_u64_array,
-    u64
-);
-impl_const_quicksort!(
-    into_sorted_i64_array,
-    sort_i64_slice,
-    qsort_i64_slice,
-    partition_i64_slice,
-    qsort_i64_array,
-    partition_i64_array,
-    i64
-);
-impl_const_quicksort!(
-    into_sorted_u128_array,
-    sort_u128_slice,
-    qsort_u128_slice,
-    partition_u128_slice,
-    qsort_u128_array,
-    partition_u128_array,
-    u128
-);
-impl_const_quicksort!(
-    into_sorted_i128_array,
-    sort_i128_slice,
-    qsort_i128_slice,
-    partition_i128_slice,
-    qsort_i128_array,
-    partition_i128_array,
-    i128
-);
-impl_const_quicksort!(
-    into_sorted_usize_array,
-    sort_usize_slice,
-    qsort_usize_slice,
-    partition_usize_slice,
-    qsort_usize_array,
-    partition_usize_array,
-    usize
-);
-impl_const_quicksort!(
-    into_sorted_isize_array,
-    sort_isize_slice,
-    qsort_isize_slice,
-    partition_isize_slice,
-    qsort_isize_array,
-    partition_isize_array,
-    isize
-);
+impl_const_quicksort! {char, u16, i16, u32, i32, u64, i64, u128, i128, usize, isize}
 
 // region: counting sort implementations
 
