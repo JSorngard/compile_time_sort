@@ -2,6 +2,10 @@
 
 This file contains all changes to the crate since version v0.1.0.
 
+## 1.0.4
+
+- Corrected the links to licenses in the readme.
+
 ## 1.0.3
 
 - Added doc examples to all functions.
