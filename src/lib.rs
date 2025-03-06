@@ -149,6 +149,15 @@ macro_rules! impl_const_quicksort {
                 const_array_quicksort!{$tpe, [<qsort_ $tpe _array>], [<partition_ $tpe _array>]}
 
                 #[doc = concat!("Sorts the given array of `", stringify!($tpe), "`s using the quicksort algorithm and returns it.")]
+                #[doc = ""]
+                #[doc = "# Example"]
+                #[doc = ""]
+                #[doc = "```"]
+                #[doc = concat!("# use compile_time_sort::", stringify!([<into_sorted_ $tpe _array>]), ";")]
+                #[doc = concat!("const SORTED_ARRAY: [", stringify!($tpe), "; 2] = ", stringify!([<into_sorted_ $tpe _array>]), "([", stringify!($tpe),"::MAX, ", stringify!($tpe), "::MIN]);")]
+                #[doc = ""]
+                #[doc = concat!("assert_eq!(&SORTED_ARRAY, &[", stringify!($tpe), "::MIN, ", stringify!($tpe), "::MAX]);")]
+                #[doc = "```"]
                 pub const fn [<into_sorted_ $tpe _array>]<const N: usize>(array: [$tpe; N]) -> [$tpe; N] {
                     if N <= 1 {
                         return array;
@@ -160,6 +169,16 @@ macro_rules! impl_const_quicksort {
                 #[doc = concat!("Sorts the given slice of `", stringify!($tpe), "`s using the quicksort algorithm.")]
                 #[doc = ""]
                 #[doc = "This function is only available on Rust versions 1.83 and above."]
+                #[doc = ""]
+                #[doc = "# Example"]
+                #[doc = ""]
+                #[doc = "```"]
+                #[doc = concat!("# use compile_time_sort::", stringify!([<sort_ $tpe _slice>]), ";")]
+                #[doc = concat!("const ARRAY: [", stringify!($tpe), "; 2] = ([", stringify!($tpe),"::MAX, ", stringify!($tpe), "::MIN]);")]
+                #[doc = concat!("const SORTED_ARRAY: [", stringify!($tpe), "; 2]= {\n    let mut arr = ARRAY;\n    ", stringify!([<sort_ $tpe _slice>]), "(&mut arr);\n    arr\n};")]
+                #[doc = ""]
+                #[doc = concat!("assert_eq!(&SORTED_ARRAY, &[", stringify!($tpe), "::MIN, ", stringify!($tpe), "::MAX]);")]
+                #[doc = "```"]
                 pub const fn [<sort_ $tpe _slice>](slice: &mut [$tpe]) {
                     [<qsort_ $tpe _slice>](slice);
                 }
