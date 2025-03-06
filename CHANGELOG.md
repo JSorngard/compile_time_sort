@@ -2,6 +2,10 @@
 
 This file contains all changes to the crate since version v0.1.0.
 
+## 1.0.2 (unreleased)
+
+- Depend on the `paste` crate to simplify macro definitions and invocations.
+
 ## 1.0.1
 
 - Removed unused code that was used to document the now non-existing feature on docs.rs.
