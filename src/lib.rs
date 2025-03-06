@@ -262,6 +262,8 @@ impl_const_quicksort!(
     isize
 );
 
+// region: counting sort implementations
+
 #[rustversion::since(1.83.0)]
 /// Sorts the given slice of `i8`s using the counting sort algorithm.
 ///
@@ -435,3 +437,5 @@ pub const fn into_sorted_bool_array<const N: usize>(mut array: [bool; N]) -> [bo
 
     array
 }
+
+// endregion: counting sort implementations
