@@ -43,8 +43,6 @@
 
 #![no_std]
 
-use paste::paste;
-
 // region: quicksort implementations
 
 #[rustversion::since(1.83.0)]
@@ -52,51 +50,49 @@ use paste::paste;
 /// and sorts it using the quicksort algorithm.
 // This implementation is the one from <https://github.com/jonhoo/orst/blob/master/src/quicksort.rs> but made const.
 macro_rules! const_slice_quicksort {
-    ($tpe:ty) => {
-        paste! {
-            const fn [<qsort_ $tpe _slice>](slice: &mut [$tpe]) {
-                match slice.len() {
-                    0 | 1 => return,
-                    2 => {
-                        if slice[0] > slice[1] {
-                            (slice[0], slice[1]) = (slice[1], slice[0]);
-                        }
-                        return;
+    ($tpe:ty, $name:ident) => {
+        const fn $name(slice: &mut [$tpe]) {
+            match slice.len() {
+                0 | 1 => return,
+                2 => {
+                    if slice[0] > slice[1] {
+                        (slice[0], slice[1]) = (slice[1], slice[0]);
                     }
-                    _ => {}
+                    return;
                 }
+                _ => {}
+            }
 
-                let (pivot, rest) = slice
-                    .split_first_mut()
-                    .expect("slice is not empty, as verified above");
+            let (pivot, rest) = slice
+                .split_first_mut()
+                .expect("slice is not empty, as verified above");
 
-                let mut left = 0;
-                let mut right = rest.len() - 1;
-                while left <= right {
-                    if rest[left] <= *pivot {
-                        left += 1;
-                    } else if rest[right] > *pivot {
-                        if right == 0 {
-                            break;
-                        }
-                        right -= 1;
-                    } else {
-                        (rest[left], rest[right]) = (rest[right], rest[left]);
-                        left += 1;
-                        if right == 0 {
-                            break;
-                        }
-                        right -= 1;
+            let mut left = 0;
+            let mut right = rest.len() - 1;
+            while left <= right {
+                if rest[left] <= *pivot {
+                    left += 1;
+                } else if rest[right] > *pivot {
+                    if right == 0 {
+                        break;
                     }
+                    right -= 1;
+                } else {
+                    (rest[left], rest[right]) = (rest[right], rest[left]);
+                    left += 1;
+                    if right == 0 {
+                        break;
+                    }
+                    right -= 1;
                 }
+            }
 
-                (slice[0], slice[left]) = (slice[left], slice[0]);
+            (slice[0], slice[left]) = (slice[left], slice[0]);
 
-                let (left, right) = slice.split_at_mut(left);
-                [<qsort_ $tpe _slice>](left);
-                if let Some((_pivot, right)) = right.split_first_mut() {
-                    [<qsort_ $tpe _slice>](right);
-                }
+            let (left, right) = slice.split_at_mut(left);
+            $name(left);
+            if let Some((_pivot, right)) = right.split_first_mut() {
+                $name(right);
             }
         }
     };
@@ -104,43 +100,41 @@ macro_rules! const_slice_quicksort {
 
 /// Defines a `const` function with the given name that sorts an array of the given type with the quicksort algorithm.
 macro_rules! const_array_quicksort {
-    ($tpe:ty) => {
-        paste!{
-            const fn [<qsort_ $tpe _array>]<const N: usize>(array: [$tpe; N], left: usize, right: usize) -> [$tpe; N] {
-                if right - left > 1 {
-                    let (pivot_index, mut array) = [<partition_ $tpe _array>](array, left, right);
-                    array = [<qsort_ $tpe _array>](array, left, pivot_index);
-                    array = [<qsort_ $tpe _array>](array, pivot_index + 1, right);
-                    return array;
-                }
-
-                array
+    ($tpe:ty, $name:ident, $partition_name:ident) => {
+        const fn $name<const N: usize>(array: [$tpe; N], left: usize, right: usize) -> [$tpe; N] {
+            if right - left > 1 {
+                let (pivot_index, mut array) = $partition_name(array, left, right);
+                array = $name(array, left, pivot_index);
+                array = $name(array, pivot_index + 1, right);
+                return array;
             }
 
-            const fn [<partition_ $tpe _array>]<const N: usize>(
-                mut arr: [$tpe; N],
-                left: usize,
-                right: usize,
-            ) -> (usize, [$tpe; N]) {
-                let len = right - left;
-                let pivot_index = left + len / 2;
-                let last_index = right - 1;
+            array
+        }
 
-                (arr[pivot_index], arr[last_index]) = (arr[last_index], arr[pivot_index]);
+        const fn $partition_name<const N: usize>(
+            mut arr: [$tpe; N],
+            left: usize,
+            right: usize,
+        ) -> (usize, [$tpe; N]) {
+            let len = right - left;
+            let pivot_index = left + len / 2;
+            let last_index = right - 1;
 
-                let mut store_index = left;
-                let mut i = left;
-                while i < last_index {
-                    if arr[i] < arr[last_index] {
-                        (arr[store_index], arr[i]) = (arr[i], arr[store_index]);
-                        store_index += 1;
-                    }
-                    i += 1;
+            (arr[pivot_index], arr[last_index]) = (arr[last_index], arr[pivot_index]);
+
+            let mut store_index = left;
+            let mut i = left;
+            while i < last_index {
+                if arr[i] < arr[last_index] {
+                    (arr[store_index], arr[i]) = (arr[i], arr[store_index]);
+                    store_index += 1;
                 }
-                (arr[store_index], arr[last_index]) = (arr[last_index], arr[store_index]);
-
-                (store_index, arr)
+                i += 1;
             }
+            (arr[store_index], arr[last_index]) = (arr[last_index], arr[store_index]);
+
+            (store_index, arr)
         }
     };
 }
@@ -148,12 +142,12 @@ macro_rules! const_array_quicksort {
 macro_rules! impl_const_quicksort {
     ($($tpe:ty),*) => {
         $(
-            #[rustversion::since(1.83.0)]
-            const_slice_quicksort!{$tpe}
+            paste::paste! {
+                #[rustversion::since(1.83.0)]
+                const_slice_quicksort!{$tpe, [<qsort_ $tpe _slice>]}
 
-            const_array_quicksort!{$tpe}
+                const_array_quicksort!{$tpe, [<qsort_ $tpe _array>], [<partition_ $tpe _array>]}
 
-            paste! {
                 #[doc = concat!("Sorts the given array of `", stringify!($tpe), "`s using the quicksort algorithm and returns it.")]
                 pub const fn [<into_sorted_ $tpe _array>]<const N: usize>(array: [$tpe; N]) -> [$tpe; N] {
                     if N <= 1 {
