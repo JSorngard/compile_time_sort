@@ -154,7 +154,7 @@ macro_rules! impl_const_quicksort {
                 #[doc = ""]
                 #[doc = "```"]
                 #[doc = concat!("# use compile_time_sort::", stringify!([<into_sorted_ $tpe _array>]), ";")]
-                #[doc = concat!("const SORTED_ARRAY: [", stringify!($tpe), "; 2] = ", stringify!([<into_sorted_ $tpe _array>]), "([", stringify!($tpe),"::MAX, ", stringify!($tpe), "::MIN]);")]
+                #[doc = concat!("const SORTED_ARRAY: [", stringify!($tpe), "; 3] = ", stringify!([<into_sorted_ $tpe _array>]), "([0 as ", stringify!($tpe), ", ", stringify!($tpe),"::MAX, ", stringify!($tpe), "::MIN]);")]
                 #[doc = ""]
                 #[doc = "assert!(SORTED_ARRAY.is_sorted());"]
                 #[doc = "```"]
@@ -174,8 +174,8 @@ macro_rules! impl_const_quicksort {
                 #[doc = ""]
                 #[doc = "```"]
                 #[doc = concat!("# use compile_time_sort::", stringify!([<sort_ $tpe _slice>]), ";")]
-                #[doc = concat!("const ARRAY: [", stringify!($tpe), "; 2] = [", stringify!($tpe),"::MAX, ", stringify!($tpe), "::MIN];")]
-                #[doc = concat!("const SORTED_ARRAY: [", stringify!($tpe), "; 2]= {\n    let mut arr = ARRAY;\n    ", stringify!([<sort_ $tpe _slice>]), "(&mut arr);\n    arr\n};")]
+                #[doc = concat!("const ARRAY: [", stringify!($tpe), "; 3] = [0 as ", stringify!($tpe), ", ", stringify!($tpe),"::MAX, ", stringify!($tpe), "::MIN];")]
+                #[doc = concat!("const SORTED_ARRAY: [", stringify!($tpe), "; 3]= {\n    let mut arr = ARRAY;\n    ", stringify!([<sort_ $tpe _slice>]), "(&mut arr);\n    arr\n};")]
                 #[doc = ""]
                 #[doc = "assert!(SORTED_ARRAY.is_sorted());"]
                 #[doc = "```"]
@@ -210,8 +210,8 @@ impl_const_quicksort! {
 ///
 /// ```
 /// # use compile_time_sort::sort_i8_slice;
-/// const ARRAY: [i8; 2] = [i8::MAX, i8::MIN];
-/// const SORTED_ARRAY: [i8; 2] = {
+/// const ARRAY: [i8; 3] = [0, i8::MAX, i8::MIN];
+/// const SORTED_ARRAY: [i8; 3] = {
 ///     let mut arr = ARRAY;
 ///     sort_i8_slice(&mut arr);
 ///     arr
@@ -251,7 +251,7 @@ pub const fn sort_i8_slice(slice: &mut [i8]) {
 ///
 /// ```
 /// # use compile_time_sort::into_sorted_i8_array;
-/// const SORTED_ARRAY: [i8; 2] = into_sorted_i8_array([i8::MAX, i8::MIN]);
+/// const SORTED_ARRAY: [i8; 3] = into_sorted_i8_array([0, i8::MAX, i8::MIN]);
 ///
 /// assert!(SORTED_ARRAY.is_sorted());
 /// ```
@@ -292,8 +292,8 @@ pub const fn into_sorted_i8_array<const N: usize>(mut array: [i8; N]) -> [i8; N]
 ///
 /// ```
 /// # use compile_time_sort::sort_u8_slice;
-/// const ARRAY: [u8; 2] = [u8::MAX, u8::MIN];
-/// const SORTED_ARRAY: [u8; 2] = {
+/// const ARRAY: [u8; 3] = [0, u8::MAX, u8::MIN];
+/// const SORTED_ARRAY: [u8; 3] = {
 ///     let mut arr = ARRAY;
 ///     sort_u8_slice(&mut arr);
 ///     arr
@@ -333,7 +333,7 @@ pub const fn sort_u8_slice(slice: &mut [u8]) {
 ///
 /// ```
 /// # use compile_time_sort::into_sorted_u8_array;
-/// const SORTED_ARRAY: [u8; 2] = into_sorted_u8_array([u8::MAX, u8::MIN]);
+/// const SORTED_ARRAY: [u8; 3] = into_sorted_u8_array([0, u8::MAX, u8::MIN]);
 ///
 /// assert!(SORTED_ARRAY.is_sorted());
 /// ```
