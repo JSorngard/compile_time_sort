@@ -21,15 +21,17 @@ use paste::paste;
 #[rustversion::since(1.83.0)]
 macro_rules! quickcheck_slice_sort {
     ($($tpe:ty),+) => {
-        $(paste! {
-            quickcheck! {
-                    fn [<quickcheck_ $tpe _slice>](vec: Vec<$tpe>) -> bool {
-                        let mut vec = vec;
-                        [<sort_ $tpe _slice>](&mut vec);
-                        vec.is_sorted()
-                    }
+        $(
+            paste! {
+                quickcheck! {
+                        fn [<quickcheck_ $tpe _slice>](vec: Vec<$tpe>) -> bool {
+                            let mut vec = vec;
+                            [<sort_ $tpe _slice>](&mut vec);
+                            vec.is_sorted()
+                        }
+                }
             }
-        })+
+        )+
     };
 }
 
