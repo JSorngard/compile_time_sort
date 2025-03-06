@@ -2,6 +2,12 @@
 
 This file contains all changes to the crate since version v0.1.0.
 
+## 1.0.5
+
+- Add tests of the functions that sort `usize` and `isize`.
+- Use the `paste` crate in the macros that define the tests
+ such that invoking them is simpler.
+
 ## 1.0.4
 
 - Corrected the links to licenses in the readme.
