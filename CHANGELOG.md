@@ -3,6 +3,7 @@
 This file contains all changes to the crate since version v0.1.0.
 
 ## 1.0.2
+
 - Depend on the `paste` crate to simplify macro definitions and invocations.
 
 ## 1.0.1
