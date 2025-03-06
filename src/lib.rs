@@ -169,7 +169,14 @@ macro_rules! impl_const_quicksort {
 }
 
 // We don't call this macro on `bool`, `u8`, or `i8` because they can be efficiently sorted with counting sort.
-impl_const_quicksort! {char, u16, i16, u32, i32, u64, i64, u128, i128, usize, isize}
+impl_const_quicksort! {
+    char,
+    u16, i16,
+    u32, i32,
+    u64, i64,
+    u128, i128,
+    usize, isize
+}
 
 // endregion: quicksort implementations
 
