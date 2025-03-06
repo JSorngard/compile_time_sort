@@ -140,7 +140,7 @@ macro_rules! const_array_quicksort {
 }
 
 macro_rules! impl_const_quicksort {
-    ($($tpe:ty),*) => {
+    ($($tpe:ty),+) => {
         $(
             paste::paste! {
                 #[rustversion::since(1.83.0)]
