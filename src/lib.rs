@@ -45,6 +45,8 @@
 
 use paste::paste;
 
+// region: quicksort implementations
+
 #[rustversion::since(1.83.0)]
 /// Defines a `const` function with the given name that takes in a mutable reference to a slice of the given type
 /// and sorts it using the quicksort algorithm.
@@ -173,6 +175,8 @@ macro_rules! impl_const_quicksort {
 }
 
 impl_const_quicksort! {char, u16, i16, u32, i32, u64, i64, u128, i128, usize, isize}
+
+// endregion: quicksort implementations
 
 // region: counting sort implementations
 
