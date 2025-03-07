@@ -2,6 +2,10 @@
 
 This file contains all changes to the crate since version v0.1.0.
 
+## 1.0.6 (unreleased)
+
+- Internal improvements to macro clarity.
+
 ## 1.0.5
 
 - Add tests of the functions that sort `usize` and `isize` arrays.
