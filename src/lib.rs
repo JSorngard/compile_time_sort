@@ -148,7 +148,7 @@ macro_rules! impl_const_quicksort {
 
                 const_array_quicksort!{$tpe, [<qsort_ $tpe _array>], [<partition_ $tpe _array>]}
 
-                #[doc = concat!("Sorts the given array of `", stringify!($tpe), "`s using the quicksort algorithm and returns it.")]
+                #[doc = "Sorts the given array of `" $tpe "`s using the quicksort algorithm and returns it."]
                 #[doc = ""]
                 #[doc = "# Example"]
                 #[doc = ""]
