@@ -2,7 +2,7 @@
 
 This file contains all changes to the crate since version v0.1.0.
 
-## 1.0.6 (unreleased)
+## 1.0.6
 
 - Internal improvements to macro clarity.
 
