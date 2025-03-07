@@ -166,7 +166,7 @@ macro_rules! impl_const_quicksort {
                 }
 
                 #[rustversion::since(1.83.0)]
-                #[doc = "Sorts the given slice of `", $tpe, "`s using the quicksort algorithm.")]
+                #[doc = "Sorts the given slice of `", $tpe, "`s using the quicksort algorithm."]
                 #[doc = ""]
                 #[doc = "This function is only available on Rust versions 1.83 and above."]
                 #[doc = ""]
