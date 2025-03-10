@@ -2,6 +2,10 @@
 
 This file contains all changes to the crate since version v0.1.0.
 
+## 1.0.7
+
+- Clearer definition of the docstring in the `sort_*_slice` functions.
+
 ## 1.0.6
 
 - Internal improvements to macro clarity.
