@@ -4,7 +4,7 @@
 //!
 //! Arrays and slices of `bool`s, `u8`s, and `i8`s are sorted with counting sort while arrays of other types
 //! are sorted with quicksort.
-//! All types except `bool` are sorted with insertion sort if the length of the array is small.
+//! All types except `bool` are sorted with insertion sort if the length is small.
 //!
 //! This implementation is usable on Rust version 1.59.0, before the [`const_trait_impl`](https://github.com/rust-lang/rust/issues/67792) feature is stabilized.
 //! This means that it unfortunately can not be generic,
