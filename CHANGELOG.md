@@ -5,6 +5,7 @@ This file contains all changes to the crate since version v0.1.0.
 ## 1.0.9
 
 - Internal improvements to sort impls.
+- Document switch to insertion sort.
 
 ## 1.0.8
 
