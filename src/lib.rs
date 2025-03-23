@@ -141,6 +141,7 @@ macro_rules! const_array_quicksort {
     };
 }
 
+/// Defines a `const` function with the given name that sorts an array of the given type with the insertion sort algorithm.
 macro_rules! impl_const_array_insertion_sort {
     ($tpe:ty, $name:ident) => {
         const fn $name<const N: usize>(mut array: [$tpe; N]) -> [$tpe; N] {
@@ -164,6 +165,7 @@ macro_rules! impl_const_array_insertion_sort {
 }
 
 #[rustversion::since(1.83.0)]
+/// Defines a `const` function with the given name that sorts a slice of the given type with the insertion sort algorithm.
 macro_rules! impl_const_slice_insersion_sort {
     ($tpe:ty, $name:ident) => {
         const fn $name(slice: &mut [$tpe]) {
