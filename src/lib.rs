@@ -188,7 +188,7 @@ macro_rules! const_slice_insersion_sort {
 }
 
 /// Defines the public const quicksort implementations for the given list of types.
-/// One function that sorts slices and one function that sorts arrays.
+/// One function that sorts slices and one function that sorts arrays for each type.
 macro_rules! impl_const_quicksort {
     ($($tpe:ty),+) => {
         $(
