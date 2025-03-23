@@ -143,7 +143,7 @@ macro_rules! const_array_quicksort {
 }
 
 /// Defines a `const` function with the given name that sorts an array of the given type with the insertion sort algorithm.
-macro_rules! impl_const_array_insertion_sort {
+macro_rules! const_array_insertion_sort {
     ($tpe:ty, $name:ident) => {
         const fn $name<const N: usize>(mut array: [$tpe; N]) -> [$tpe; N] {
             if N <= 1 {
@@ -167,7 +167,7 @@ macro_rules! impl_const_array_insertion_sort {
 
 #[rustversion::since(1.83.0)]
 /// Defines a `const` function with the given name that sorts a slice of the given type with the insertion sort algorithm.
-macro_rules! impl_const_slice_insersion_sort {
+macro_rules! const_slice_insersion_sort {
     ($tpe:ty, $name:ident) => {
         const fn $name(slice: &mut [$tpe]) {
             if slice.len() <= 1 {
@@ -195,11 +195,11 @@ macro_rules! impl_const_quicksort {
                 const_slice_quicksort!{$tpe, [<qsort_ $tpe _slice>]}
 
                 #[rustversion::since(1.83.0)]
-                impl_const_slice_insersion_sort!{$tpe, [<insertion_sort_ $tpe _slice>]}
+                const_slice_insersion_sort!{$tpe, [<insertion_sort_ $tpe _slice>]}
 
                 const_array_quicksort!{$tpe, [<qsort_ $tpe _array>], [<partition_ $tpe _array>]}
 
-                impl_const_array_insertion_sort!{$tpe, [<insertion_sort_ $tpe _array>]}
+                const_array_insertion_sort!{$tpe, [<insertion_sort_ $tpe _array>]}
 
                 #[doc = "Sorts the given array of `" $tpe "`s using the quicksort algorithm and returns it."]
                 #[doc = ""]
@@ -315,7 +315,7 @@ pub const fn sort_i8_slice(slice: &mut [i8]) {
 }
 
 #[rustversion::since(1.83.0)]
-impl_const_slice_insersion_sort!(i8, insertion_sort_i8_slice);
+const_slice_insersion_sort!(i8, insertion_sort_i8_slice);
 
 /// Sorts the given array of `i8`s using the counting sort algorithm and returns it.
 ///
@@ -357,7 +357,7 @@ pub const fn into_sorted_i8_array<const N: usize>(mut array: [i8; N]) -> [i8; N]
     array
 }
 
-impl_const_array_insertion_sort!(i8, insertion_sort_i8_array);
+const_array_insertion_sort!(i8, insertion_sort_i8_array);
 
 #[rustversion::since(1.83.0)]
 /// Sorts the given slice of `u8`s using the counting sort algorithm.
@@ -407,7 +407,7 @@ pub const fn sort_u8_slice(slice: &mut [u8]) {
 }
 
 #[rustversion::since(1.83.0)]
-impl_const_slice_insersion_sort!(u8, insertion_sort_u8_slice);
+const_slice_insersion_sort!(u8, insertion_sort_u8_slice);
 
 /// Sorts the given array of `u8`s using the counting sort algorithm and returns it.
 ///
@@ -447,7 +447,7 @@ pub const fn into_sorted_u8_array<const N: usize>(mut array: [u8; N]) -> [u8; N]
     array
 }
 
-impl_const_array_insertion_sort!(u8, insertion_sort_u8_array);
+const_array_insertion_sort!(u8, insertion_sort_u8_array);
 
 #[rustversion::since(1.83.0)]
 /// Sorts the given slice of `bool`s using the counting sort algorithm.
