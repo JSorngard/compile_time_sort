@@ -211,7 +211,7 @@ macro_rules! impl_const_quicksort {
                 pub const fn [<into_sorted_ $tpe _array>]<const N: usize>(array: [$tpe; N]) -> [$tpe; N] {
                     if N <= 1 {
                         return array;
-                    } else if N <= 15 {
+                    } else if N <= 10 {
                         return [<insertion_sort_ $tpe _array>](array);
                     } else {
                         [<qsort_ $tpe _array>](array, 0, N)
@@ -239,7 +239,7 @@ macro_rules! impl_const_quicksort {
                 pub const fn [<sort_ $tpe _slice>](slice: &mut [$tpe]) {
                     if slice.len() <= 1 {
                         return;
-                    } else if slice.len() <= 15 {
+                    } else if slice.len() <= 10 {
                         return [<insertion_sort_ $tpe _slice>](slice);
                     } else {
                         [<qsort_ $tpe _slice>](slice);
