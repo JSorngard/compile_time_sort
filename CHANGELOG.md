@@ -2,6 +2,11 @@
 
 This file contains all changes to the crate since version v0.1.0.
 
+## 1.0.8
+
+- Use insertion sort when the collections are small.
+ Except for `bool`s, in that case we always use counting sort.
+
 ## 1.0.7
 
 - Clearer definition of the docstring in the `sort_*_slice` functions.
