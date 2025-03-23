@@ -120,16 +120,15 @@ macro_rules! const_array_quicksort {
         const fn $name<const N: usize>(array: [$tpe; N], left: usize, right: usize) -> [$tpe; N] {
             let len = right - left;
             if len <= 1 {
+                array
             } else if len <= INSERTION_SIZE {
-                return $insertion_name(array);
+                $insertion_name(array)
             } else {
                 let (pivot_index, mut array) = $partition_name(array, left, right);
                 array = $name(array, left, pivot_index);
                 array = $name(array, pivot_index + 1, right);
-                return array;
+                array
             }
-
-            array
         }
 
         const fn $partition_name<const N: usize>(
