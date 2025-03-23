@@ -43,6 +43,8 @@
 
 #![no_std]
 
+use paste::paste;
+
 // region: quicksort implementations
 
 #[rustversion::since(1.83.0)]
@@ -139,14 +141,62 @@ macro_rules! const_array_quicksort {
     };
 }
 
+macro_rules! impl_const_array_insertion_sort {
+    ($tpe:ty, $name:ident) => {
+        const fn $name<const N: usize>(mut array: [$tpe; N]) -> [$tpe; N] {
+            if N <= 1 {
+                return array;
+            }
+
+            let mut i = 1;
+            while i < N {
+                let mut j = i;
+                while j > 0 && array[j - 1] > array[j] {
+                    (array[j - 1], array[j]) = (array[j], array[j - 1]);
+                    j -= 1;
+                }
+                i += 1;
+            }
+
+            array
+        }
+    };
+}
+
+#[rustversion::since(1.83.0)]
+macro_rules! impl_const_slice_insersion_sort {
+    ($tpe:ty, $name:ident) => {
+        const fn $name(slice: &mut [$tpe]) {
+            if slice.len() <= 1 {
+                return;
+            }
+
+            let mut i = 1;
+            while i < slice.len() {
+                let mut j = i;
+                while j > 0 && slice[j - 1] > slice[j] {
+                    (slice[j - 1], slice[j]) = (slice[j], slice[j - 1]);
+                    j -= 1;
+                }
+                i += 1;
+            }
+        }
+    };
+}
+
 macro_rules! impl_const_quicksort {
     ($($tpe:ty),+) => {
         $(
-            paste::paste! {
+            paste! {
                 #[rustversion::since(1.83.0)]
                 const_slice_quicksort!{$tpe, [<qsort_ $tpe _slice>]}
 
+                #[rustversion::since(1.83.0)]
+                impl_const_slice_insersion_sort!{$tpe, [<insertion_sort_ $tpe _slice>]}
+
                 const_array_quicksort!{$tpe, [<qsort_ $tpe _array>], [<partition_ $tpe _array>]}
+
+                impl_const_array_insertion_sort!{$tpe, [<insertion_sort_ $tpe _array>]}
 
                 #[doc = "Sorts the given array of `" $tpe "`s using the quicksort algorithm and returns it."]
                 #[doc = ""]
@@ -161,8 +211,11 @@ macro_rules! impl_const_quicksort {
                 pub const fn [<into_sorted_ $tpe _array>]<const N: usize>(array: [$tpe; N]) -> [$tpe; N] {
                     if N <= 1 {
                         return array;
+                    } else if N <= 15 {
+                        return [<insertion_sort_ $tpe _array>](array);
+                    } else {
+                        [<qsort_ $tpe _array>](array, 0, N)
                     }
-                    [<qsort_ $tpe _array>](array, 0, N)
                 }
 
                 #[rustversion::since(1.83.0)]
@@ -184,7 +237,13 @@ macro_rules! impl_const_quicksort {
                 #[doc = "assert!(SORTED_ARRAY.is_sorted());"]
                 #[doc = "```"]
                 pub const fn [<sort_ $tpe _slice>](slice: &mut [$tpe]) {
-                    [<qsort_ $tpe _slice>](slice);
+                    if slice.len() <= 1 {
+                        return;
+                    } else if slice.len() <= 15 {
+                        return [<insertion_sort_ $tpe _slice>](slice);
+                    } else {
+                        [<qsort_ $tpe _slice>](slice);
+                    }
                 }
             }
         )+
@@ -226,6 +285,9 @@ impl_const_quicksort! {
 pub const fn sort_i8_slice(slice: &mut [i8]) {
     if slice.is_empty() || slice.len() == 1 {
         return;
+    } else if slice.len() <= 15 {
+        insertion_sort_i8_slice(slice);
+        return;
     }
     let mut counts = [0_usize; u8::MAX as usize + 1];
     let mut i = 0;
@@ -249,6 +311,9 @@ pub const fn sort_i8_slice(slice: &mut [i8]) {
     }
 }
 
+#[rustversion::since(1.83.0)]
+impl_const_slice_insersion_sort!(i8, insertion_sort_i8_slice);
+
 /// Sorts the given array of `i8`s using the counting sort algorithm and returns it.
 ///
 /// # Example
@@ -262,6 +327,8 @@ pub const fn sort_i8_slice(slice: &mut [i8]) {
 pub const fn into_sorted_i8_array<const N: usize>(mut array: [i8; N]) -> [i8; N] {
     if N == 0 || N == 1 {
         return array;
+    } else if N <= 15 {
+        return insertion_sort_i8_array(array);
     }
     let mut counts = [0_usize; u8::MAX as usize + 1];
     let mut i = 0;
@@ -287,6 +354,8 @@ pub const fn into_sorted_i8_array<const N: usize>(mut array: [i8; N]) -> [i8; N]
     array
 }
 
+impl_const_array_insertion_sort!(i8, insertion_sort_i8_array);
+
 #[rustversion::since(1.83.0)]
 /// Sorts the given slice of `u8`s using the counting sort algorithm.
 ///
@@ -307,6 +376,9 @@ pub const fn into_sorted_i8_array<const N: usize>(mut array: [i8; N]) -> [i8; N]
 /// ```
 pub const fn sort_u8_slice(slice: &mut [u8]) {
     if slice.is_empty() || slice.len() == 1 {
+        return;
+    } else if slice.len() <= 15 {
+        insertion_sort_u8_slice(slice);
         return;
     }
     let mut counts = [0_usize; u8::MAX as usize + 1];
@@ -331,6 +403,9 @@ pub const fn sort_u8_slice(slice: &mut [u8]) {
     }
 }
 
+#[rustversion::since(1.83.0)]
+impl_const_slice_insersion_sort!(u8, insertion_sort_u8_slice);
+
 /// Sorts the given array of `u8`s using the counting sort algorithm and returns it.
 ///
 /// # Example
@@ -344,6 +419,8 @@ pub const fn sort_u8_slice(slice: &mut [u8]) {
 pub const fn into_sorted_u8_array<const N: usize>(mut array: [u8; N]) -> [u8; N] {
     if N == 0 || N == 1 {
         return array;
+    } else if N <= 15 {
+        return insertion_sort_u8_array(array);
     }
     let mut counts = [0_usize; u8::MAX as usize + 1];
     let mut i = 0;
@@ -366,6 +443,8 @@ pub const fn into_sorted_u8_array<const N: usize>(mut array: [u8; N]) -> [u8; N]
     }
     array
 }
+
+impl_const_array_insertion_sort!(u8, insertion_sort_u8_array);
 
 #[rustversion::since(1.83.0)]
 /// Sorts the given slice of `bool`s using the counting sort algorithm.
