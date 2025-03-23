@@ -69,7 +69,7 @@ macro_rules! const_slice_quicksort {
                     }
                     return;
                 }
-                3..=10 => {
+                3..=INSERTION_SIZE => {
                     $insertion_name(slice);
                     return;
                 }
