@@ -217,6 +217,8 @@ macro_rules! impl_const_quicksort {
 
                 #[doc = "Sorts the given array of `" $tpe "`s using the quicksort algorithm and returns it."]
                 #[doc = ""]
+                #[doc = "Switches to insertion sort when the array is small."]
+                #[doc = ""]
                 #[doc = "# Example"]
                 #[doc = ""]
                 #[doc = "```"]
@@ -235,6 +237,8 @@ macro_rules! impl_const_quicksort {
 
                 #[rustversion::since(1.83.0)]
                 #[doc = "Sorts the given slice of `" $tpe "`s using the quicksort algorithm."]
+                #[doc = ""]
+                #[doc = "Switches to insertion sort when the slice is small."]
                 #[doc = ""]
                 #[doc = "This function is only available on Rust versions 1.83 and above."]
                 #[doc = ""]
@@ -279,6 +283,8 @@ impl_const_quicksort! {
 
 #[rustversion::since(1.83.0)]
 /// Sorts the given slice of `i8`s using the counting sort algorithm.
+///
+/// Switches to insertion sort when the slice is small.
 ///
 /// This function is only available on Rust versions 1.83 and above.
 ///
@@ -329,6 +335,8 @@ const_slice_insersion_sort!(i8, insertion_sort_i8_slice);
 
 /// Sorts the given array of `i8`s using the counting sort algorithm and returns it.
 ///
+/// Switches to insertion sort when the array is small.
+///
 /// # Example
 ///
 /// ```
@@ -371,6 +379,8 @@ const_array_insertion_sort!(i8, insertion_sort_i8_array);
 
 #[rustversion::since(1.83.0)]
 /// Sorts the given slice of `u8`s using the counting sort algorithm.
+///
+/// Switches to insertion sort when the slice is small.
 ///
 /// This function is only available on Rust versions 1.83 and above.
 ///
@@ -420,6 +430,8 @@ pub const fn sort_u8_slice(slice: &mut [u8]) {
 const_slice_insersion_sort!(u8, insertion_sort_u8_slice);
 
 /// Sorts the given array of `u8`s using the counting sort algorithm and returns it.
+///
+/// Switches to insertion sort when the array is small.
 ///
 /// # Example
 ///
