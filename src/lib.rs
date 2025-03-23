@@ -44,6 +44,10 @@
 
 #![no_std]
 
+/// If the array/slice is larger than this size quicksort will be used,
+/// otherwise insertion sort will be used.
+const INSERTION_SIZE: usize = 10;
+
 use paste::paste;
 
 // region: quicksort implementations
@@ -170,12 +174,13 @@ macro_rules! const_array_insertion_sort {
 macro_rules! const_slice_insersion_sort {
     ($tpe:ty, $name:ident) => {
         const fn $name(slice: &mut [$tpe]) {
-            if slice.len() <= 1 {
+            let n = slice.len();
+            if n <= 1 {
                 return;
             }
 
             let mut i = 1;
-            while i < slice.len() {
+            while i < n {
                 let mut j = i;
                 while j > 0 && slice[j - 1] > slice[j] {
                     (slice[j - 1], slice[j]) = (slice[j], slice[j - 1]);
@@ -216,7 +221,7 @@ macro_rules! impl_const_quicksort {
                 pub const fn [<into_sorted_ $tpe _array>]<const N: usize>(array: [$tpe; N]) -> [$tpe; N] {
                     if N <= 1 {
                         return array;
-                    } else if N <= 10 {
+                    } else if N <= INSERTION_SIZE {
                         return [<insertion_sort_ $tpe _array>](array);
                     } else {
                         [<qsort_ $tpe _array>](array, 0, N)
@@ -244,7 +249,7 @@ macro_rules! impl_const_quicksort {
                 pub const fn [<sort_ $tpe _slice>](slice: &mut [$tpe]) {
                     if slice.len() <= 1 {
                         return;
-                    } else if slice.len() <= 10 {
+                    } else if slice.len() <= INSERTION_SIZE {
                         return [<insertion_sort_ $tpe _slice>](slice);
                     } else {
                         [<qsort_ $tpe _slice>](slice);
@@ -290,7 +295,7 @@ impl_const_quicksort! {
 pub const fn sort_i8_slice(slice: &mut [i8]) {
     if slice.is_empty() || slice.len() == 1 {
         return;
-    } else if slice.len() <= 15 {
+    } else if slice.len() <= INSERTION_SIZE {
         insertion_sort_i8_slice(slice);
         return;
     }
@@ -332,7 +337,7 @@ const_slice_insersion_sort!(i8, insertion_sort_i8_slice);
 pub const fn into_sorted_i8_array<const N: usize>(mut array: [i8; N]) -> [i8; N] {
     if N == 0 || N == 1 {
         return array;
-    } else if N <= 15 {
+    } else if N <= INSERTION_SIZE {
         return insertion_sort_i8_array(array);
     }
     let mut counts = [0_usize; u8::MAX as usize + 1];
@@ -382,7 +387,7 @@ const_array_insertion_sort!(i8, insertion_sort_i8_array);
 pub const fn sort_u8_slice(slice: &mut [u8]) {
     if slice.is_empty() || slice.len() == 1 {
         return;
-    } else if slice.len() <= 15 {
+    } else if slice.len() <= INSERTION_SIZE {
         insertion_sort_u8_slice(slice);
         return;
     }
@@ -424,7 +429,7 @@ const_slice_insersion_sort!(u8, insertion_sort_u8_slice);
 pub const fn into_sorted_u8_array<const N: usize>(mut array: [u8; N]) -> [u8; N] {
     if N == 0 || N == 1 {
         return array;
-    } else if N <= 15 {
+    } else if N <= INSERTION_SIZE {
         return insertion_sort_u8_array(array);
     }
     let mut counts = [0_usize; u8::MAX as usize + 1];
