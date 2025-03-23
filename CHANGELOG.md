@@ -2,6 +2,10 @@
 
 This file contains all changes to the crate since version v0.1.0.
 
+## 1.0.9 (unreleased)
+
+- Internal improvements to sort impls.
+
 ## 1.0.8
 
 - Use insertion sort when the collections are small.
