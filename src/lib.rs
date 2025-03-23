@@ -54,10 +54,12 @@ use paste::paste;
 
 #[rustversion::since(1.83.0)]
 /// Defines a `const` function with the given name that takes in a mutable reference to a slice of the given type
-/// and sorts it using the quicksort algorithm.
+/// and sorts it using the quicksort algorithm while switching to the insertion sort algorithm when the array is small.
 // This implementation is the one from <https://github.com/jonhoo/orst/blob/master/src/quicksort.rs> but made const.
 macro_rules! const_slice_quicksort {
-    ($tpe:ty, $name:ident) => {
+    ($tpe:ty, $name:ident, $insertion_name:ident) => {
+        const_slice_insersion_sort!($tpe, $insertion_name);
+
         const fn $name(slice: &mut [$tpe]) {
             match slice.len() {
                 0 | 1 => return,
@@ -65,6 +67,10 @@ macro_rules! const_slice_quicksort {
                     if slice[0] > slice[1] {
                         (slice[0], slice[1]) = (slice[1], slice[0]);
                     }
+                    return;
+                }
+                3..=INSERTION_SIZE => {
+                    $insertion_name(slice);
                     return;
                 }
                 _ => {}
@@ -105,18 +111,24 @@ macro_rules! const_slice_quicksort {
     };
 }
 
-/// Defines a `const` function with the given name that sorts an array of the given type with the quicksort algorithm.
+/// Defines a `const` function with the given name that sorts an array of the given type with the quicksort algorithm
+/// for large arrays and switches to the insertion sort algorithm when the array is small.
 macro_rules! const_array_quicksort {
-    ($tpe:ty, $name:ident, $partition_name:ident) => {
+    ($tpe:ty, $name:ident, $partition_name:ident, $insertion_name:ident) => {
+        const_array_insertion_sort! {$tpe, $insertion_name}
+
         const fn $name<const N: usize>(array: [$tpe; N], left: usize, right: usize) -> [$tpe; N] {
-            if right - left > 1 {
+            let len = right - left;
+            if len <= 1 {
+                array
+            } else if len <= INSERTION_SIZE {
+                $insertion_name(array)
+            } else {
                 let (pivot_index, mut array) = $partition_name(array, left, right);
                 array = $name(array, left, pivot_index);
                 array = $name(array, pivot_index + 1, right);
-                return array;
+                array
             }
-
-            array
         }
 
         const fn $partition_name<const N: usize>(
@@ -199,14 +211,9 @@ macro_rules! impl_const_quicksort {
         $(
             paste! {
                 #[rustversion::since(1.83.0)]
-                const_slice_quicksort!{$tpe, [<qsort_ $tpe _slice>]}
+                const_slice_quicksort!{$tpe, [<qsort_ $tpe _slice>], [<insertion_sort_ $tpe _slice>]}
 
-                #[rustversion::since(1.83.0)]
-                const_slice_insersion_sort!{$tpe, [<insertion_sort_ $tpe _slice>]}
-
-                const_array_quicksort!{$tpe, [<qsort_ $tpe _array>], [<partition_ $tpe _array>]}
-
-                const_array_insertion_sort!{$tpe, [<insertion_sort_ $tpe _array>]}
+                const_array_quicksort!{$tpe, [<qsort_ $tpe _array>], [<partition_ $tpe _array>], [<insertion_sort_ $tpe _array>]}
 
                 #[doc = "Sorts the given array of `" $tpe "`s using the quicksort algorithm and returns it."]
                 #[doc = ""]
@@ -221,8 +228,6 @@ macro_rules! impl_const_quicksort {
                 pub const fn [<into_sorted_ $tpe _array>]<const N: usize>(array: [$tpe; N]) -> [$tpe; N] {
                     if N <= 1 {
                         array
-                    } else if N <= INSERTION_SIZE {
-                        [<insertion_sort_ $tpe _array>](array)
                     } else {
                         [<qsort_ $tpe _array>](array, 0, N)
                     }
@@ -249,8 +254,6 @@ macro_rules! impl_const_quicksort {
                 pub const fn [<sort_ $tpe _slice>](slice: &mut [$tpe]) {
                     if slice.len() <= 1 {
                         return;
-                    } else if slice.len() <= INSERTION_SIZE {
-                        [<insertion_sort_ $tpe _slice>](slice);
                     } else {
                         [<qsort_ $tpe _slice>](slice);
                     }
