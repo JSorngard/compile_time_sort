@@ -266,7 +266,8 @@ macro_rules! impl_const_quicksort {
     };
 }
 
-// We don't call this macro on `bool`, `u8`, or `i8` because they can be efficiently sorted with counting sort.
+// We don't call this macro on `bool`, `u8`, or `i8` because they can be efficiently sorted with counting sort
+// and that requires a custom implementation for each type.
 impl_const_quicksort! {
     char,
     u16, i16,
