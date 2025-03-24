@@ -58,7 +58,7 @@ use paste::paste;
 // This implementation is the one from <https://github.com/jonhoo/orst/blob/master/src/quicksort.rs> but made const.
 macro_rules! const_slice_quicksort {
     ($tpe:ty, $name:ident, $insertion_name:ident) => {
-        const_slice_insersion_sort!($tpe, $insertion_name);
+        const_slice_insertion_sort!($tpe, $insertion_name);
 
         const fn $name(slice: &mut [$tpe]) {
             match slice.len() {
@@ -183,7 +183,7 @@ macro_rules! const_array_insertion_sort {
 
 #[rustversion::since(1.83.0)]
 /// Defines a `const` function with the given name that sorts a slice of the given type with the insertion sort algorithm.
-macro_rules! const_slice_insersion_sort {
+macro_rules! const_slice_insertion_sort {
     ($tpe:ty, $name:ident) => {
         const fn $name(slice: &mut [$tpe]) {
             let n = slice.len();
@@ -331,7 +331,7 @@ pub const fn sort_i8_slice(slice: &mut [i8]) {
 }
 
 #[rustversion::since(1.83.0)]
-const_slice_insersion_sort!(i8, insertion_sort_i8_slice);
+const_slice_insertion_sort!(i8, insertion_sort_i8_slice);
 
 /// Sorts the given array of `i8`s using the counting sort algorithm and returns it.
 ///
@@ -427,7 +427,7 @@ pub const fn sort_u8_slice(slice: &mut [u8]) {
 }
 
 #[rustversion::since(1.83.0)]
-const_slice_insersion_sort!(u8, insertion_sort_u8_slice);
+const_slice_insertion_sort!(u8, insertion_sort_u8_slice);
 
 /// Sorts the given array of `u8`s using the counting sort algorithm and returns it.
 ///
