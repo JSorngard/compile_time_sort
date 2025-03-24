@@ -43,33 +43,47 @@ macro_rules! test_unsigned_integer {
                 fn [<test_sort_ $tpe>]() {
                     const REV_ARRAY: [$tpe; 3] = [3, 2, 1];
                     const SORTED_REV_ARRAY: [$tpe; 3] = [<into_sorted_ $tpe _array>](REV_ARRAY);
+                    assert!(SORTED_REV_ARRAY.is_sorted());
 
                     const CONST_ARRAY: [$tpe; 3] = [2, 2, 2];
                     const SORTED_CONST_ARRAY: [$tpe; 3] = [<into_sorted_ $tpe _array>](CONST_ARRAY);
+                    assert!(SORTED_CONST_ARRAY.is_sorted());
 
                     const INCORRECT_LAST: [$tpe; 4] = [1, 1, 1, 0];
                     const SORTED_INCORRECT_LAST: [$tpe; 4] = [<into_sorted_ $tpe _array>](INCORRECT_LAST);
+                    assert!(SORTED_INCORRECT_LAST.is_sorted());
 
                     const JUST_ZEROS_ARRAY: [$tpe; 100] = [0; 100];
                     const SORTED_JUST_ZEROS_ARRAY: [$tpe; 100] = [<into_sorted_ $tpe _array>](JUST_ZEROS_ARRAY);
+                    assert!(SORTED_JUST_ZEROS_ARRAY.is_sorted());
 
                     const EMPTY_ARRAY: [$tpe; 0] = [];
                     const SORTED_EMPTY_ARRAY: [$tpe; 0] = [<into_sorted_ $tpe _array>](EMPTY_ARRAY);
+                    assert!(SORTED_EMPTY_ARRAY.is_sorted());
 
                     const SINGLETON_ARRAY: [$tpe; 1] = [1];
                     const SORTED_SINGLETON_ARRAY: [$tpe; 1] = [<into_sorted_ $tpe _array>](SINGLETON_ARRAY);
-
-                    assert!(SORTED_EMPTY_ARRAY.is_sorted());
-
                     assert!(SORTED_SINGLETON_ARRAY.is_sorted());
 
-                    assert!(SORTED_REV_ARRAY.is_sorted());
+                    // Test alternating pattern
+                    const ALTERNATING: [$tpe; 4] = [2, 1, 2, 1];
+                    const SORTED_ALTERNATING: [$tpe; 4] = [<into_sorted_ $tpe _array>](ALTERNATING);
+                    assert!(SORTED_ALTERNATING.is_sorted());
 
-                    assert!(SORTED_CONST_ARRAY.is_sorted());
+                    // Test already sorted array
+                    const SORTED: [$tpe; 4] = [1, 2, 3, 4];
+                    const STILL_SORTED: [$tpe; 4] = [<into_sorted_ $tpe _array>](SORTED);
+                    assert!(STILL_SORTED.is_sorted());
 
-                    assert!(SORTED_INCORRECT_LAST.is_sorted());
+                    // Test reverse sorted array with duplicates
+                    const REV_WITH_DUPS: [$tpe; 6] = [5, 4, 4, 3, 2, 1];
+                    const SORTED_REV_DUPS: [$tpe; 6] = [<into_sorted_ $tpe _array>](REV_WITH_DUPS);
+                    assert!(SORTED_REV_DUPS.is_sorted());
 
-                    assert!(SORTED_JUST_ZEROS_ARRAY.is_sorted());
+                    // Test array with all same values except one
+                    const ALL_SAME_ONE_DIFF: [$tpe; 5] = [2, 2, 1, 2, 2];
+                    const SORTED_SAME_DIFF: [$tpe; 5] = [<into_sorted_ $tpe _array>](ALL_SAME_ONE_DIFF);
+                    assert!(SORTED_SAME_DIFF.is_sorted());
 
                     let mut rng = SmallRng::from_seed([0b01010101; 32]);
 
