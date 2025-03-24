@@ -44,8 +44,7 @@
 
 #![no_std]
 
-/// If the array/slice is larger than this size quicksort will be used,
-/// otherwise insertion sort will be used.
+/// If the array/slice is smaller than this size insertion sort will be used.
 const INSERTION_SIZE: usize = 10;
 
 use paste::paste;
