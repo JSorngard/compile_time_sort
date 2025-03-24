@@ -302,7 +302,7 @@ impl_const_quicksort! {
 /// assert!(SORTED_ARRAY.is_sorted());
 /// ```
 pub const fn sort_i8_slice(slice: &mut [i8]) {
-    if slice.is_empty() || slice.len() == 1 {
+    if slice.len() <= 1 {
         return;
     } else if slice.len() <= INSERTION_SIZE {
         insertion_sort_i8_slice(slice);
@@ -346,7 +346,7 @@ const_slice_insertion_sort!(i8, insertion_sort_i8_slice);
 /// assert!(SORTED_ARRAY.is_sorted());
 /// ```
 pub const fn into_sorted_i8_array<const N: usize>(mut array: [i8; N]) -> [i8; N] {
-    if N == 0 || N == 1 {
+    if N <= 1 {
         return array;
     } else if N <= INSERTION_SIZE {
         return insertion_sort_i8_array(array);
@@ -398,7 +398,7 @@ const_array_insertion_sort!(i8, insertion_sort_i8_array);
 /// assert!(SORTED_ARRAY.is_sorted());
 /// ```
 pub const fn sort_u8_slice(slice: &mut [u8]) {
-    if slice.is_empty() || slice.len() == 1 {
+    if slice.len() <= 1 {
         return;
     } else if slice.len() <= INSERTION_SIZE {
         insertion_sort_u8_slice(slice);
@@ -442,7 +442,7 @@ const_slice_insertion_sort!(u8, insertion_sort_u8_slice);
 /// assert!(SORTED_ARRAY.is_sorted());
 /// ```
 pub const fn into_sorted_u8_array<const N: usize>(mut array: [u8; N]) -> [u8; N] {
-    if N == 0 || N == 1 {
+    if N <= 1 {
         return array;
     } else if N <= INSERTION_SIZE {
         return insertion_sort_u8_array(array);
@@ -490,7 +490,7 @@ const_array_insertion_sort!(u8, insertion_sort_u8_array);
 /// assert!(SORTED_ARRAY.is_sorted());
 /// ```
 pub const fn sort_bool_slice(slice: &mut [bool]) {
-    if slice.is_empty() || slice.len() == 1 {
+    if slice.len() <= 1 {
         return;
     }
     let mut falses = 0;
@@ -526,7 +526,7 @@ pub const fn sort_bool_slice(slice: &mut [bool]) {
 /// assert!(SORTED_ARRAY.is_sorted());
 /// ```
 pub const fn into_sorted_bool_array<const N: usize>(mut array: [bool; N]) -> [bool; N] {
-    if N == 0 || N == 1 {
+    if N <= 1 {
         return array;
     }
     let mut falses = 0;
