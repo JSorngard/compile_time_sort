@@ -45,7 +45,7 @@
 #![no_std]
 
 /// If the array/slice is smaller than this size insertion sort will be used.
-const INSERTION_SIZE: usize = 4;
+const INSERTION_SIZE: usize = 10;
 
 // region: quicksort implementations
 
