@@ -47,8 +47,6 @@
 /// If the array/slice is smaller than this size insertion sort will be used.
 const INSERTION_SIZE: usize = 10;
 
-use paste::paste;
-
 // region: quicksort implementations
 
 #[rustversion::since(1.83.0)]
@@ -208,7 +206,7 @@ macro_rules! const_slice_insertion_sort {
 macro_rules! impl_const_quicksort {
     ($($tpe:ty),+) => {
         $(
-            paste! {
+            paste::paste! {
                 #[rustversion::since(1.83.0)]
                 const_slice_quicksort!{$tpe, [<qsort_ $tpe _slice>], [<insertion_sort_ $tpe _slice>]}
 
