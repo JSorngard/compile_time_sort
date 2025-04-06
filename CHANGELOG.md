@@ -2,6 +2,10 @@
 
 This file contains all changes to the crate since version v0.1.0.
 
+## 1.1.2
+
+- Show the import of the crate in the doc examples.
+
 ## 1.1.1
 
 - Correct MSRV information in the readme.
