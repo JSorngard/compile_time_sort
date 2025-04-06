@@ -2,6 +2,10 @@
 
 This file contains all changes to the crate since version v0.1.0.
 
+## 1.0.10
+
+- Correct the code examples in the readme.
+
 ## 1.0.9
 
 - Internal improvements to sort impls.
