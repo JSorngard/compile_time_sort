@@ -231,7 +231,8 @@ macro_rules! impl_const_quicksort {
                 #[doc = "# Example"]
                 #[doc = ""]
                 #[doc = "```"]
-                #[doc = "# use compile_time_sort::" [<into_sorted_ $tpe _array>] ";"]
+                #[doc = "use compile_time_sort::" [<into_sorted_ $tpe _array>] ";"]
+                #[doc = ""]
                 #[doc = "const SORTED_ARRAY: [" $tpe "; 3] = " [<into_sorted_ $tpe _array>] "([0 as " $tpe ", " $tpe "::MAX, " $tpe "::MIN]);"]
                 #[doc = ""]
                 #[doc = "assert!(SORTED_ARRAY.is_sorted());"]
@@ -254,7 +255,8 @@ macro_rules! impl_const_quicksort {
                 #[doc = "# Example"]
                 #[doc = ""]
                 #[doc = "```"]
-                #[doc = "# use compile_time_sort::" [<sort_ $tpe _slice>] ";"]
+                #[doc = "use compile_time_sort::" [<sort_ $tpe _slice>] ";"]
+                #[doc = ""]
                 #[doc = "const ARRAY: [" $tpe "; 3] = [0 as " $tpe ", " $tpe "::MAX, " $tpe "::MIN];"]
                 #[doc = "const SORTED_ARRAY: [" $tpe "; 3]= {"]
                 #[doc = "    let mut arr = ARRAY;"]
@@ -301,7 +303,8 @@ impl_const_quicksort! {
 /// # Example
 ///
 /// ```
-/// # use compile_time_sort::sort_i8_slice;
+/// use compile_time_sort::sort_i8_slice;
+///
 /// const ARRAY: [i8; 3] = [0, i8::MAX, i8::MIN];
 /// const SORTED_ARRAY: [i8; 3] = {
 ///     let mut arr = ARRAY;
@@ -350,7 +353,8 @@ const_slice_insertion_sort!(i8, insertion_sort_i8_slice);
 /// # Example
 ///
 /// ```
-/// # use compile_time_sort::into_sorted_i8_array;
+/// use compile_time_sort::into_sorted_i8_array;
+///
 /// const SORTED_ARRAY: [i8; 3] = into_sorted_i8_array([0, i8::MAX, i8::MIN]);
 ///
 /// assert!(SORTED_ARRAY.is_sorted());
@@ -397,7 +401,8 @@ const_array_insertion_sort!(i8, insertion_sort_i8_array);
 /// # Example
 ///
 /// ```
-/// # use compile_time_sort::sort_u8_slice;
+/// use compile_time_sort::sort_u8_slice;
+///
 /// const ARRAY: [u8; 3] = [0, u8::MAX, u8::MIN];
 /// const SORTED_ARRAY: [u8; 3] = {
 ///     let mut arr = ARRAY;
@@ -446,7 +451,8 @@ const_slice_insertion_sort!(u8, insertion_sort_u8_slice);
 /// # Example
 ///
 /// ```
-/// # use compile_time_sort::into_sorted_u8_array;
+/// use compile_time_sort::into_sorted_u8_array;
+///
 /// const SORTED_ARRAY: [u8; 3] = into_sorted_u8_array([0, u8::MAX, u8::MIN]);
 ///
 /// assert!(SORTED_ARRAY.is_sorted());
@@ -489,7 +495,8 @@ const_array_insertion_sort!(u8, insertion_sort_u8_array);
 /// # Example
 ///
 /// ```
-/// # use compile_time_sort::sort_bool_slice;
+/// use compile_time_sort::sort_bool_slice;
+///
 /// const ARRAY: [bool; 2] = [true, false];
 /// const SORTED_ARRAY: [bool; 2] = {
 ///     let mut arr = ARRAY;
@@ -530,7 +537,8 @@ pub const fn sort_bool_slice(slice: &mut [bool]) {
 /// # Example
 ///
 /// ```
-/// # use compile_time_sort::into_sorted_bool_array;
+/// use compile_time_sort::into_sorted_bool_array;
+///
 /// const SORTED_ARRAY: [bool; 2] = into_sorted_bool_array([true, false]);
 ///
 /// assert!(SORTED_ARRAY.is_sorted());
