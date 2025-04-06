@@ -2,6 +2,10 @@
 
 This file contains all changes to the crate since version v0.1.0.
 
+## 1.0.10
+
+- Run the test CI job on multiple operating systems.
+
 ## 1.0.9
 
 - Internal improvements to sort impls.
