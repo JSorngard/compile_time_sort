@@ -141,18 +141,24 @@ macro_rules! const_array_quicksort {
             let pivot_index = left + len / 2;
             let last_index = right - 1;
 
-            (arr[pivot_index], arr[last_index]) = (arr[last_index], arr[pivot_index]);
+            let temp = arr[pivot_index];
+            arr[pivot_index] = arr[last_index];
+            arr[last_index] = temp;
 
             let mut store_index = left;
             let mut i = left;
             while i < last_index {
                 if arr[i] < arr[last_index] {
-                    (arr[store_index], arr[i]) = (arr[i], arr[store_index]);
+                    let temp = arr[i];
+                    arr[i] = arr[store_index];
+                    arr[store_index] = temp;
                     store_index += 1;
                 }
                 i += 1;
             }
-            (arr[store_index], arr[last_index]) = (arr[last_index], arr[store_index]);
+            let temp = arr[store_index];
+            arr[store_index] = arr[last_index];
+            arr[last_index] = temp;
 
             (store_index, arr)
         }
@@ -171,7 +177,9 @@ macro_rules! const_array_insertion_sort {
             while i < N {
                 let mut j = i;
                 while j > 0 && array[j - 1] > array[j] {
-                    (array[j - 1], array[j]) = (array[j], array[j - 1]);
+                    let temp = array[j - 1];
+                    array[j - 1] = array[j];
+                    array[j] = temp;
                     j -= 1;
                 }
                 i += 1;
