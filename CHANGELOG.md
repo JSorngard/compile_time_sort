@@ -4,6 +4,7 @@ This file contains all changes to the crate since version v0.1.0.
 
 ## 1.0.10
 
+- Correct the code examples in the readme.
 - Run the test CI job on multiple operating systems.
 - Lower the MSRV of the crate to 1.51.0 by using rust edition 2018.
 
