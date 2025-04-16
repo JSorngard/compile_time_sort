@@ -41,7 +41,7 @@ jobs:
   test:
     strategy:
       matrix:
-        toolchain: [stable, beta]
+        toolchain: [stable, beta, 1.82.0]
         os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
