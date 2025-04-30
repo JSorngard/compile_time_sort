@@ -9,7 +9,7 @@ license = "MIT OR Apache-2.0"
 rust-version = "1.54.0"
 repository = "https://github.com/JSorngard/compile_time_sort"
 documentation = "https://docs.rs/compile_time_sort/"
-exclude = ["CHANGELOG.md"]
+exclude = ["CHANGELOG.md", ".github/"]
 
 [dependencies]
 rustversion = "1.0.20"
