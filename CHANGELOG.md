@@ -5,6 +5,7 @@ This file contains all changes to the crate since version v0.1.0.
 ## 1.1.4
 
 - Add a crate level `#![forbid(unsafe_code)]` attribute.
+- Don't publish unneeded files to crates.io.
 
 ## 1.1.3
 
