@@ -2,6 +2,10 @@
 
 This file contains all changes to the crate since version v0.1.0.
 
+## 1.1.4 (unreleased)
+
+- Add a crate level `#![forbid(unsafe_code)]` attribute.
+
 ## 1.1.3
 
 - Correct MSRV information in the crate docs.

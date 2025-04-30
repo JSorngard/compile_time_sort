@@ -43,6 +43,7 @@
 //! ```
 
 #![no_std]
+#![forbid(unsafe_code)]
 
 #[cfg(doctest)]
 #[doc = include_str!("../README.md")]
