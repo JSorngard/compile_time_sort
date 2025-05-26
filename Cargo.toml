@@ -12,7 +12,7 @@ documentation = "https://docs.rs/compile_time_sort/"
 exclude = ["CHANGELOG.md", ".github/", "tests/"]
 
 [dependencies]
-rustversion = "1.0.20"
+rustversion = "1.0.21"
 paste = "1.0.15"
 
 [dev-dependencies]
