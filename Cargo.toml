@@ -1,6 +1,6 @@
 [package]
 name = "compile_time_sort"
-version = "1.1.1"
+version = "1.1.4"
 edition = "2018"
 description = "Sort arrays and slices of primitives in const contexts."
 keywords = ["const", "sort", "const-sort", "sorting"]
@@ -9,9 +9,10 @@ license = "MIT OR Apache-2.0"
 rust-version = "1.54.0"
 repository = "https://github.com/JSorngard/compile_time_sort"
 documentation = "https://docs.rs/compile_time_sort/"
+exclude = ["CHANGELOG.md", ".github/", "tests/"]
 
 [dependencies]
-rustversion = "1.0.20"
+rustversion = "1.0.22"
 paste = "1.0.15"
 
 [dev-dependencies]

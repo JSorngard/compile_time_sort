@@ -2,6 +2,25 @@
 
 This file contains all changes to the crate since version v0.1.0.
 
+## 1.1.5 (unreleased)
+
+- Change the insertion sort threshold to 8,
+ the closest power of two to the previous value of 10.
+- Use caching to speed up CI.
+
+## 1.1.4
+
+- Add a crate level `#![forbid(unsafe_code)]` attribute.
+- Don't publish unneeded files to crates.io.
+
+## 1.1.3
+
+- Correct MSRV information in the crate docs.
+
+## 1.1.2
+
+- Show the import of the crate in the doc examples.
+
 ## 1.1.1
 
 - Correct MSRV information in the readme.
