@@ -7,16 +7,16 @@ use crate::INSERTION_SIZE;
 
 #[rustversion::since(1.83.0)]
 /// Sorts the given slice of `f32`s using the quicksort algorithm.
-/// 
+///
 /// This function uses a `const` implementation of [`f32::total_cmp`] to implement
 /// a total order over `f32`s.
 ///
 /// Switches to insertion sort when the slice is small.
-/// 
+///
 /// This function is only available on Rust versions 1.83 and above.
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```rust
 /// use compile_time_sort::sort_f32_slice;
 /// let mut arr = [3.0, 1.0, 4.0, 1.5];
