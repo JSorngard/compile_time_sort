@@ -43,7 +43,10 @@
 //! ```
 
 #![no_std]
-#![forbid(unsafe_code)]
+
+mod float_sort;
+#[rustversion::since(1.83.0)]
+pub use float_sort::{sort_f32_slice, sort_f64_slice};
 
 #[cfg(doctest)]
 #[doc = include_str!("../README.md")]
