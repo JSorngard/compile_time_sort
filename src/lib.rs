@@ -401,9 +401,11 @@ impl_const_quicksort! {
     u32, i32,
     u64, i64,
     u128, i128,
-    usize, isize,
-    f32, f64
+    usize, isize
 }
+
+#[rustversion::since(1.83.0)]
+impl_const_quicksort!{f32, f64}
 
 // endregion: quicksort implementations
 
