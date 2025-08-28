@@ -13,8 +13,8 @@
 //! Functions with the naming convention `into_sorted_*_array` take an array by value,
 //! and functions with the naming convention `sort_*_slice` take a mutable reference to a slice.
 //!
-//! The functions that sort slices by reference are only available on Rust versions 1.83 and above, as are the functions that sort floats as they need `const` [`{float}::to_bits`](f32::to_bits) in order to generate
-//! a total ordering in accordance with [`{float}::total_cmp`](f32::total_cmp).
+//! The functions that sort slices by reference are only available on Rust versions 1.83 and above, as are the functions that sort floats as they need [`{float}::to_bits`](f32::to_bits)
+//! to be `const` in order to generate a total ordering in accordance with [`{float}::total_cmp`](f32::total_cmp).
 //!
 //! # Examples
 //!
@@ -96,7 +96,8 @@ impl_default_const_compare! {
     usize, isize
 }
 
-// Below are the wrappers for floats.
+// Below are the wrappers for floats. They are taken from the standard library
+// implementation of `{float}::total_cmp` and adapted to be `const`.
 
 #[cfg(not(feature = "unsafe_float_sort"))]
 #[rustversion::since(1.83.0)]
