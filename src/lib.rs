@@ -109,7 +109,9 @@ const fn f32_to_bits(value: f32) -> u32 {
 const fn f32_to_bits(value: f32) -> u32 {
     // SAFETY: This is safe because `f32` and `u32` have the same size and alignment.
     #[allow(unnecessary_transmutes)]
-    unsafe { core::mem::transmute(value) }
+    unsafe {
+        core::mem::transmute(value)
+    }
 }
 
 #[cfg(not(feature = "unsafe_float_sort"))]
@@ -123,7 +125,9 @@ const fn f64_to_bits(value: f64) -> u64 {
 const fn f64_to_bits(value: f64) -> u64 {
     // SAFETY: This is safe because `f64` and `u64` have the same size and alignment.
     #[allow(unnecessary_transmutes)]
-    unsafe { core::mem::transmute(value) }
+    unsafe {
+        core::mem::transmute(value)
+    }
 }
 
 #[cfg_attr(not(feature = "unsafe_float_sort"), rustversion::since(1.83.0))]
