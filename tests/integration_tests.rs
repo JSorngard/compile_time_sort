@@ -3,10 +3,11 @@ use quickcheck::quickcheck;
 use rand::{rngs::SmallRng, Rng, SeedableRng};
 
 use compile_time_sort::{
-    into_sorted_bool_array, into_sorted_char_array, into_sorted_i128_array, into_sorted_i16_array,
-    into_sorted_i32_array, into_sorted_i64_array, into_sorted_i8_array, into_sorted_isize_array,
-    into_sorted_u128_array, into_sorted_u16_array, into_sorted_u32_array, into_sorted_u64_array,
-    into_sorted_u8_array, into_sorted_usize_array,
+    into_sorted_bool_array, into_sorted_char_array, into_sorted_f32_array, into_sorted_f64_array,
+    into_sorted_i128_array, into_sorted_i16_array, into_sorted_i32_array, into_sorted_i64_array,
+    into_sorted_i8_array, into_sorted_isize_array, into_sorted_u128_array, into_sorted_u16_array,
+    into_sorted_u32_array, into_sorted_u64_array, into_sorted_u8_array, into_sorted_usize_array,
+    sort_f32_slice, sort_f64_slice,
 };
 
 #[rustversion::since(1.83.0)]
@@ -145,4 +146,78 @@ fn test_char_sort() {
     const SORTED_ARR: [char; 4] = into_sorted_char_array(['a', '#', '\n', 'A']);
 
     assert_eq!(SORTED_ARR, ['\n', '#', 'A', 'a'])
+}
+
+#[test]
+fn test_f32_into_sorted() {
+    const ARR: [f32; 5] = [3.0, 1.0, -0.0, 0.0, f32::MIN];
+    const SORTED_ARR: [f32; 5] = into_sorted_f32_array(ARR);
+
+    const CONSTANT_ARR: [f32; 3] = [1.0, 1.0, 1.0];
+    const SORTED_CONSTANT_ARR: [f32; 3] = into_sorted_f32_array(CONSTANT_ARR);
+
+    const NAN_ARR: [f32; 3] = [f32::NAN, 1.0, -2.0];
+    const SORTED_NAN_ARR: [f32; 3] = into_sorted_f32_array(NAN_ARR);
+
+    const INF_ARR: [f32; 4] = [f32::INFINITY, 1.0, f32::NEG_INFINITY, 0.0];
+    const SORTED_INF_ARR: [f32; 4] = into_sorted_f32_array(INF_ARR);
+
+    assert!(SORTED_ARR.is_sorted());
+    assert!(SORTED_CONSTANT_ARR.is_sorted());
+    assert!(
+        SORTED_NAN_ARR[0].is_nan() && SORTED_NAN_ARR[1..].is_sorted()
+            || SORTED_NAN_ARR[2].is_nan() && SORTED_NAN_ARR[..2].is_sorted()
+    );
+    assert!(SORTED_INF_ARR.is_sorted());
+
+    let mut rng = SmallRng::from_seed([0b01010101; 32]);
+
+    let random_array: [f32; 500] = core::array::from_fn(|_| rng.gen());
+
+    let sorted_array = into_sorted_f32_array(random_array);
+    assert!(sorted_array.is_sorted());
+}
+
+#[test]
+fn test_f64_into_sorted() {
+    const ARR: [f64; 5] = [3.0, 1.0, -0.0, 0.0, f64::MIN];
+    const SORTED_ARR: [f64; 5] = into_sorted_f64_array(ARR);
+
+    const CONSTANT_ARR: [f64; 3] = [1.0, 1.0, 1.0];
+    const SORTED_CONSTANT_ARR: [f64; 3] = into_sorted_f64_array(CONSTANT_ARR);
+
+    const NAN_ARR: [f64; 3] = [f64::NAN, 1.0, -2.0];
+    const SORTED_NAN_ARR: [f64; 3] = into_sorted_f64_array(NAN_ARR);
+
+    const INF_ARR: [f64; 4] = [f64::INFINITY, 1.0, f64::NEG_INFINITY, 0.0];
+    const SORTED_INF_ARR: [f64; 4] = into_sorted_f64_array(INF_ARR);
+
+    assert!(SORTED_ARR.is_sorted());
+    assert!(SORTED_CONSTANT_ARR.is_sorted());
+    assert!(
+        SORTED_NAN_ARR[0].is_nan() && SORTED_NAN_ARR[1..].is_sorted()
+            || SORTED_NAN_ARR[2].is_nan() && SORTED_NAN_ARR[..2].is_sorted()
+    );
+    assert!(SORTED_INF_ARR.is_sorted());
+
+    let mut rng = SmallRng::from_seed([0b01010101; 32]);
+
+    let random_array: [f64; 500] = core::array::from_fn(|_| rng.gen());
+
+    let sorted_array = into_sorted_f64_array(random_array);
+    assert!(sorted_array.is_sorted());
+}
+
+quickcheck! {
+    fn quickcheck_f32_slice(vec: Vec<f32>) -> bool {
+        let mut vec = vec;
+        sort_f32_slice(&mut vec);
+        vec.is_sorted_by(|a, b| matches!(a.total_cmp(&b), std::cmp::Ordering::Less | std::cmp::Ordering::Equal))
+    }
+
+    fn quickcheck_f64_slice(vec: Vec<f64>) -> bool {
+        let mut vec = vec;
+        sort_f64_slice(&mut vec);
+        vec.is_sorted_by(|a, b| matches!(a.total_cmp(&b), std::cmp::Ordering::Less | std::cmp::Ordering::Equal))
+    }
 }
