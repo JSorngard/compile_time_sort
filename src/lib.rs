@@ -96,7 +96,8 @@ impl_default_const_compare! {
     usize, isize
 }
 
-// Below are the wrappers for floats.
+// Below are the wrappers for floats. They are taken from the standard library
+// implementation of `{float}::total_cmp` and adapted to be `const`.
 
 #[rustversion::since(1.83.0)]
 const fn total_cmp_f32(a: f32, b: f32) -> Ordering {
