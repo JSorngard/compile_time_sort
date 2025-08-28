@@ -2,7 +2,7 @@
 
 This file contains all changes to the crate since version v0.1.0.
 
-## 1.2.0 (unreleased)
+## 1.2.0
 
 - Enable sorting of floating point values in accordance with the IEEE 754 totalOrder predicate.
 - Change the insertion sort threshold to 8,
