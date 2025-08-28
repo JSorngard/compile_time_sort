@@ -405,7 +405,7 @@ impl_const_quicksort! {
 }
 
 #[rustversion::since(1.83.0)]
-impl_const_quicksort!{f32, f64}
+impl_const_quicksort! {f32, f64}
 
 // endregion: quicksort implementations
 
