@@ -13,7 +13,8 @@
 //! Functions with the naming convention `into_sorted_*_array` take an array by value,
 //! and functions with the naming convention `sort_*_slice` take a mutable reference to a slice.
 //!
-//! The functions that sort slices by reference are only available on Rust versions 1.83 and above.
+//! The functions that sort slices by reference are only available on Rust versions 1.83 and above, as are the functions that sort floats as they need `const` [`{float}::to_bits`](f32::to_bits) in order to generate
+//! a total ordering in accordance with [`{float}::total_cmp`](f32::total_cmp).
 //!
 //! # Examples
 //!
@@ -43,10 +44,9 @@
 //! ```
 
 #![no_std]
+#![forbid(unsafe_code)]
 
-mod float_sort;
-#[rustversion::since(1.83.0)]
-pub use float_sort::{sort_f32_slice, sort_f64_slice};
+use core::cmp::Ordering;
 
 #[cfg(doctest)]
 #[doc = include_str!("../README.md")]
@@ -55,6 +55,119 @@ struct ReadMeDocTests;
 /// If the array/slice is smaller than this size insertion sort will be used.
 const INSERTION_SIZE: usize = 8;
 
+// region: comparison wrappers
+
+/// This macro generates wrappers around the default comparison operators for the given types.
+/// This is needed because floats can not be compared without generating these wrappers
+/// around the [`f32::total_cmp`] and [`f64::total_cmp`] functions.
+/// This means that if we just wrap the comparison operators for all types
+/// we can use the same macros to generate the sorting functions for all types.
+macro_rules! impl_default_const_compare {
+    ($($tpe:ty),+) => {
+        $(
+            paste::paste! {
+                #[allow(unused)]
+                const fn [<greater_than_ $tpe>](a: $tpe, b: $tpe) -> bool {
+                    a > b
+                }
+
+                #[allow(unused)]
+                const fn [<less_or_equal_ $tpe>](a: $tpe, b: $tpe) -> bool {
+                    a <= b
+                }
+
+                #[allow(unused)]
+                const fn [<less_than_ $tpe>](a: $tpe, b: $tpe) -> bool {
+                    a < b
+                }
+            }
+        )+
+    };
+}
+
+impl_default_const_compare! {
+    bool,
+    char,
+    u8, i8,
+    u16, i16,
+    u32, i32,
+    u64, i64,
+    u128, i128,
+    usize, isize
+}
+
+// Below are the wrappers for floats.
+
+#[rustversion::since(1.83.0)]
+const fn total_cmp_f32(a: f32, b: f32) -> core::cmp::Ordering {
+    let mut left = a.to_bits() as i32;
+
+    let mut right = b.to_bits() as i32;
+
+    left ^= (((left >> 31) as u32) >> 1) as i32;
+
+    right ^= (((right >> 31) as u32) >> 1) as i32;
+
+    if left < right {
+        core::cmp::Ordering::Less
+    } else if left > right {
+        core::cmp::Ordering::Greater
+    } else {
+        core::cmp::Ordering::Equal
+    }
+}
+
+#[rustversion::since(1.83.0)]
+const fn total_cmp_f64(a: f64, b: f64) -> core::cmp::Ordering {
+    let mut left = a.to_bits() as i64;
+
+    let mut right = b.to_bits() as i64;
+
+    left ^= (((left >> 63) as u64) >> 1) as i64;
+
+    right ^= (((right >> 63) as u64) >> 1) as i64;
+
+    if left < right {
+        core::cmp::Ordering::Less
+    } else if left > right {
+        core::cmp::Ordering::Greater
+    } else {
+        core::cmp::Ordering::Equal
+    }
+}
+
+#[rustversion::since(1.83.0)]
+const fn greater_than_f32(a: f32, b: f32) -> bool {
+    matches!(total_cmp_f32(a, b), Ordering::Greater)
+}
+
+#[rustversion::since(1.83.0)]
+const fn less_or_equal_f32(a: f32, b: f32) -> bool {
+    matches!(total_cmp_f32(a, b), Ordering::Less | Ordering::Equal)
+}
+
+#[rustversion::since(1.83.0)]
+const fn less_than_f32(a: f32, b: f32) -> bool {
+    matches!(total_cmp_f32(a, b), Ordering::Less)
+}
+
+#[rustversion::since(1.83.0)]
+const fn greater_than_f64(a: f64, b: f64) -> bool {
+    matches!(total_cmp_f64(a, b), Ordering::Greater)
+}
+
+#[rustversion::since(1.83.0)]
+const fn less_or_equal_f64(a: f64, b: f64) -> bool {
+    matches!(total_cmp_f64(a, b), Ordering::Less | Ordering::Equal)
+}
+
+#[rustversion::since(1.83.0)]
+const fn less_than_f64(a: f64, b: f64) -> bool {
+    matches!(total_cmp_f64(a, b), Ordering::Less)
+}
+
+// endregion: comparison wrappers
+
 // region: quicksort implementations
 
 #[rustversion::since(1.83.0)]
@@ -62,14 +175,14 @@ const INSERTION_SIZE: usize = 8;
 /// and sorts it using the quicksort algorithm while switching to the insertion sort algorithm when the array is small.
 // This implementation is the one from <https://github.com/jonhoo/orst/blob/master/src/quicksort.rs> but made const.
 macro_rules! const_slice_quicksort {
-    ($tpe:ty, $name:ident, $insertion_name:ident) => {
-        const_slice_insertion_sort!($tpe, $insertion_name);
+    ($tpe:ty, $name:ident, $insertion_name:ident, $less_or_equal:ident, $greater_than:ident) => {
+        const_slice_insertion_sort!($tpe, $insertion_name, $greater_than);
 
         const fn $name(slice: &mut [$tpe]) {
             match slice.len() {
                 0 | 1 => return,
                 2 => {
-                    if slice[0] > slice[1] {
+                    if $greater_than(slice[0], slice[1]) {
                         (slice[0], slice[1]) = (slice[1], slice[0]);
                     }
                     return;
@@ -88,9 +201,9 @@ macro_rules! const_slice_quicksort {
             let mut left = 0;
             let mut right = rest.len() - 1;
             while left <= right {
-                if rest[left] <= *pivot {
+                if $less_or_equal(rest[left], *pivot) {
                     left += 1;
-                } else if rest[right] > *pivot {
+                } else if $greater_than(rest[right], *pivot) {
                     if right == 0 {
                         break;
                     }
@@ -119,8 +232,8 @@ macro_rules! const_slice_quicksort {
 /// Defines a `const` function with the given name that sorts an array of the given type with the quicksort algorithm
 /// for large arrays and switches to the insertion sort algorithm when the array is small.
 macro_rules! const_array_quicksort {
-    ($tpe:ty, $name:ident, $partition_name:ident, $insertion_name:ident) => {
-        const_array_insertion_sort! {$tpe, $insertion_name}
+    ($tpe:ty, $name:ident, $partition_name:ident, $insertion_name:ident, $greater_than:ident, $less_than:ident) => {
+        const_array_insertion_sort! {$tpe, $insertion_name, $greater_than}
 
         const fn $name<const N: usize>(array: [$tpe; N], left: usize, right: usize) -> [$tpe; N] {
             let len = right - left;
@@ -152,7 +265,7 @@ macro_rules! const_array_quicksort {
             let mut store_index = left;
             let mut i = left;
             while i < last_index {
-                if arr[i] < arr[last_index] {
+                if $less_than(arr[i], arr[last_index]) {
                     let temp = arr[i];
                     arr[i] = arr[store_index];
                     arr[store_index] = temp;
@@ -171,7 +284,7 @@ macro_rules! const_array_quicksort {
 
 /// Defines a `const` function with the given name that sorts an array of the given type with the insertion sort algorithm.
 macro_rules! const_array_insertion_sort {
-    ($tpe:ty, $name:ident) => {
+    ($tpe:ty, $name:ident, $greater_than:ident) => {
         const fn $name<const N: usize>(mut array: [$tpe; N]) -> [$tpe; N] {
             if N <= 1 {
                 return array;
@@ -180,7 +293,7 @@ macro_rules! const_array_insertion_sort {
             let mut i = 1;
             while i < N {
                 let mut j = i;
-                while j > 0 && array[j - 1] > array[j] {
+                while j > 0 && $greater_than(array[j - 1], array[j]) {
                     let temp = array[j - 1];
                     array[j - 1] = array[j];
                     array[j] = temp;
@@ -197,7 +310,7 @@ macro_rules! const_array_insertion_sort {
 #[rustversion::since(1.83.0)]
 /// Defines a `const` function with the given name that sorts a slice of the given type with the insertion sort algorithm.
 macro_rules! const_slice_insertion_sort {
-    ($tpe:ty, $name:ident) => {
+    ($tpe:ty, $name:ident, $greater_than:ident) => {
         const fn $name(slice: &mut [$tpe]) {
             let n = slice.len();
             if n <= 1 {
@@ -207,7 +320,7 @@ macro_rules! const_slice_insertion_sort {
             let mut i = 1;
             while i < n {
                 let mut j = i;
-                while j > 0 && slice[j - 1] > slice[j] {
+                while j > 0 && $greater_than(slice[j - 1], slice[j]) {
                     (slice[j - 1], slice[j]) = (slice[j], slice[j - 1]);
                     j -= 1;
                 }
@@ -224,9 +337,9 @@ macro_rules! impl_const_quicksort {
         $(
             paste::paste! {
                 #[rustversion::since(1.83.0)]
-                const_slice_quicksort!{$tpe, [<qsort_ $tpe _slice>], [<insertion_sort_ $tpe _slice>]}
+                const_slice_quicksort!{$tpe, [<qsort_ $tpe _slice>], [<insertion_sort_ $tpe _slice>], [<less_or_equal_ $tpe>], [<greater_than_ $tpe>]}
 
-                const_array_quicksort!{$tpe, [<qsort_ $tpe _array>], [<partition_ $tpe _array>], [<insertion_sort_ $tpe _array>]}
+                const_array_quicksort!{$tpe, [<qsort_ $tpe _array>], [<partition_ $tpe _array>], [<insertion_sort_ $tpe _array>], [<greater_than_ $tpe>], [<less_than_ $tpe>]}
 
                 #[doc = "Sorts the given array of `" $tpe "`s using the quicksort algorithm and returns it."]
                 #[doc = ""]
@@ -253,8 +366,6 @@ macro_rules! impl_const_quicksort {
                 #[doc = "Sorts the given slice of `" $tpe "`s using the quicksort algorithm."]
                 #[doc = ""]
                 #[doc = "Switches to insertion sort when the slice is small."]
-                #[doc = ""]
-                #[doc = "This function is only available on Rust versions 1.83 and above."]
                 #[doc = ""]
                 #[doc = "# Example"]
                 #[doc = ""]
@@ -290,7 +401,8 @@ impl_const_quicksort! {
     u32, i32,
     u64, i64,
     u128, i128,
-    usize, isize
+    usize, isize,
+    f32, f64
 }
 
 // endregion: quicksort implementations
@@ -348,7 +460,7 @@ pub const fn sort_i8_slice(slice: &mut [i8]) {
 }
 
 #[rustversion::since(1.83.0)]
-const_slice_insertion_sort!(i8, insertion_sort_i8_slice);
+const_slice_insertion_sort!(i8, insertion_sort_i8_slice, greater_than_i8);
 
 /// Sorts the given array of `i8`s using the counting sort algorithm and returns it.
 ///
@@ -393,7 +505,7 @@ pub const fn into_sorted_i8_array<const N: usize>(mut array: [i8; N]) -> [i8; N]
     array
 }
 
-const_array_insertion_sort!(i8, insertion_sort_i8_array);
+const_array_insertion_sort!(i8, insertion_sort_i8_array, greater_than_i8);
 
 #[rustversion::since(1.83.0)]
 /// Sorts the given slice of `u8`s using the counting sort algorithm.
@@ -446,7 +558,7 @@ pub const fn sort_u8_slice(slice: &mut [u8]) {
 }
 
 #[rustversion::since(1.83.0)]
-const_slice_insertion_sort!(u8, insertion_sort_u8_slice);
+const_slice_insertion_sort!(u8, insertion_sort_u8_slice, greater_than_u8);
 
 /// Sorts the given array of `u8`s using the counting sort algorithm and returns it.
 ///
@@ -489,7 +601,7 @@ pub const fn into_sorted_u8_array<const N: usize>(mut array: [u8; N]) -> [u8; N]
     array
 }
 
-const_array_insertion_sort!(u8, insertion_sort_u8_array);
+const_array_insertion_sort!(u8, insertion_sort_u8_array, greater_than_u8);
 
 #[rustversion::since(1.83.0)]
 /// Sorts the given slice of `bool`s using the counting sort algorithm.
