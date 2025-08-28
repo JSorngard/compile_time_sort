@@ -2,6 +2,10 @@
 
 This file contains all changes to the crate since version v0.1.0.
 
+## 1.2.1
+
+- Corrected the link to the RFC for `const` traits.
+
 ## 1.2.0
 
 - Enable the sorting of floating point values in accordance with the IEEE 754 totalOrder predicate on Rust versions 1.83.0 and newer.
