@@ -99,7 +99,7 @@ impl_default_const_compare! {
 // Below are the wrappers for floats.
 
 #[rustversion::since(1.83.0)]
-const fn total_cmp_f32(a: f32, b: f32) -> core::cmp::Ordering {
+const fn total_cmp_f32(a: f32, b: f32) -> Ordering {
     let mut left = a.to_bits() as i32;
 
     let mut right = b.to_bits() as i32;
@@ -109,16 +109,16 @@ const fn total_cmp_f32(a: f32, b: f32) -> core::cmp::Ordering {
     right ^= (((right >> 31) as u32) >> 1) as i32;
 
     if left < right {
-        core::cmp::Ordering::Less
+        Ordering::Less
     } else if left > right {
-        core::cmp::Ordering::Greater
+        Ordering::Greater
     } else {
-        core::cmp::Ordering::Equal
+        Ordering::Equal
     }
 }
 
 #[rustversion::since(1.83.0)]
-const fn total_cmp_f64(a: f64, b: f64) -> core::cmp::Ordering {
+const fn total_cmp_f64(a: f64, b: f64) -> Ordering {
     let mut left = a.to_bits() as i64;
 
     let mut right = b.to_bits() as i64;
@@ -128,11 +128,11 @@ const fn total_cmp_f64(a: f64, b: f64) -> core::cmp::Ordering {
     right ^= (((right >> 63) as u64) >> 1) as i64;
 
     if left < right {
-        core::cmp::Ordering::Less
+        Ordering::Less
     } else if left > right {
-        core::cmp::Ordering::Greater
+        Ordering::Greater
     } else {
-        core::cmp::Ordering::Equal
+        Ordering::Equal
     }
 }
 
