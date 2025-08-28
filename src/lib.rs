@@ -6,7 +6,7 @@
 //! are sorted with quicksort.
 //! All types except `bool` are sorted with insertion sort if the length is small.
 //!
-//! This implementation is usable on Rust version 1.54.0, before the [`const_trait_impl`](https://github.com/rust-lang/rust/issues/67792) feature is stabilized.
+//! This implementation is usable on Rust version 1.54.0, before the [`const_trait_impl`](https://github.com/rust-lang/rust/issues/143874) feature is stabilized.
 //! This means that it unfortunately can not be generic,
 //! and so there are separate functions for every primitive type.
 //!
