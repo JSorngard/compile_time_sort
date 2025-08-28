@@ -4,7 +4,8 @@ This file contains all changes to the crate since version v0.1.0.
 
 ## 1.2.0
 
-- Enable the sorting of floating point values in accordance with the IEEE 754 totalOrder predicate.
+- Enable the sorting of floating point values in accordance with the IEEE 754 totalOrder predicate on Rust versions 1.83.0 and newer.
+- Add the feature `unsafe_float_sort` that enable floating point numbers to be sorted on Rust version 1.56.0 and newer.
 - Change the insertion sort threshold to 8,
  the closest power of two to the previous value of 10.
 - Use caching to speed up CI.
