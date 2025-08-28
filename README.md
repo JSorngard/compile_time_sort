@@ -20,8 +20,8 @@ Functions with the naming convention `into_sorted_*_array` take an array by valu
 and functions with the naming convention `sort_*_slice` take a mutable reference to a slice.
 
 The functions that sort slices by reference are only available on Rust versions 1.83 and above,
-as are the functions that sort floats as they need `const` [`{float}::to_bits`](https://doc.rust-lang.org/1.89.0/core/primitive.f32.html#method.to_bits)
-in order to generate a total ordering in accordance with [`{float}::total_cmp`](https://doc.rust-lang.org/1.89.0/core/primitive.f32.html#method.total_cmp).
+as are the functions that sort floats as they need [`{float}::to_bits`](https://doc.rust-lang.org/1.89.0/core/primitive.f32.html#method.to_bits)
+to be `const` in order to generate a total ordering in accordance with [`{float}::total_cmp`](https://doc.rust-lang.org/1.89.0/core/primitive.f32.html#method.total_cmp).
 
 ## Examples
 
