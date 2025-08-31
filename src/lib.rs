@@ -44,7 +44,7 @@
 //! ```
 
 #![no_std]
-#![forbid(unsafe_code)]
+#![cfg_attr(not(feature = "unsafe_float_sort"), forbid(unsafe_code))]
 
 use core::cmp::Ordering;
 
@@ -99,11 +99,44 @@ impl_default_const_compare! {
 // Below are the wrappers for floats. They are taken from the standard library
 // implementation of `{float}::total_cmp` and adapted to be `const`.
 
+#[cfg(not(feature = "unsafe_float_sort"))]
 #[rustversion::since(1.83.0)]
-const fn total_cmp_f32(a: f32, b: f32) -> Ordering {
-    let mut left = a.to_bits() as i32;
+const fn f32_to_bits(value: f32) -> u32 {
+    value.to_bits()
+}
 
-    let mut right = b.to_bits() as i32;
+#[cfg(feature = "unsafe_float_sort")]
+#[rustversion::since(1.56.0)]
+const fn f32_to_bits(value: f32) -> u32 {
+    // SAFETY: This is safe because `f32` and `u32` have the same size and alignment.
+    #[allow(unnecessary_transmutes)]
+    unsafe {
+        core::mem::transmute(value)
+    }
+}
+
+#[cfg(not(feature = "unsafe_float_sort"))]
+#[rustversion::since(1.83.0)]
+const fn f64_to_bits(value: f64) -> u64 {
+    value.to_bits()
+}
+
+#[cfg(feature = "unsafe_float_sort")]
+#[rustversion::since(1.56.0)]
+const fn f64_to_bits(value: f64) -> u64 {
+    // SAFETY: This is safe because `f64` and `u64` have the same size and alignment.
+    #[allow(unnecessary_transmutes)]
+    unsafe {
+        core::mem::transmute(value)
+    }
+}
+
+#[cfg_attr(not(feature = "unsafe_float_sort"), rustversion::since(1.83.0))]
+#[cfg_attr(feature = "unsafe_float_sort", rustversion::since(1.56.0))]
+const fn total_cmp_f32(a: f32, b: f32) -> Ordering {
+    let mut left = f32_to_bits(a) as i32;
+
+    let mut right = f32_to_bits(b) as i32;
 
     left ^= (((left >> 31) as u32) >> 1) as i32;
 
@@ -118,11 +151,12 @@ const fn total_cmp_f32(a: f32, b: f32) -> Ordering {
     }
 }
 
-#[rustversion::since(1.83.0)]
+#[cfg_attr(not(feature = "unsafe_float_sort"), rustversion::since(1.83.0))]
+#[cfg_attr(feature = "unsafe_float_sort", rustversion::since(1.56.0))]
 const fn total_cmp_f64(a: f64, b: f64) -> Ordering {
-    let mut left = a.to_bits() as i64;
+    let mut left = f64_to_bits(a) as i64;
 
-    let mut right = b.to_bits() as i64;
+    let mut right = f64_to_bits(b) as i64;
 
     left ^= (((left >> 63) as u64) >> 1) as i64;
 
@@ -137,32 +171,38 @@ const fn total_cmp_f64(a: f64, b: f64) -> Ordering {
     }
 }
 
-#[rustversion::since(1.83.0)]
+#[cfg_attr(not(feature = "unsafe_float_sort"), rustversion::since(1.83.0))]
+#[cfg_attr(feature = "unsafe_float_sort", rustversion::since(1.56.0))]
 const fn greater_than_f32(a: f32, b: f32) -> bool {
     matches!(total_cmp_f32(a, b), Ordering::Greater)
 }
 
-#[rustversion::since(1.83.0)]
+#[cfg_attr(not(feature = "unsafe_float_sort"), rustversion::since(1.83.0))]
+#[cfg_attr(feature = "unsafe_float_sort", rustversion::since(1.56.0))]
 const fn less_or_equal_f32(a: f32, b: f32) -> bool {
     matches!(total_cmp_f32(a, b), Ordering::Less | Ordering::Equal)
 }
 
-#[rustversion::since(1.83.0)]
+#[cfg_attr(not(feature = "unsafe_float_sort"), rustversion::since(1.83.0))]
+#[cfg_attr(feature = "unsafe_float_sort", rustversion::since(1.56.0))]
 const fn less_than_f32(a: f32, b: f32) -> bool {
     matches!(total_cmp_f32(a, b), Ordering::Less)
 }
 
-#[rustversion::since(1.83.0)]
+#[cfg_attr(not(feature = "unsafe_float_sort"), rustversion::since(1.83.0))]
+#[cfg_attr(feature = "unsafe_float_sort", rustversion::since(1.56.0))]
 const fn greater_than_f64(a: f64, b: f64) -> bool {
     matches!(total_cmp_f64(a, b), Ordering::Greater)
 }
 
-#[rustversion::since(1.83.0)]
+#[cfg_attr(not(feature = "unsafe_float_sort"), rustversion::since(1.83.0))]
+#[cfg_attr(feature = "unsafe_float_sort", rustversion::since(1.56.0))]
 const fn less_or_equal_f64(a: f64, b: f64) -> bool {
     matches!(total_cmp_f64(a, b), Ordering::Less | Ordering::Equal)
 }
 
-#[rustversion::since(1.83.0)]
+#[cfg_attr(not(feature = "unsafe_float_sort"), rustversion::since(1.83.0))]
+#[cfg_attr(feature = "unsafe_float_sort", rustversion::since(1.56.0))]
 const fn less_than_f64(a: f64, b: f64) -> bool {
     matches!(total_cmp_f64(a, b), Ordering::Less)
 }
@@ -405,7 +445,8 @@ impl_const_quicksort! {
     usize, isize
 }
 
-#[rustversion::since(1.83.0)]
+#[cfg_attr(not(feature = "unsafe_float_sort"), rustversion::since(1.83.0))]
+#[cfg_attr(feature = "unsafe_float_sort", rustversion::since(1.56.0))]
 impl_const_quicksort! {f32, f64}
 
 // endregion: quicksort implementations
