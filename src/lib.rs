@@ -67,16 +67,19 @@ macro_rules! impl_default_const_compare {
         $(
             paste::paste! {
                 #[allow(unused)]
+                #[inline]
                 const fn [<greater_than_ $tpe>](a: $tpe, b: $tpe) -> bool {
                     a > b
                 }
 
                 #[allow(unused)]
+                #[inline]
                 const fn [<less_or_equal_ $tpe>](a: $tpe, b: $tpe) -> bool {
                     a <= b
                 }
 
                 #[allow(unused)]
+                #[inline]
                 const fn [<less_than_ $tpe>](a: $tpe, b: $tpe) -> bool {
                     a < b
                 }
@@ -100,6 +103,7 @@ impl_default_const_compare! {
 // implementation of `{float}::total_cmp` and adapted to be `const`.
 
 #[rustversion::since(1.83.0)]
+#[inline]
 const fn total_cmp_f32(a: f32, b: f32) -> Ordering {
     let mut left = a.to_bits() as i32;
 
@@ -119,6 +123,7 @@ const fn total_cmp_f32(a: f32, b: f32) -> Ordering {
 }
 
 #[rustversion::since(1.83.0)]
+#[inline]
 const fn total_cmp_f64(a: f64, b: f64) -> Ordering {
     let mut left = a.to_bits() as i64;
 
@@ -138,31 +143,37 @@ const fn total_cmp_f64(a: f64, b: f64) -> Ordering {
 }
 
 #[rustversion::since(1.83.0)]
+#[inline]
 const fn greater_than_f32(a: f32, b: f32) -> bool {
     matches!(total_cmp_f32(a, b), Ordering::Greater)
 }
 
 #[rustversion::since(1.83.0)]
+#[inline]
 const fn less_or_equal_f32(a: f32, b: f32) -> bool {
     matches!(total_cmp_f32(a, b), Ordering::Less | Ordering::Equal)
 }
 
 #[rustversion::since(1.83.0)]
+#[inline]
 const fn less_than_f32(a: f32, b: f32) -> bool {
     matches!(total_cmp_f32(a, b), Ordering::Less)
 }
 
 #[rustversion::since(1.83.0)]
+#[inline]
 const fn greater_than_f64(a: f64, b: f64) -> bool {
     matches!(total_cmp_f64(a, b), Ordering::Greater)
 }
 
 #[rustversion::since(1.83.0)]
+#[inline]
 const fn less_or_equal_f64(a: f64, b: f64) -> bool {
     matches!(total_cmp_f64(a, b), Ordering::Less | Ordering::Equal)
 }
 
 #[rustversion::since(1.83.0)]
+#[inline]
 const fn less_than_f64(a: f64, b: f64) -> bool {
     matches!(total_cmp_f64(a, b), Ordering::Less)
 }
