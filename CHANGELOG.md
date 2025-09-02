@@ -4,7 +4,7 @@ This file contains all changes to the crate since version v0.1.0.
 
 ## 1.2.2 (unreleased)
 
-- Inline small crate internal functions.
+- Inline small crate-internal functions.
 
 ## 1.2.1
 
