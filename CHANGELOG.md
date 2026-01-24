@@ -5,6 +5,8 @@ This file contains all changes to the crate since version v0.1.0.
 ## 1.2.2 (unreleased)
 
 - Inline small crate-internal functions.
+- Correct copyright year information.
+- Allow the `inconsistent-msrv` clippy lint as it can not function correct due to the way this crate uses macros and the `rustversion` cratr. MSRV issues are still caught in CI due to the use of the `cargo-msrv` add-on.
 
 ## 1.2.1
 
