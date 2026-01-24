@@ -1,3 +1,6 @@
+// Copyright 2024-2025 Johanna Sörngård
+// SPDX-License-Identifier: MIT OR Apache-2.0
+
 #[rustversion::since(1.83.0)]
 use quickcheck::quickcheck;
 use rand::{rngs::SmallRng, Rng, SeedableRng};
