@@ -1,3 +1,6 @@
+// Copyright 2024-2025 Johanna Sörngård
+// SPDX-License-Identifier: MIT OR Apache-2.0
+
 //! # Description
 //!
 //! This small crate provides functions for sorting arrays and slices of primitives in `const` contexts.
