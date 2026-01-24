@@ -45,6 +45,8 @@
 
 #![no_std]
 #![forbid(unsafe_code)]
+// This is added because of https://github.com/rust-lang/rust-clippy/issues/16450#issuecomment-3794847429
+#![allow(clippy::incompatible-msrv)]
 
 use core::cmp::Ordering;
 
