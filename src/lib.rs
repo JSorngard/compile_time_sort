@@ -384,6 +384,8 @@ macro_rules! impl_const_quicksort {
                 #[doc = ""]
                 #[doc = "Switches to insertion sort when the slice is small."]
                 #[doc = ""]
+                #[doc = "This function is only available on Rust versions 1.83 and above."]
+                #[doc = ""]
                 #[doc = "# Example"]
                 #[doc = ""]
                 #[doc = "```"]
