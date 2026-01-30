@@ -7,6 +7,7 @@ This file contains all changes to the crate since version v0.1.0.
 - Inline small crate-internal functions.
 - Correct copyright year information.
 - Allow the `clippy::inconsistent-msrv` lint as it can not function correctly due to the way this crate uses macros and the `rustversion` crate. MSRV issues are still caught in CI due to the use of the `cargo-msrv` add-on.
+- Add dates to the release entries in this log.
 
 ## [1.2.1] - 2025-08-28
 
