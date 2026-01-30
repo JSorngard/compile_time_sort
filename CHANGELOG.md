@@ -152,3 +152,10 @@ This file contains all changes to the crate since version v0.1.0.
 - Corrected name of by-value function in `README.md`.
 
 ## [0.1.0] - 2024-12-16
+
+First release 🎉
+
+This is a small crate I used in another personal project that I have expanded so that it might find some use to others!
+The ideal would of course be if the standard library's sorting functions were `const`, but until then, here are a collection of functions to sort arrays and slices in `const` contexts.
+
+It uses counting sort for types with few valid states and quicksort for all other types.
