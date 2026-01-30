@@ -2,7 +2,7 @@
 
 This file contains all changes to the crate since version v0.1.0.
 
-## 1.2.2 (unreleased)
+## [Unreleased, 1.2.2]
 
 - Inline small crate-internal functions.
 - Correct copyright year information.
