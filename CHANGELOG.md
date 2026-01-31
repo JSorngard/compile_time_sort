@@ -86,7 +86,7 @@ This file contains all changes to the crate since version v0.1.0.
 
 ## [1.0.0] - 2025-03-05
 
-- Stabilized the crate's API.
+- 🎉 Stabilized the crate's API.
 - Re-added the "no-std" category.
 
 ### Breaking changes
