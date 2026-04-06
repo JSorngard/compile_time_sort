@@ -5,9 +5,8 @@
 //!
 //! This small crate provides functions for sorting arrays and slices of primitives in `const` contexts.
 //!
-//! Arrays and slices of `bool`s, `u8`s, and `i8`s are sorted with counting sort while arrays of other types
-//! are sorted with quicksort.
-//! All types except `bool` are sorted with insertion sort if the length is small.
+//! Arrays and slices of `bool`s, `u8`s, and `i8`s are sorted with counting sort while other types
+//! are sorted with introsort.
 //!
 //! This implementation is usable on Rust version 1.54.0, before the [`const_trait_impl`](https://github.com/rust-lang/rust/issues/143874) feature is stabilized.
 //! This means that it unfortunately can not be generic,
@@ -187,7 +186,7 @@ const fn less_than_f64(a: f64, b: f64) -> bool {
 
 // endregion: comparison wrappers
 
-// region: quicksort implementations
+// region: introsort implementations
 
 #[rustversion::since(1.83.0)]
 /// Defines a `const` function with the given name that takes in a mutable reference to a slice of the given type
@@ -561,7 +560,7 @@ impl_const_introsort! {
 #[rustversion::since(1.83.0)]
 impl_const_introsort! {f32, f64}
 
-// endregion: quicksort implementations
+// endregion: introsort implementations
 
 // region: counting sort implementations
 
