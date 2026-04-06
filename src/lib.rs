@@ -422,9 +422,7 @@ macro_rules! impl_const_quicksort {
 
                 const_array_introsort!{$tpe, [<introsort_ $tpe _array>], [<partition_ $tpe _array>], [<insertion_sort_ $tpe _array>], [<heapsort_ $tpe _array>], [<max_heapify_ $tpe _array>], [<greater_than_ $tpe>], [<less_than_ $tpe>]}
 
-                #[doc = "Sorts the given array of `" $tpe "`s using the quicksort algorithm and returns it."]
-                #[doc = ""]
-                #[doc = "Switches to insertion sort when the array is small."]
+                #[doc = "Sorts the given array of `" $tpe "`s using the introsort algorithm and returns it."]
                 #[doc = ""]
                 #[doc = "# Example"]
                 #[doc = ""]
