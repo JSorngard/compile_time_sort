@@ -99,6 +99,18 @@ macro_rules! test_unsigned_integer {
                     assert!([<into_sorted_ $tpe _array>](sorted_array).is_sorted());
                     assert!([<into_sorted_ $tpe _array>]([1; 500]).is_sorted());
                 }
+
+                #[rustversion::since(1.83.0)]
+                #[test]
+                fn [<test_slice_sort_ $tpe _cases>]() {
+                    const BIG_IDENTICAL: [$tpe; 500] = {
+                        let mut arr = [42; 500];
+                        [<sort_ $tpe _slice>](&mut arr);
+                        arr
+                    };
+
+                    assert!(BIG_IDENTICAL.is_sorted());
+                }
             }
         )+
     };
