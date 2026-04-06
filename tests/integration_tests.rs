@@ -95,6 +95,21 @@ macro_rules! test_unsigned_integer {
 
                     let sorted_array = [<into_sorted_ $tpe _array>](random_array);
                     assert!(sorted_array.is_sorted());
+
+                    assert!([<into_sorted_ $tpe _array>](sorted_array).is_sorted());
+                    assert!([<into_sorted_ $tpe _array>]([1; 500]).is_sorted());
+                }
+
+                #[rustversion::since(1.83.0)]
+                #[test]
+                fn [<test_slice_sort_ $tpe _cases>]() {
+                    const BIG_IDENTICAL: [$tpe; 500] = {
+                        let mut arr = [42; 500];
+                        [<sort_ $tpe _slice>](&mut arr);
+                        arr
+                    };
+
+                    assert!(BIG_IDENTICAL.is_sorted());
                 }
             }
         )+
@@ -111,6 +126,39 @@ macro_rules! test_signed_integer {
                     const SORTED_ARRAY_WITH_NEGATIVES: [$tpe; 3] = [<into_sorted_ $tpe _array>](ARRAY_WITH_NEGATIVES);
 
                     assert!(SORTED_ARRAY_WITH_NEGATIVES.is_sorted());
+
+                    const FOUND_BY_QUICKCHECK: [$tpe; 27] = [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                    const SORTED_QUICKCHECK_CASE: [$tpe; 27] = [<into_sorted_ $tpe _array>](FOUND_BY_QUICKCHECK);
+
+                    assert!(SORTED_QUICKCHECK_CASE.is_sorted());
+
+                    const FOUND_BY_QUICKCHECK_2: [$tpe; 56] = [-4, 0, -1, 0, -3, 0, 3, 0, 0, 1, 0, 3, 0, -2, 0, 0, -4, 0, 3, 0, -3, 0, 0, 0, 0, 2, 3, 1, -2, -3, -3, 2, 2, -3, -2, -3, -3, 1, -4, -3, 2, -2, -2, -3, -4, -3, -2, -3, 0, -1, 2, -3, -3, -3, -2, 3];
+                    const SORTED_QUICKCHECK_CASE_2: [$tpe; 56] = [<into_sorted_ $tpe _array>](FOUND_BY_QUICKCHECK_2);
+
+                    assert!(SORTED_QUICKCHECK_CASE_2.is_sorted());
+                }
+
+                #[test]
+                #[rustversion::since(1.83.0)]
+                fn [<test_sort_ $tpe _slice_quickcheck_cases>]() {
+                    const SORTED_QUICKCHECK_CASE_1: [$tpe; 27] = {
+                        let mut quickcheck_case_1 = [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+                        [<sort_ $tpe _slice>](&mut quickcheck_case_1);
+
+                        quickcheck_case_1
+                    };
+
+                    const SORTED_QUICKCHECK_CASE_2: [$tpe; 56] = {
+                        let mut quickcheck_case_2 = [-4, 0, -1, 0, -3, 0, 3, 0, 0, 1, 0, 3, 0, -2, 0, 0, -4, 0, 3, 0, -3, 0, 0, 0, 0, 2, 3, 1, -2, -3, -3, 2, 2, -3, -2, -3, -3, 1, -4, -3, 2, -2, -2, -3, -4, -3, -2, -3, 0, -1, 2, -3, -3, -3, -2, 3];
+
+                        [<sort_ $tpe _slice>](&mut quickcheck_case_2);
+
+                        quickcheck_case_2
+                    };
+
+                    assert!(SORTED_QUICKCHECK_CASE_1.is_sorted());
+                    assert!(SORTED_QUICKCHECK_CASE_2.is_sorted());
                 }
 
                 #[test]
@@ -195,6 +243,37 @@ fn test_f32_into_sorted() {
     assert!(sorted_array.is_sorted());
 }
 
+#[rustversion::since(1.83.0)]
+#[test]
+fn test_f32_sort_slice() {
+    const BIG_IDENTICAL: [f32; 500] = {
+        let mut arr = [42.0; 500];
+        sort_f32_slice(&mut arr);
+        arr
+    };
+
+    const SORTED_ARR: [f32; 500] = {
+        let mut arr = [0.0; 500];
+        let mut i = 0;
+        while i < arr.len() {
+            arr[i] = i as f32;
+            i += 1;
+        }
+
+        sort_f32_slice(&mut arr);
+
+        arr
+    };
+
+    assert!(BIG_IDENTICAL.is_sorted());
+    assert!(SORTED_ARR.is_sorted());
+
+    let mut rng = SmallRng::from_seed([0b01010101; 32]);
+    let mut random_array: [f32; 500] = core::array::from_fn(|_| rng.gen());
+    sort_f32_slice(&mut random_array);
+    assert!(random_array.is_sorted());
+}
+
 #[test]
 fn test_f64_into_sorted() {
     const ARR: [f64; 5] = [3.0, 1.0, -0.0, 0.0, f64::MIN];
@@ -223,6 +302,37 @@ fn test_f64_into_sorted() {
 
     let sorted_array = into_sorted_f64_array(random_array);
     assert!(sorted_array.is_sorted());
+}
+
+#[rustversion::since(1.83.0)]
+#[test]
+fn test_f64_sort_slice() {
+    const BIG_IDENTICAL: [f64; 500] = {
+        let mut arr = [42.0; 500];
+        sort_f64_slice(&mut arr);
+        arr
+    };
+
+    const SORTED_ARR: [f64; 500] = {
+        let mut arr = [0.0; 500];
+        let mut i = 0;
+        while i < arr.len() {
+            arr[i] = i as f64;
+            i += 1;
+        }
+
+        sort_f64_slice(&mut arr);
+
+        arr
+    };
+
+    assert!(BIG_IDENTICAL.is_sorted());
+    assert!(SORTED_ARR.is_sorted());
+
+    let mut rng = SmallRng::from_seed([0b01010101; 32]);
+    let mut random_array: [f64; 500] = core::array::from_fn(|_| rng.gen());
+    sort_f64_slice(&mut random_array);
+    assert!(random_array.is_sorted());
 }
 
 quickcheck! {
