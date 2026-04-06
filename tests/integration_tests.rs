@@ -130,11 +130,11 @@ macro_rules! test_signed_integer {
                 #[rustversion::since(1.83.0)]
                 fn [<test_sort_ $tpe _slice>]() {
                     const SORTED_QUICKCHECK_CASE_1: [$tpe; 27] = {
-                        const QUICKCHECK_CASE_1: [$tpe; 27] = [0 as $tpe, 0 as $tpe, 0 as $tpe, 0 as $tpe, 0 as $tpe, 0 as $tpe, 0 as $tpe, 0 as $tpe, 1 as $tpe, 0 as $tpe, 0 as $tpe, 0 as $tpe, 0 as $tpe, 0 as $tpe, 0 as $tpe, 1 as $tpe, 0 as $tpe, -1 as $tpe, 0 as $tpe, 0 as $tpe, 0 as $tpe, 0 as $tpe, 0 as $tpe, 0 as $tpe, 0 as $tpe, 0 as $tpe, 0 as $tpe];
+                        let mut quickcheck_case_1 = [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
-                        [<sort_ $tpe _slice>](&mut QUICKCHECK_CASE_1);
+                        [<sort_ $tpe _slice>](&mut quickcheck_case_1);
 
-                        QUICKCHECK_CASE_1
+                        quickcheck_case_1
                     };
 
                     println!("{SORTED_QUICKCHECK_CASE_1:?}");
