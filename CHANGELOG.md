@@ -4,6 +4,7 @@ This file contains all changes to the crate since version v0.1.0.
 
 ## [Unreleased]
 
+- Use introsort instead of quicksort.
 - Set read-only permissions for the CI jobs.
 
 ## [1.2.2] - 2026-01-30
