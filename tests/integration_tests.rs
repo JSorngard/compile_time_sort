@@ -113,6 +113,20 @@ macro_rules! test_signed_integer {
                     assert!(SORTED_ARRAY_WITH_NEGATIVES.is_sorted());
                 }
 
+                #[test]
+                #[rustversion::since(1.83.0)]
+                fn [<test_sort_ $tpe _slice>]() {
+                    const SORTED_QUICKCHECK_CASE_1: [$tpe; 27] = {
+                        let mut quickcheck_case_1 = [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+                        [<sort_ $tpe _slice>](&mut quickcheck_case_1);
+
+                        quickcheck_case_1
+                    };
+
+                    assert!(SORTED_QUICKCHECK_CASE_1.is_sorted());
+                }
+
                 // Also run all the tests for unsigned integers on the signed integers
                 test_unsigned_integer! {$tpe}
             }
