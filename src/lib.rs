@@ -351,6 +351,7 @@ macro_rules! const_slice_insertion_sort {
     };
 }
 
+/// Defines a `const` function with the given name that sorts the given array with heapsort.
 macro_rules! const_array_heapsort {
     ($tpe:ty, $name:ident, $heapify_name:ident, $greater_than:ident) => {
         const fn $heapify_name<const N: usize>(
@@ -412,6 +413,7 @@ macro_rules! const_array_heapsort {
 }
 
 #[rustversion::since(1.83.0)]
+/// Defines a `const` function with the given name that sorts the given slice with heapsort.
 macro_rules! const_slice_heapsort {
     ($tpe:ty, $name:ident, $heapify_name:ident, $greater_than:ident) => {
         const fn $heapify_name(slice: &mut [$tpe], n: usize, i: usize) {
