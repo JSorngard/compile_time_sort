@@ -384,10 +384,11 @@ macro_rules! const_array_heapsort {
 
         const fn $name<const N: usize>(mut array: [$tpe; N]) -> [$tpe; N] {
             let mut i = N / 2 - 1;
-            while i.checked_sub(1).is_some() {
+            while i > 0 {
                 array = $heapify_name(array, N, i);
                 i -= 1;
             }
+            array = $heapify_name(array, N, i);
 
             let mut i = N - 1;
             while i > 0 {
