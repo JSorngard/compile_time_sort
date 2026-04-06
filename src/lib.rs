@@ -383,6 +383,10 @@ macro_rules! const_array_heapsort {
         }
 
         const fn $name<const N: usize>(mut array: [$tpe; N]) -> [$tpe; N] {
+            if N <= 1 {
+                return array;
+            }
+
             let mut i = N / 2 - 1;
             while i > 0 {
                 array = $heapify_name(array, N, i);
@@ -432,11 +436,16 @@ macro_rules! const_slice_heapsort {
         const fn $name(slice: &mut [$tpe]) {
             let n = slice.len();
 
+            if n <= 1 {
+                return;
+            }
+
             let mut i = n / 2 - 1;
-            while i.checked_sub(1).is_some() {
+            while i > 0 {
                 $heapify_name(slice, n, i);
                 i -= 1;
             }
+            $heapify_name(slice, n, i);
 
             let mut i = n - 1;
             while i > 0 {
