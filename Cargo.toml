@@ -22,4 +22,8 @@ criterion = "0.8.2"
 
 [[bench]]
 harness = false
+name = "std_unstable_sort"
+
+[[bench]]
+harness = false
 name = "slice_sort"
