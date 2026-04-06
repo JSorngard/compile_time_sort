@@ -128,7 +128,7 @@ macro_rules! test_signed_integer {
 
                 #[test]
                 #[rustversion::since(1.83.0)]
-                fn [<test_sort_ $tpe _slice>]() {
+                fn [<test_sort_ $tpe _slice_quickcheck_cases>]() {
                     const SORTED_QUICKCHECK_CASE_1: [$tpe; 27] = {
                         let mut quickcheck_case_1 = [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
