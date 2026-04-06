@@ -126,6 +126,21 @@ macro_rules! test_signed_integer {
                     assert!(SORTED_QUICKCHECK_CASE_2.is_sorted());
                 }
 
+                #[test]
+                #[rustversion::since(1.83.0)]
+                fn [<test_sort_ $tpe _slice>]() {
+                    const SORTED_QUICKCHECK_CASE_1: [$tpe; 27] = {
+                        const QUICKCHECK_CASE_1: [$tpe; 27] = [0 as $tpe, 0 as $tpe, 0 as $tpe, 0 as $tpe, 0 as $tpe, 0 as $tpe, 0 as $tpe, 0 as $tpe, 1 as $tpe, 0 as $tpe, 0 as $tpe, 0 as $tpe, 0 as $tpe, 0 as $tpe, 0 as $tpe, 1 as $tpe, 0 as $tpe, -1 as $tpe, 0 as $tpe, 0 as $tpe, 0 as $tpe, 0 as $tpe, 0 as $tpe, 0 as $tpe, 0 as $tpe, 0 as $tpe, 0 as $tpe];
+
+                        [<sort_ $tpe _slice>](&mut QUICKCHECK_CASE_1);
+
+                        QUICKCHECK_CASE_1
+                    };
+
+                    println!("{SORTED_QUICKCHECK_CASE_1:?}");
+                    assert!(SORTED_QUICKCHECK_CASE_1.is_sorted());
+                }
+
                 // Also run all the tests for unsigned integers on the signed integers
                 test_unsigned_integer! {$tpe}
             }
