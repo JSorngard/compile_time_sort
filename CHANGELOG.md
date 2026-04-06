@@ -2,6 +2,10 @@
 
 This file contains all changes to the crate since version v0.1.0.
 
+## [1.2.4] - 2026-04-06
+
+- Update crate docs.
+
 ## [1.2.3] - 2026-04-06
 
 - Use introsort instead of quicksort.
