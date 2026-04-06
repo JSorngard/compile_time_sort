@@ -1,4 +1,6 @@
-use compile_time_sort::{sort_bool_slice, sort_f32_slice, sort_i32_slice, sort_u8_slice};
+use compile_time_sort::{
+    sort_bool_slice, sort_f32_slice, sort_i32_slice, sort_u128_slice, sort_u8_slice,
+};
 use core::hint::black_box;
 use criterion::{criterion_group, criterion_main, BatchSize, Criterion};
 use rand::{rngs::SmallRng, Rng, SeedableRng};
@@ -91,11 +93,34 @@ fn bench_sort_bool(c: &mut Criterion) {
     });
 }
 
+fn bench_sort_u128(c: &mut Criterion) {
+    let mut rng = SmallRng::from_seed([42; 32]);
+
+    let data: Vec<u128> = (0..1000).map(|_| rng.gen()).collect();
+
+    c.bench_function("std::sort_unstable_u128", |b| {
+        b.iter_batched(
+            || data.clone(),
+            |mut slice| black_box(slice.sort_unstable()),
+            BatchSize::SmallInput,
+        )
+    });
+
+    c.bench_function("sort_u128_slice", |b| {
+        b.iter_batched(
+            || data.clone(),
+            |mut slice| black_box(sort_u128_slice(&mut slice)),
+            BatchSize::SmallInput,
+        )
+    });
+}
+
 criterion_group!(
     benches,
     bench_sort_i32,
     bench_sort_f32,
     bench_sort_u8,
-    bench_sort_bool
+    bench_sort_bool,
+    bench_sort_u128
 );
 criterion_main!(benches);
