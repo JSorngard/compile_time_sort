@@ -253,6 +253,11 @@ fn test_f32_sort_slice() {
 
     assert!(BIG_IDENTICAL.is_sorted());
     assert!(SORTED_ARR.is_sorted());
+
+    let mut rng = SmallRng::from_seed([0b01010101; 32]);
+    let mut random_array: [f32; 500] = core::array::from_fn(|_| rng.gen());
+    sort_f32_slice(&mut random_array);
+    assert!(random_array.is_sorted());
 }
 
 #[test]
@@ -309,6 +314,11 @@ fn test_f64_sort_slice() {
 
     assert!(BIG_IDENTICAL.is_sorted());
     assert!(SORTED_ARR.is_sorted());
+
+    let mut rng = SmallRng::from_seed([0b01010101; 32]);
+    let mut random_array: [f64; 500] = core::array::from_fn(|_| rng.gen());
+    sort_f64_slice(&mut random_array);
+    assert!(random_array.is_sorted());
 }
 
 quickcheck! {
