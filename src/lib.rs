@@ -392,6 +392,7 @@ macro_rules! const_array_heapsort {
                 array = $heapify_name(array, N, i);
                 i -= 1;
             }
+            // This call is ok since we know `i` is never negative.
             array = $heapify_name(array, N, i);
 
             let mut i = N - 1;
@@ -445,6 +446,7 @@ macro_rules! const_slice_heapsort {
                 $heapify_name(slice, n, i);
                 i -= 1;
             }
+            // This call is ok since we know `i` is never negative.
             $heapify_name(slice, n, i);
 
             let mut i = n - 1;
