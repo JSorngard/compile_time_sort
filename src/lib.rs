@@ -51,7 +51,9 @@
 // This is added because of https://github.com/rust-lang/rust-clippy/issues/16450#issuecomment-3794847429
 #![allow(clippy::incompatible_msrv)]
 
+#[rustversion::since(1.83.0)]
 use core::cmp::Ordering;
+use core::num::NonZeroUsize;
 
 #[cfg(doctest)]
 #[doc = include_str!("../README.md")]
@@ -254,7 +256,12 @@ macro_rules! const_array_introsort {
 
         const_array_heapsort! {$tpe, $heap_name, $max_heapify_name, $greater_than}
 
-        const fn $intro_name<const N: usize>(array: [$tpe; N], recursion_depth: u32, left: usize, right: usize) -> [$tpe; N] {
+        const fn $intro_name<const N: usize>(
+            array: [$tpe; N],
+            recursion_depth: u32,
+            left: usize,
+            right: usize,
+        ) -> [$tpe; N] {
             let len = right - left;
             if len <= 1 {
                 array
@@ -353,7 +360,11 @@ macro_rules! const_slice_insertion_sort {
 
 macro_rules! const_array_heapsort {
     ($tpe:ty, $name:ident, $heapify_name:ident, $greater_than:ident) => {
-        const fn $heapify_name<const N: usize>(mut array: [$tpe; N], n: usize, i: usize) -> [$tpe; N] {
+        const fn $heapify_name<const N: usize>(
+            mut array: [$tpe; N],
+            n: usize,
+            i: usize,
+        ) -> [$tpe; N] {
             let mut largest = i;
 
             let l = 2 * i + 1;
@@ -425,11 +436,15 @@ macro_rules! impl_const_quicksort {
                 #[doc = "assert!(SORTED_ARRAY.is_sorted());"]
                 #[doc = "```"]
                 pub const fn [<into_sorted_ $tpe _array>]<const N: usize>(array: [$tpe; N]) -> [$tpe; N] {
-                    if N <= 1 {
-                        array
-                    } else {
-                        let max_depth = 2*N.ilog2();
-                        [<introsort_ $tpe _array>](array, max_depth, 0, N)
+                    match NonZeroUsize::new(N) {
+                        Some(nz) => {
+                            if nz.get() == 1 {
+                                return array;
+                            }
+                            let max_depth = 2*ilog2(nz);
+                            [<introsort_ $tpe _array>](array, max_depth, 0, N)
+                        }
+                        None => array
                     }
                 }
 
@@ -462,6 +477,22 @@ macro_rules! impl_const_quicksort {
             }
         )+
     };
+}
+
+/// Implementation of the `ilog2` function that becomes available in Rust 1.67.0.
+const fn ilog2(n: NonZeroUsize) -> u32 {
+    let mut n = n.get();
+
+    let mut exp = usize::BITS / 2;
+    let mut i = 0;
+    while exp > 0 {
+        if n >= (1 << exp) {
+            i += exp;
+            n >>= exp;
+        }
+        exp /= 2;
+    }
+    i
 }
 
 // We don't call this macro on `bool`, `u8`, or `i8` because they can be efficiently sorted with counting sort
@@ -760,3 +791,16 @@ pub const fn into_sorted_bool_array<const N: usize>(mut array: [bool; N]) -> [bo
 }
 
 // endregion: counting sort implementations
+
+#[cfg(test)]
+mod test {
+    use core::num::NonZeroUsize;
+    use crate::ilog2;
+
+    #[test]
+    fn test_ilog2() {
+        for i in 1..10000 {
+            assert_eq!(ilog2(NonZeroUsize::new(i).unwrap()), i.ilog2());
+        }
+    }
+}
