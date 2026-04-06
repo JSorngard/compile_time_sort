@@ -137,8 +137,16 @@ macro_rules! test_signed_integer {
                         quickcheck_case_1
                     };
 
-                    println!("{SORTED_QUICKCHECK_CASE_1:?}");
+                    const SORTED_QUICKCHECK_CASE_2: [$tpe; 56] = {
+                        let mut quickcheck_case_2 = [-4, 0, -1, 0, -3, 0, 3, 0, 0, 1, 0, 3, 0, -2, 0, 0, -4, 0, 3, 0, -3, 0, 0, 0, 0, 2, 3, 1, -2, -3, -3, 2, 2, -3, -2, -3, -3, 1, -4, -3, 2, -2, -2, -3, -4, -3, -2, -3, 0, -1, 2, -3, -3, -3, -2, 3];
+
+                        [<sort_ $tpe _slice>](&mut quickcheck_case_2);
+
+                        quickcheck_case_2
+                    };
+
                     assert!(SORTED_QUICKCHECK_CASE_1.is_sorted());
+                    assert!(SORTED_QUICKCHECK_CASE_2.is_sorted());
                 }
 
                 // Also run all the tests for unsigned integers on the signed integers
