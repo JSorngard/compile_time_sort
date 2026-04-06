@@ -60,7 +60,7 @@ use core::num::NonZeroUsize;
 struct ReadMeDocTests;
 
 /// If the array/slice is smaller than this size insertion sort will be used.
-const INSERTION_SIZE: usize = 8;
+const INSERTION_SIZE: usize = 16;
 
 // region: comparison wrappers
 
@@ -191,58 +191,51 @@ const fn less_than_f64(a: f64, b: f64) -> bool {
 
 #[rustversion::since(1.83.0)]
 /// Defines a `const` function with the given name that takes in a mutable reference to a slice of the given type
-/// and sorts it using the quicksort algorithm while switching to the insertion sort algorithm when the array is small.
-// This implementation is the one from <https://github.com/jonhoo/orst/blob/master/src/quicksort.rs> but made const.
-macro_rules! const_slice_quicksort {
-    ($tpe:ty, $name:ident, $insertion_name:ident, $less_or_equal:ident, $greater_than:ident) => {
+/// and sorts it using the introsort algorithm while switching to the insertion sort algorithm when the array is small.
+macro_rules! const_slice_introsort {
+    ($tpe:ty, $intro_name:ident, $insertion_name:ident, $heap_name:ident, $max_heapify_name: ident, $less_or_equal:ident, $greater_than:ident) => {
         const_slice_insertion_sort!($tpe, $insertion_name, $greater_than);
 
-        const fn $name(slice: &mut [$tpe]) {
-            match slice.len() {
-                0 | 1 => return,
-                2 => {
-                    if $greater_than(slice[0], slice[1]) {
-                        (slice[0], slice[1]) = (slice[1], slice[0]);
+        const_slice_heapsort!($tpe, $heap_name, $max_heapify_name, $greater_than);
+
+        const fn $intro_name(slice: &mut [$tpe], recursion_depth: u32) {
+            if slice.len() <= 1 {
+            } else if slice.len() <= INSERTION_SIZE {
+                $insertion_name(slice);
+            } else if recursion_depth == 0 {
+                $heap_name(slice);
+            } else {
+                let (pivot, rest) = slice
+                    .split_first_mut()
+                    .expect("slice is not empty, as verified above");
+
+                let mut left = 0;
+                let mut right = rest.len() - 1;
+                while left <= right {
+                    if $less_or_equal(rest[left], *pivot) {
+                        left += 1;
+                    } else if $greater_than(rest[right], *pivot) {
+                        if right == 0 {
+                            break;
+                        }
+                        right -= 1;
+                    } else {
+                        (rest[left], rest[right]) = (rest[right], rest[left]);
+                        left += 1;
+                        if right == 0 {
+                            break;
+                        }
+                        right -= 1;
                     }
-                    return;
                 }
-                3..=INSERTION_SIZE => {
-                    $insertion_name(slice);
-                    return;
+
+                (slice[0], slice[left]) = (slice[left], slice[0]);
+
+                let (left, right) = slice.split_at_mut(left);
+                $intro_name(left, recursion_depth - 1);
+                if let Some((_pivot, right)) = right.split_first_mut() {
+                    $intro_name(right, recursion_depth - 1);
                 }
-                _ => {}
-            }
-
-            let (pivot, rest) = slice
-                .split_first_mut()
-                .expect("slice is not empty, as verified above");
-
-            let mut left = 0;
-            let mut right = rest.len() - 1;
-            while left <= right {
-                if $less_or_equal(rest[left], *pivot) {
-                    left += 1;
-                } else if $greater_than(rest[right], *pivot) {
-                    if right == 0 {
-                        break;
-                    }
-                    right -= 1;
-                } else {
-                    (rest[left], rest[right]) = (rest[right], rest[left]);
-                    left += 1;
-                    if right == 0 {
-                        break;
-                    }
-                    right -= 1;
-                }
-            }
-
-            (slice[0], slice[left]) = (slice[left], slice[0]);
-
-            let (left, right) = slice.split_at_mut(left);
-            $name(left);
-            if let Some((_pivot, right)) = right.split_first_mut() {
-                $name(right);
             }
         }
     };
@@ -411,14 +404,58 @@ macro_rules! const_array_heapsort {
     };
 }
 
-/// Defines the public const quicksort implementations for the given list of types.
+#[rustversion::since(1.83.0)]
+macro_rules! const_slice_heapsort {
+    ($tpe:ty, $name:ident, $heapify_name:ident, $greater_than:ident) => {
+        const fn $heapify_name(slice: &mut [$tpe], n: usize, i: usize) {
+            let mut largest = i;
+
+            let l = 2 * i + 1;
+            let r = l + 1;
+
+            if l < n && $greater_than(slice[l], slice[largest]) {
+                largest = l;
+            }
+
+            if r < n && $greater_than(slice[r], slice[largest]) {
+                largest = r;
+            }
+
+            if largest != i {
+                (slice[i], slice[largest]) = (slice[largest], slice[i]);
+
+                $heapify_name(slice, n, largest);
+            }
+        }
+
+        const fn $name(slice: &mut [$tpe]) {
+            let n = slice.len();
+
+            let mut i = n / 2 - 1;
+            while i.checked_sub(1).is_some() {
+                $heapify_name(slice, n, i);
+                i -= 1;
+            }
+
+            let mut i = n - 1;
+            while i > 0 {
+                (slice[0], slice[i]) = (slice[i], slice[0]);
+
+                $heapify_name(slice, i, 0);
+                i -= 1;
+            }
+        }
+    };
+}
+
+/// Defines the public const introsort implementations for the given list of types.
 /// One function that sorts slices and one function that sorts arrays for each type.
-macro_rules! impl_const_quicksort {
+macro_rules! impl_const_introsort {
     ($($tpe:ty),+) => {
         $(
             paste::paste! {
                 #[rustversion::since(1.83.0)]
-                const_slice_quicksort!{$tpe, [<qsort_ $tpe _slice>], [<insertion_sort_ $tpe _slice>], [<less_or_equal_ $tpe>], [<greater_than_ $tpe>]}
+                const_slice_introsort!{$tpe, [<introsort_ $tpe _slice>], [<insertion_sort_ $tpe _slice>], [<heapsort_ $tpe _slice>], [<max_heapify_ $tpe _slice>], [<less_or_equal_ $tpe>], [<greater_than_ $tpe>]}
 
                 const_array_introsort!{$tpe, [<introsort_ $tpe _array>], [<partition_ $tpe _array>], [<insertion_sort_ $tpe _array>], [<heapsort_ $tpe _array>], [<max_heapify_ $tpe _array>], [<greater_than_ $tpe>], [<less_than_ $tpe>]}
 
@@ -447,9 +484,7 @@ macro_rules! impl_const_quicksort {
                 }
 
                 #[rustversion::since(1.83.0)]
-                #[doc = "Sorts the given slice of `" $tpe "`s using the quicksort algorithm."]
-                #[doc = ""]
-                #[doc = "Switches to insertion sort when the slice is small."]
+                #[doc = "Sorts the given slice of `" $tpe "`s using the introsort algorithm."]
                 #[doc = ""]
                 #[doc = "# Example"]
                 #[doc = ""]
@@ -466,10 +501,13 @@ macro_rules! impl_const_quicksort {
                 #[doc = "assert!(SORTED_ARRAY.is_sorted());"]
                 #[doc = "```"]
                 pub const fn [<sort_ $tpe _slice>](slice: &mut [$tpe]) {
-                    if slice.len() <= 1 {
-                        return;
-                    } else {
-                        [<qsort_ $tpe _slice>](slice);
+                    if let Some(nz) = NonZeroUsize::new(slice.len()) {
+                        if nz.get() <= 1 {
+                            return;
+                        }
+
+                        let max_depth = 2*ilog2(nz);
+                        [<introsort_ $tpe _slice>](slice, max_depth);
                     }
                 }
             }
@@ -495,7 +533,7 @@ const fn ilog2(n: NonZeroUsize) -> u32 {
 
 // We don't call this macro on `bool`, `u8`, or `i8` because they can be efficiently sorted with counting sort
 // and that requires a custom implementation for each type.
-impl_const_quicksort! {
+impl_const_introsort! {
     char,
     u16, i16,
     u32, i32,
@@ -505,7 +543,7 @@ impl_const_quicksort! {
 }
 
 #[rustversion::since(1.83.0)]
-impl_const_quicksort! {f32, f64}
+impl_const_introsort! {f32, f64}
 
 // endregion: quicksort implementations
 
