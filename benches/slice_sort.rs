@@ -1,5 +1,5 @@
 use compile_time_sort::{
-    sort_bool_slice, sort_f32_slice, sort_i32_slice, sort_u128_slice, sort_u8_slice,
+    sort_bool_slice, sort_f32_slice, sort_f64_slice, sort_i32_slice, sort_u128_slice, sort_u8_slice,
 };
 use core::hint::black_box;
 use criterion::{criterion_group, criterion_main, BatchSize, Criterion};
@@ -115,10 +115,33 @@ fn bench_sort_u128(c: &mut Criterion) {
     });
 }
 
+fn bench_sort_f64(c: &mut Criterion) {
+    let mut rng = SmallRng::from_seed([42; 32]);
+
+    let data: Vec<f64> = (0..1000).map(|_| rng.gen()).collect();
+
+    c.bench_function("std::sort_unstable_f64", |b| {
+        b.iter_batched(
+            || data.clone(),
+            |mut slice| black_box(slice.sort_unstable_by(|a, b| a.total_cmp(b))),
+            BatchSize::SmallInput,
+        )
+    });
+
+    c.bench_function("sort_f64_slice", |b| {
+        b.iter_batched(
+            || data.clone(),
+            |mut slice| black_box(sort_f64_slice(&mut slice)),
+            BatchSize::SmallInput,
+        )
+    });
+}
+
 criterion_group!(
     benches,
     bench_sort_i32,
     bench_sort_f32,
+    bench_sort_f64,
     bench_sort_u8,
     bench_sort_bool,
     bench_sort_u128
