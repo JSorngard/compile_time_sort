@@ -229,6 +229,32 @@ fn test_f32_into_sorted() {
     assert!(sorted_array.is_sorted());
 }
 
+#[rustversion::since(1.83.0)]
+#[test]
+fn test_f32_sort_slice() {
+    const BIG_IDENTICAL: [f32; 500] = {
+        let mut arr = [42.0; 500];
+        sort_f32_slice(&mut arr);
+        arr
+    };
+
+    const SORTED_ARR: [f32; 500] = {
+        let mut arr = [0.0; 500];
+        let mut i = 0;
+        while i < arr.len() {
+            arr[i] = i as f32;
+            i += 1;
+        }
+
+        sort_f32_slice(&mut arr);
+
+        arr
+    };
+
+    assert!(BIG_IDENTICAL.is_sorted());
+    assert!(SORTED_ARR.is_sorted());
+}
+
 #[test]
 fn test_f64_into_sorted() {
     const ARR: [f64; 5] = [3.0, 1.0, -0.0, 0.0, f64::MIN];
@@ -257,6 +283,32 @@ fn test_f64_into_sorted() {
 
     let sorted_array = into_sorted_f64_array(random_array);
     assert!(sorted_array.is_sorted());
+}
+
+#[rustversion::since(1.83.0)]
+#[test]
+fn test_f64_sort_slice() {
+    const BIG_IDENTICAL: [f64; 500] = {
+        let mut arr = [42.0; 500];
+        sort_f64_slice(&mut arr);
+        arr
+    };
+
+    const SORTED_ARR: [f64; 500] = {
+        let mut arr = [0.0; 500];
+        let mut i = 0;
+        while i < arr.len() {
+            arr[i] = i as f64;
+            i += 1;
+        }
+
+        sort_f64_slice(&mut arr);
+
+        arr
+    };
+
+    assert!(BIG_IDENTICAL.is_sorted());
+    assert!(SORTED_ARR.is_sorted());
 }
 
 quickcheck! {
