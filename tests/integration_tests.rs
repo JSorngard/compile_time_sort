@@ -95,6 +95,8 @@ macro_rules! test_unsigned_integer {
 
                     let sorted_array = [<into_sorted_ $tpe _array>](random_array);
                     assert!(sorted_array.is_sorted());
+
+                    assert!([<into_sorted_ $tpe _array>](sorted_array).is_sorted());
                 }
             }
         )+
