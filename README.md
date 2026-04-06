@@ -9,7 +9,7 @@
 This small crate provides functions for sorting arrays and slices of primitives in `const` contexts.
 
 Arrays and slices of `bool`s, `u8`s, and `i8`s are sorted with counting sort while arrays of other types
-are sorted with quicksort. All types except `bool` are sorted with insertion sort if the length is small.
+are sorted with introsort.
 
 This implementation is usable on Rust version 1.54.0,
 before the [`const_trait_impl`](https://github.com/rust-lang/rust/issues/143874) feature is stabilized.
