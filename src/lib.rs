@@ -792,8 +792,8 @@ pub const fn into_sorted_bool_array<const N: usize>(mut array: [bool; N]) -> [bo
 
 #[cfg(test)]
 mod test {
-    use core::num::NonZeroUsize;
     use crate::ilog2;
+    use core::num::NonZeroUsize;
 
     #[test]
     fn test_ilog2() {
