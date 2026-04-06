@@ -114,6 +114,11 @@ macro_rules! test_signed_integer {
                     const SORTED_ARRAY_WITH_NEGATIVES: [$tpe; 3] = [<into_sorted_ $tpe _array>](ARRAY_WITH_NEGATIVES);
 
                     assert!(SORTED_ARRAY_WITH_NEGATIVES.is_sorted());
+
+                    const FOUND_BY_QUICKCHECK: [$tpe; 27] = [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                    const SORTED_QUICKCHECK_CASE: [$tpe; 27] = [<into_sorted_ $tpe _array>](FOUND_BY_QUICKCHECK);
+
+                    assert!(SORTED_QUICKCHECK_CASE.is_sorted());
                 }
 
                 // Also run all the tests for unsigned integers on the signed integers
