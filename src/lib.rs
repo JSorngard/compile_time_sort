@@ -246,22 +246,26 @@ macro_rules! const_slice_quicksort {
     };
 }
 
-/// Defines a `const` function with the given name that sorts an array of the given type with the quicksort algorithm
+/// Defines a `const` function with the given name that sorts an array of the given type with the introsort algorithm
 /// for large arrays and switches to the insertion sort algorithm when the array is small.
-macro_rules! const_array_quicksort {
-    ($tpe:ty, $name:ident, $partition_name:ident, $insertion_name:ident, $greater_than:ident, $less_than:ident) => {
+macro_rules! const_array_introsort {
+    ($tpe:ty, $intro_name:ident, $partition_name:ident, $insertion_name:ident, $heap_name:ident, $max_heapify_name: ident, $greater_than:ident, $less_than:ident) => {
         const_array_insertion_sort! {$tpe, $insertion_name, $greater_than}
 
-        const fn $name<const N: usize>(array: [$tpe; N], left: usize, right: usize) -> [$tpe; N] {
+        const_array_heapsort! {$tpe, $heap_name, $max_heapify_name, $greater_than}
+
+        const fn $intro_name<const N: usize>(array: [$tpe; N], recursion_depth: u32, left: usize, right: usize) -> [$tpe; N] {
             let len = right - left;
             if len <= 1 {
                 array
             } else if len <= INSERTION_SIZE {
                 $insertion_name(array)
+            } else if recursion_depth == 0 {
+                $heap_name(array)
             } else {
                 let (pivot_index, mut array) = $partition_name(array, left, right);
-                array = $name(array, left, pivot_index);
-                array = $name(array, pivot_index + 1, right);
+                array = $intro_name(array, recursion_depth - 1, left, pivot_index);
+                array = $intro_name(array, recursion_depth - 1, pivot_index + 1, right);
                 array
             }
         }
@@ -347,6 +351,55 @@ macro_rules! const_slice_insertion_sort {
     };
 }
 
+macro_rules! const_array_heapsort {
+    ($tpe:ty, $name:ident, $heapify_name:ident, $greater_than:ident) => {
+        const fn $heapify_name<const N: usize>(mut array: [$tpe; N], n: usize, i: usize) -> [$tpe; N] {
+            let mut largest = i;
+
+            let l = 2 * i + 1;
+            let r = l + 1;
+
+            if l < n && $greater_than(array[l], array[largest]) {
+                largest = l;
+            }
+
+            if r < n && $greater_than(array[r], array[largest]) {
+                largest = r;
+            }
+
+            if largest != i {
+                let temp = array[i];
+                array[i] = array[largest];
+                array[largest] = temp;
+
+                array = $heapify_name(array, n, largest);
+            }
+
+            array
+        }
+
+        const fn $name<const N: usize>(mut array: [$tpe; N]) -> [$tpe; N] {
+            let mut i = N / 2 - 1;
+            while i.checked_sub(1).is_some() {
+                array = $heapify_name(array, N, i);
+                i -= 1;
+            }
+
+            let mut i = N - 1;
+            while i > 0 {
+                let temp = array[0];
+                array[0] = array[i];
+                array[i] = temp;
+
+                array = $heapify_name(array, i, 0);
+                i -= 1;
+            }
+
+            array
+        }
+    };
+}
+
 /// Defines the public const quicksort implementations for the given list of types.
 /// One function that sorts slices and one function that sorts arrays for each type.
 macro_rules! impl_const_quicksort {
@@ -356,7 +409,7 @@ macro_rules! impl_const_quicksort {
                 #[rustversion::since(1.83.0)]
                 const_slice_quicksort!{$tpe, [<qsort_ $tpe _slice>], [<insertion_sort_ $tpe _slice>], [<less_or_equal_ $tpe>], [<greater_than_ $tpe>]}
 
-                const_array_quicksort!{$tpe, [<qsort_ $tpe _array>], [<partition_ $tpe _array>], [<insertion_sort_ $tpe _array>], [<greater_than_ $tpe>], [<less_than_ $tpe>]}
+                const_array_introsort!{$tpe, [<introsort_ $tpe _array>], [<partition_ $tpe _array>], [<insertion_sort_ $tpe _array>], [<heapsort_ $tpe _array>], [<max_heapify_ $tpe _array>], [<greater_than_ $tpe>], [<less_than_ $tpe>]}
 
                 #[doc = "Sorts the given array of `" $tpe "`s using the quicksort algorithm and returns it."]
                 #[doc = ""]
@@ -375,7 +428,8 @@ macro_rules! impl_const_quicksort {
                     if N <= 1 {
                         array
                     } else {
-                        [<qsort_ $tpe _array>](array, 0, N)
+                        let max_depth = 2*N.ilog2();
+                        [<introsort_ $tpe _array>](array, max_depth, 0, N)
                     }
                 }
 
