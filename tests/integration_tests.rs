@@ -277,6 +277,10 @@ fn test_f32_sort_slice() {
     let mut random_array: [f32; 500] = core::array::from_fn(|_| rng.gen());
     sort_f32_slice(&mut random_array);
     assert!(random_array.is_sorted());
+
+    let mut all_same = vec![42.0; 500];
+    sort_f32_slice(&mut all_same);
+    assert!(all_same.is_sorted());
 }
 
 #[test]
@@ -338,6 +342,10 @@ fn test_f64_sort_slice() {
     let mut random_array: [f64; 500] = core::array::from_fn(|_| rng.gen());
     sort_f64_slice(&mut random_array);
     assert!(random_array.is_sorted());
+
+    let mut all_same = vec![42.0; 500];
+    sort_f64_slice(&mut all_same);
+    assert!(all_same.is_sorted());
 }
 
 quickcheck! {
