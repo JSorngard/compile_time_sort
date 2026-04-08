@@ -45,6 +45,11 @@ macro_rules! test_unsigned_integer {
             paste! {
                 #[test]
                 fn [<test_sort_ $tpe>]() {
+                    const TINY_ARR: [$tpe; 1] = [1];
+                    const SORTED_TINY_ARR: [$tpe; 1] = [<into_sorted_ $tpe _array>](TINY_ARR);
+                    assert!(SORTED_TINY_ARR.is_sorted());
+
+
                     const REV_ARRAY: [$tpe; 3] = [3, 2, 1];
                     const SORTED_REV_ARRAY: [$tpe; 3] = [<into_sorted_ $tpe _array>](REV_ARRAY);
                     assert!(SORTED_REV_ARRAY.is_sorted());
