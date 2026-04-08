@@ -45,6 +45,11 @@ macro_rules! test_unsigned_integer {
             paste! {
                 #[test]
                 fn [<test_sort_ $tpe>]() {
+                    const TINY_ARR: [$tpe; 1] = [1];
+                    const SORTED_TINY_ARR: [$tpe; 1] = [<into_sorted_ $tpe _array>](TINY_ARR);
+                    assert!(SORTED_TINY_ARR.is_sorted());
+
+
                     const REV_ARRAY: [$tpe; 3] = [3, 2, 1];
                     const SORTED_REV_ARRAY: [$tpe; 3] = [<into_sorted_ $tpe _array>](REV_ARRAY);
                     assert!(SORTED_REV_ARRAY.is_sorted());
@@ -109,7 +114,19 @@ macro_rules! test_unsigned_integer {
                         arr
                     };
 
+                    const REVERSE_SORTED: [$tpe; 255] = {
+                        let mut arr = [0; 255];
+                        let mut i = arr.len();
+                        while i > 0 {
+                            arr[i-1] = i as $tpe;
+                            i -= 1
+                        }
+                        [<sort_ $tpe _slice>](&mut arr);
+                        arr
+                    };
+
                     assert!(BIG_IDENTICAL.is_sorted());
+                    assert!(REVERSE_SORTED.is_sorted());
                 }
             }
         )+
@@ -157,22 +174,17 @@ macro_rules! test_signed_integer {
                         quickcheck_case_2
                     };
 
-                    assert!(SORTED_QUICKCHECK_CASE_1.is_sorted());
-                    assert!(SORTED_QUICKCHECK_CASE_2.is_sorted());
-                }
+                    const SORTED_QUICKCHECK_CASE_3: [$tpe; 27] = {
+                        let mut quickcheck_case_3 = [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
-                #[test]
-                #[rustversion::since(1.83.0)]
-                fn [<test_sort_ $tpe _slice>]() {
-                    const SORTED_QUICKCHECK_CASE_1: [$tpe; 27] = {
-                        let mut quickcheck_case_1 = [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        [<sort_ $tpe _slice>](&mut quickcheck_case_3);
 
-                        [<sort_ $tpe _slice>](&mut quickcheck_case_1);
-
-                        quickcheck_case_1
+                        quickcheck_case_3
                     };
 
                     assert!(SORTED_QUICKCHECK_CASE_1.is_sorted());
+                    assert!(SORTED_QUICKCHECK_CASE_2.is_sorted());
+                    assert!(SORTED_QUICKCHECK_CASE_3.is_sorted());
                 }
 
                 // Also run all the tests for unsigned integers on the signed integers
@@ -272,6 +284,10 @@ fn test_f32_sort_slice() {
     let mut random_array: [f32; 500] = core::array::from_fn(|_| rng.gen());
     sort_f32_slice(&mut random_array);
     assert!(random_array.is_sorted());
+
+    let mut all_same = vec![42.0; 500];
+    sort_f32_slice(&mut all_same);
+    assert!(all_same.is_sorted());
 }
 
 #[test]
@@ -333,6 +349,10 @@ fn test_f64_sort_slice() {
     let mut random_array: [f64; 500] = core::array::from_fn(|_| rng.gen());
     sort_f64_slice(&mut random_array);
     assert!(random_array.is_sorted());
+
+    let mut all_same = vec![42.0; 500];
+    sort_f64_slice(&mut all_same);
+    assert!(all_same.is_sorted());
 }
 
 quickcheck! {
