@@ -550,6 +550,7 @@ macro_rules! impl_const_introsort {
     ($([$tpe:ident]),+) => {
         $(
             paste::paste! {
+                #[rustversion::since(1.83.0)]
                 const_slice_introsort!{&[$tpe], [<introsort_ $tpe _slice_slice>], [<insertion_sort_ $tpe _slice_slice>], [<heapsort_ $tpe _slice_slice>], [<max_heapify_ $tpe _slice_slice>], [<less_or_equal_ $tpe _slice>], [<greater_than_ $tpe _slice>]}
 
                 const_array_introsort!{&[$tpe], [<introsort_ $tpe _slice_array>], [<partition_ $tpe _slice_array>], [<insertion_sort_ $tpe _slice_array>], [<heapsort_ $tpe _slice_array>], [<max_heapify_ $tpe _slice_array>], [<greater_than_ $tpe _slice>], [<less_than_ $tpe _slice>]}
