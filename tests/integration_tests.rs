@@ -13,12 +13,25 @@ use compile_time_sort::{
     into_sorted_u8_slice_array, into_sorted_usize_array, sort_f32_slice, sort_f64_slice,
 };
 
+#[cfg(feature = "nested")]
+use compile_time_sort::{
+    into_sorted_u128_slice_array, into_sorted_u16_slice_array, into_sorted_u32_slice_array,
+    into_sorted_u64_slice_array, into_sorted_usize_slice_array,
+};
+
 #[rustversion::since(1.83.0)]
 use compile_time_sort::{
     sort_bool_slice, sort_char_slice, sort_i128_slice, sort_i16_slice, sort_i32_slice,
     sort_i64_slice, sort_i8_slice, sort_isize_slice, sort_str_slice, sort_u128_slice,
     sort_u16_slice, sort_u32_slice, sort_u64_slice, sort_u8_slice, sort_u8_slice_slice,
     sort_usize_slice,
+};
+
+#[cfg(feature = "nested")]
+#[rustversion::since(1.83.0)]
+use compile_time_sort::{
+    sort_u128_slice_slice, sort_u16_slice_slice, sort_u32_slice_slice, sort_u64_slice_slice,
+    sort_usize_slice_slice,
 };
 
 use paste::paste;
@@ -240,6 +253,11 @@ macro_rules! test_unsigned_slices {
 }
 
 test_unsigned_slices! { u8 }
+
+#[cfg(feature = "nested")]
+test_unsigned_slices! {
+    u16, u32, u64, u128, usize
+}
 
 #[test]
 fn test_sort_str_array() {

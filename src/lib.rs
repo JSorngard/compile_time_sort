@@ -702,6 +702,7 @@ impl_const_introsort! {
     [u16], [i16],
     [u32], [i32],
     [u64], [i64],
+    [u128], [i128],
     [usize], [isize]
 }
 
