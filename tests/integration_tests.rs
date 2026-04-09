@@ -211,25 +211,35 @@ quickcheck_slice_sort! {
     bool
 }
 
-#[test]
-fn test_sort_u8_slice_array() {
-    const ARR: [&[u8]; 4] = [&[0, 1], &[0, 0], &[1, 0], &[1, 1]];
-    const SORTED_ARR: [&[u8]; 4] = into_sorted_u8_slice_array(ARR);
+macro_rules! test_unsigned_slices {
+    ($($tpe:ty),+) => {
+        $(
+            paste! {
+                #[test]
+                fn [<test_sort_ $tpe _slice_array>]() {
+                    const ARR: [&[$tpe]; 4] = [&[0 as $tpe, 1 as $tpe], &[0 as $tpe, 0 as $tpe], &[1 as $tpe, 0 as $tpe], &[1 as $tpe, 1 as $tpe]];
+                    const SORTED_ARR: [&[$tpe]; 4] = [<into_sorted_ $tpe _slice_array>](ARR);
 
-    assert!(SORTED_ARR.is_sorted());
-}
+                    assert!(SORTED_ARR.is_sorted());
+                }
 
-#[rustversion::since(1.83.0)]
-#[test]
-fn test_sort_u8_slice_slice() {
-    const SORTED_ARR: [&[u8]; 4] = {
-        let mut arr: [&[u8]; 4] = [&[0_u8, 1], &[0, 0], &[1, 0], &[1, 1]];
-        sort_u8_slice_slice(&mut arr);
-        arr
+                #[rustversion::since(1.83.0)]
+                #[test]
+                fn [<test_sort_ $tpe _slice_slice>]() {
+                     const SORTED_ARR: [&[$tpe]; 4] = {
+                        let mut arr: [&[$tpe]; 4] = [&[0 as $tpe, 1 as $tpe], &[0 as $tpe, 0 as $tpe], &[1 as $tpe, 0 as $tpe], &[1 as $tpe, 1 as $tpe]];
+                        [<sort_ $tpe _slice_slice>](&mut arr);
+                        arr
+                    };
+
+                    assert!(SORTED_ARR.is_sorted());
+                }
+            }
+        )+
     };
-
-    assert!(SORTED_ARR.is_sorted());
 }
+
+test_unsigned_slices! { u8 }
 
 #[test]
 fn test_sort_str_array() {
