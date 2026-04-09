@@ -588,6 +588,20 @@ macro_rules! impl_const_introsort {
 
                 #[rustversion::since(1.83.0)]
                 #[doc = "Sorts the given slice of `&[" $tpe "]`s using the introsort algorithm."]
+                #[doc = ""]
+                #[doc = "# Example"]
+                #[doc = ""]
+                #[doc = "```"]
+                #[doc = "use compile_time_sort::" [<sort_ $tpe _slice_slice>] ";"]
+                #[doc = ""]
+                #[doc = "const SORTED_ARRAY: [&[" $tpe "]; 3] = {"]
+                #[doc = "    let mut arr: [&[" $tpe "]; 3] = [&[" $tpe "::MAX, 1 as " $tpe "], &[" $tpe "::MAX, " $tpe "::MIN], &[ 3 as " $tpe "]];"]
+                #[doc = "    " [<sort_ $tpe _slice_slice>] "(&mut arr);"]
+                #[doc = "    arr"]
+                #[doc = "};"]
+                #[doc = ""]
+                #[doc = "assert!(SORTED_ARRAY.is_sorted());"]
+                #[doc = "```"]
                 pub const fn [<sort_ $tpe _slice_slice>](slice: &mut [&[$tpe]]) {
                     if let Some(nz) = NonZeroUsize::new(slice.len()) {
                         if nz.get() <= 1 {
