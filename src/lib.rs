@@ -546,6 +546,8 @@ macro_rules! const_slice_heapsort {
 
 /// Defines the public const introsort implementations for the given list of types.
 /// One function that sorts slices and one function that sorts arrays for each type.
+///
+/// The macro has two arms, one for defining functions for types, and one for defining functions for slices of types.
 macro_rules! impl_const_introsort {
     ($([$tpe:ident]),+) => {
         $(
