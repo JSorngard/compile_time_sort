@@ -8,16 +8,17 @@ use rand::{rngs::SmallRng, Rng, SeedableRng};
 use compile_time_sort::{
     into_sorted_bool_array, into_sorted_char_array, into_sorted_f32_array, into_sorted_f64_array,
     into_sorted_i128_array, into_sorted_i16_array, into_sorted_i32_array, into_sorted_i64_array,
-    into_sorted_i8_array, into_sorted_isize_array, into_sorted_u128_array, into_sorted_u16_array,
-    into_sorted_u32_array, into_sorted_u64_array, into_sorted_u8_array, into_sorted_usize_array,
-    sort_f32_slice, sort_f64_slice, into_sorted_u8_slice_array,
+    into_sorted_i8_array, into_sorted_isize_array, into_sorted_str_array, into_sorted_u128_array,
+    into_sorted_u16_array, into_sorted_u32_array, into_sorted_u64_array, into_sorted_u8_array,
+    into_sorted_u8_slice_array, into_sorted_usize_array, sort_f32_slice, sort_f64_slice,
 };
 
 #[rustversion::since(1.83.0)]
 use compile_time_sort::{
     sort_bool_slice, sort_char_slice, sort_i128_slice, sort_i16_slice, sort_i32_slice,
-    sort_i64_slice, sort_i8_slice, sort_isize_slice, sort_u128_slice, sort_u16_slice,
-    sort_u32_slice, sort_u64_slice, sort_u8_slice, sort_usize_slice, sort_u8_slice_slice,
+    sort_i64_slice, sort_i8_slice, sort_isize_slice, sort_str_slice, sort_u128_slice,
+    sort_u16_slice, sort_u32_slice, sort_u64_slice, sort_u8_slice, sort_u8_slice_slice,
+    sort_usize_slice,
 };
 
 use paste::paste;
@@ -224,6 +225,26 @@ fn test_sort_u8_slice_slice() {
     const SORTED_ARR: [&[u8]; 4] = {
         let mut arr: [&[u8]; 4] = [&[0_u8, 1], &[0, 0], &[1, 0], &[1, 1]];
         sort_u8_slice_slice(&mut arr);
+        arr
+    };
+
+    assert!(SORTED_ARR.is_sorted());
+}
+
+#[test]
+fn test_sort_str_array() {
+    const ARR: [&str; 4] = ["abc", "abd", "aaaaa", "l"];
+    const SORTED_ARR: [&str; 4] = into_sorted_str_array(ARR);
+
+    assert!(SORTED_ARR.is_sorted());
+}
+
+#[rustversion::since(1.83.0)]
+#[test]
+fn test_sort_str_slice() {
+    const SORTED_ARR: [&str; 4] = {
+        let mut arr: [&str; 4] = ["abc", "abd", "aaaaa", "l"];
+        sort_str_slice(&mut arr);
         arr
     };
 
