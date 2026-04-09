@@ -15,6 +15,8 @@ use compile_time_sort::{
 
 #[cfg(feature = "nested")]
 use compile_time_sort::{
+    into_sorted_i128_slice_array, into_sorted_i16_slice_array, into_sorted_i32_slice_array,
+    into_sorted_i64_slice_array, into_sorted_i8_slice_array, into_sorted_isize_slice_array,
     into_sorted_u128_slice_array, into_sorted_u16_slice_array, into_sorted_u32_slice_array,
     into_sorted_u64_slice_array, into_sorted_usize_slice_array,
 };
@@ -30,8 +32,9 @@ use compile_time_sort::{
 #[cfg(feature = "nested")]
 #[rustversion::since(1.83.0)]
 use compile_time_sort::{
-    sort_u128_slice_slice, sort_u16_slice_slice, sort_u32_slice_slice, sort_u64_slice_slice,
-    sort_usize_slice_slice,
+    sort_i128_slice_slice, sort_i16_slice_slice, sort_i32_slice_slice, sort_i64_slice_slice,
+    sort_i8_slice_slice, sort_isize_slice_slice, sort_u128_slice_slice, sort_u16_slice_slice,
+    sort_u32_slice_slice, sort_u64_slice_slice, sort_usize_slice_slice,
 };
 
 use paste::paste;
@@ -252,11 +255,47 @@ macro_rules! test_unsigned_slices {
     };
 }
 
+#[cfg(feature = "nested")]
+macro_rules! test_signed_slices {
+    ($($tpe:ty),+) => {
+        $(
+            paste! {
+                #[test]
+                fn [<test_sort_ $tpe _slice_array_with_negatives>]() {
+                    const ARR: [&[$tpe]; 8] = [&[0, 1], &[0, 0], &[1, 0], &[1, 1], &[0, -1], &[0, 0], &[-1, 0], &[-1, -1]];
+                    const SORTED_ARR: [&[$tpe]; 8] = [<into_sorted_ $tpe _slice_array>](ARR);
+
+                    assert!(SORTED_ARR.is_sorted());
+                }
+
+                #[rustversion::since(1.83.0)]
+                #[test]
+                fn [<test_sort_ $tpe _slice_slice_with_negatives>]() {
+                     const SORTED_ARR: [&[$tpe]; 8] = {
+                        let mut arr: [&[$tpe]; 8] = [&[0, 1], &[0, 0], &[1, 0], &[1, 1], &[0, -1], &[0, 0], &[-1, 0], &[-1, -1]];
+                        [<sort_ $tpe _slice_slice>](&mut arr);
+                        arr
+                    };
+
+                    assert!(SORTED_ARR.is_sorted());
+                }
+            }
+        )+
+
+        test_unsigned_slices! { $($tpe),+ }
+    };
+}
+
 test_unsigned_slices! { u8 }
 
 #[cfg(feature = "nested")]
 test_unsigned_slices! {
     u16, u32, u64, u128, usize
+}
+
+#[cfg(feature = "nested")]
+test_signed_slices! {
+    i8, i16, i32, i64, i128, isize
 }
 
 #[test]
