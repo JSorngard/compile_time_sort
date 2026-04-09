@@ -244,6 +244,12 @@ impl_default_const_slice_compare! {
     usize, isize
 }
 
+#[cfg(feature = "nested")]
+#[rustversion::since(1.83.0)]
+impl_default_const_slice_compare! {
+    f32, f64
+}
+
 const fn compare_str_slices(a: &str, b: &str) -> Ordering {
     compare_u8_slices(a.as_bytes(), b.as_bytes())
 }
@@ -556,7 +562,7 @@ macro_rules! impl_const_introsort {
                 #[doc = "```"]
                 #[doc = "use compile_time_sort::" [<into_sorted_ $tpe _slice_array>] ";"]
                 #[doc = ""]
-                #[doc = "const SORTED_ARRAY: [&[" $tpe "]; 2] = " [<into_sorted_ $tpe _slice_array>] "([&[" $tpe "::MAX, 1 as " $tpe "], &[" $tpe "::MAX, " $tpe "::MIN]]);"]
+                #[doc = "const SORTED_ARRAY: [&[" $tpe "]; 3] = " [<into_sorted_ $tpe _slice_array>] "([&[" $tpe "::MAX, 1 as " $tpe "], &[" $tpe "::MAX, " $tpe "::MIN], &[ 3 as " $tpe "]]);"]
                 #[doc = ""]
                 #[doc = "assert!(SORTED_ARRAY.is_sorted());"]
                 #[doc = "```"]
@@ -690,6 +696,12 @@ impl_const_introsort! {
     [u32], [i32],
     [u64], [i64],
     [usize], [isize]
+}
+
+#[cfg(feature = "nested")]
+#[rustversion::since(1.83.0)]
+impl_const_introsort! {
+    [f32], [f64]
 }
 
 #[rustversion::since(1.83.0)]
