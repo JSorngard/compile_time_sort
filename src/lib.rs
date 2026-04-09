@@ -50,7 +50,6 @@
 // This is added because of https://github.com/rust-lang/rust-clippy/issues/16450#issuecomment-3794847429
 #![allow(clippy::incompatible_msrv)]
 
-#[rustversion::since(1.83.0)]
 use core::cmp::Ordering;
 use core::num::NonZeroUsize;
 
