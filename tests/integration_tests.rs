@@ -217,7 +217,7 @@ macro_rules! test_unsigned_slices {
             paste! {
                 #[test]
                 fn [<test_sort_ $tpe _slice_array>]() {
-                    const ARR: [&[$tpe]; 4] = [&[0 as $tpe, 1 as $tpe], &[0 as $tpe, 0 as $tpe], &[1 as $tpe, 0 as $tpe], &[1 as $tpe, 1 as $tpe]];
+                    const ARR: [&[$tpe]; 4] = [&[0, 1], &[0, 0], &[1, 0], &[1, 1]];
                     const SORTED_ARR: [&[$tpe]; 4] = [<into_sorted_ $tpe _slice_array>](ARR);
 
                     assert!(SORTED_ARR.is_sorted());
@@ -227,7 +227,7 @@ macro_rules! test_unsigned_slices {
                 #[test]
                 fn [<test_sort_ $tpe _slice_slice>]() {
                      const SORTED_ARR: [&[$tpe]; 4] = {
-                        let mut arr: [&[$tpe]; 4] = [&[0 as $tpe, 1 as $tpe], &[0 as $tpe, 0 as $tpe], &[1 as $tpe, 0 as $tpe], &[1 as $tpe, 1 as $tpe]];
+                        let mut arr: [&[$tpe]; 4] = [&[0, 1], &[0, 0], &[1, 0], &[1, 1]];
                         [<sort_ $tpe _slice_slice>](&mut arr);
                         arr
                     };
