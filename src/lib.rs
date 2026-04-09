@@ -187,6 +187,7 @@ const fn less_than_f64(a: f64, b: f64) -> bool {
     matches!(total_cmp_f64(a, b), Ordering::Less)
 }
 
+/// This macro implements lexicographic ordering of slices of the given types.
 macro_rules! impl_default_const_slice_compare {
     ($($tpe:ty),+) => {
         $(
@@ -194,9 +195,9 @@ macro_rules! impl_default_const_slice_compare {
                 const fn [<compare_ $tpe _slices>](a: &[$tpe], b: &[$tpe]) -> Ordering {
                     let mut i = 0;
                     while i < a.len() && i < b.len() {
-                        if a[i] < b[i] {
+                        if [<less_than_ $tpe>](a[i], b[i]) {
                             return Ordering::Less;
-                        } else if a[i] > b[i] {
+                        } else if [<greater_than_ $tpe>](a[i], b[i]) {
                             return Ordering::Greater;
                         }
                         i += 1;
