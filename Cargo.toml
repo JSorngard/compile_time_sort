@@ -22,3 +22,6 @@ quickcheck = { version = "1.0", default-features = false }
 [features]
 # Enables sorting of slices and arrays of slices.
 nested = []
+
+[package.metadata.docs.rs]
+all-features = true
