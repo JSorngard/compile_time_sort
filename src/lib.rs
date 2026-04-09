@@ -44,6 +44,10 @@
 //!
 //! assert_eq!(SORTED_ARRAY, [i32::MIN, -2, 0, 0, 5]);
 //! ```
+//!
+//! # Features
+//!
+//! `nested`: enables the functions that sort slices of slices and arrays of slices.
 
 #![no_std]
 #![forbid(unsafe_code)]
