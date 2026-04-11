@@ -724,7 +724,7 @@ const_slice_introsort! {&str, introsort_str_slice, insertion_sort_str_slice, hea
 
 const_array_introsort! {&str, introsort_str_array, partition_str_array, insertion_sort_str_array, heapsort_str_array, max_heapify_str_array, greater_than_str, less_than_str}
 
-/// Sorts the given array of `str`s using the introsort algorithm.
+/// Sorts the given array of `str`s using the introsort algorithm and returns it.
 pub const fn into_sorted_str_array<const N: usize>(array: [&str; N]) -> [&str; N] {
     match NonZeroUsize::new(N) {
         Some(nz) => {
