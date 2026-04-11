@@ -5,13 +5,7 @@
 use quickcheck::quickcheck;
 use rand::{rngs::SmallRng, Rng, SeedableRng};
 
-use compile_time_sort::{
-    into_sorted_bool_array, into_sorted_char_array, into_sorted_f32_array, into_sorted_f64_array,
-    into_sorted_i128_array, into_sorted_i16_array, into_sorted_i32_array, into_sorted_i64_array,
-    into_sorted_i8_array, into_sorted_isize_array, into_sorted_str_array, into_sorted_u128_array,
-    into_sorted_u16_array, into_sorted_u32_array, into_sorted_u64_array, into_sorted_u8_array,
-    into_sorted_u8_slice_array, into_sorted_usize_array, sort_f32_slice, sort_f64_slice,
-};
+use compile_time_sort::{into_sorted_bool_array, into_sorted_bool_slice_array, into_sorted_char_array, into_sorted_f32_array, into_sorted_f64_array, into_sorted_i128_array, into_sorted_i16_array, into_sorted_i32_array, into_sorted_i64_array, into_sorted_i8_array, into_sorted_isize_array, into_sorted_str_array, into_sorted_u128_array, into_sorted_u16_array, into_sorted_u32_array, into_sorted_u64_array, into_sorted_u8_array, into_sorted_u8_slice_array, into_sorted_usize_array, sort_bool_slice_slice, sort_f32_slice, sort_f64_slice};
 
 #[cfg(feature = "nested")]
 use compile_time_sort::{
@@ -225,6 +219,28 @@ quickcheck_slice_sort! {
     usize, isize,
     char,
     bool
+}
+
+#[cfg(feature = "nested")]
+#[test]
+fn test_sort_bool_slice_arrays() {
+    const ARR: [&[bool]; 3] = [&[false, false], &[true], &[true, true]];
+    const SORTED_ARR: [&[bool]; 3] = into_sorted_bool_slice_array(ARR);
+
+    assert!(SORTED_ARR.is_sorted());
+}
+
+#[cfg(feature = "nested")]
+#[rustversion::since(1.83.0)]
+#[test]
+fn test_sort_bool_slice_slices() {
+    const SORTED_ARR: [&[bool]; 3] = {
+        let mut arr: [&[bool]; 3] =  [&[false], &[true], &[true, true]];
+        sort_bool_slice_slice(&mut arr);
+        arr
+    };
+
+    assert!(SORTED_ARR.is_sorted());
 }
 
 macro_rules! test_unsigned_slices {
