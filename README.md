@@ -8,7 +8,7 @@
 
 This small crate provides functions for sorting arrays and slices of primitives in `const` contexts.
 
-Arrays and slices of `bool`s, `u8`s, and `i8`s are sorted with counting sort while other types
+Arrays and slices of `bool`s, `u8`s, and `i8`s are sorted with [counting sort](https://en.wikipedia.org/wiki/Counting_sort) while other types
 are sorted with [introsort](https://en.wikipedia.org/wiki/Introsort).
 
 This implementation is usable on Rust version 1.54.0,
