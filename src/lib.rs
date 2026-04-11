@@ -255,6 +255,7 @@ impl_default_const_slice_compare! {
 #[cfg(feature = "nested")]
 impl_default_const_slice_compare! {
     char,
+    bool,
     i8,
     u16, i16,
     u32, i32,
@@ -577,17 +578,7 @@ macro_rules! impl_const_introsort {
 
                 const_array_introsort!{&[$tpe], [<introsort_ $tpe _slice_array>], [<partition_ $tpe _slice_array>], [<insertion_sort_ $tpe _slice_array>], [<heapsort_ $tpe _slice_array>], [<max_heapify_ $tpe _slice_array>], [<greater_than_ $tpe _slice>], [<less_than_ $tpe _slice>]}
 
-                #[doc = "Sorts the given array of `&[" $tpe "]`s using the introsort algorithm."]
-                #[doc = ""]
-                #[doc = "# Example"]
-                #[doc = ""]
-                #[doc = "```"]
-                #[doc = "use compile_time_sort::" [<into_sorted_ $tpe _slice_array>] ";"]
-                #[doc = ""]
-                #[doc = "const SORTED_ARRAY: [&[" $tpe "]; 3] = " [<into_sorted_ $tpe _slice_array>] "([&[" $tpe "::MAX, 1 as " $tpe "], &[" $tpe "::MAX, " $tpe "::MIN], &[ 3 as " $tpe "]]);"]
-                #[doc = ""]
-                #[doc = "assert!(SORTED_ARRAY.is_sorted());"]
-                #[doc = "```"]
+                #[doc = "Sorts the given array of `&[" $tpe "]`s using the introsort algorithm and returns it."]
                 pub const fn [<into_sorted_ $tpe _slice_array>]<const N: usize>(array: [&[$tpe]; N]) -> [&[$tpe]; N] {
                     match NonZeroUsize::new(N) {
                         Some(nz) => {
@@ -603,20 +594,6 @@ macro_rules! impl_const_introsort {
 
                 #[rustversion::since(1.83.0)]
                 #[doc = "Sorts the given slice of `&[" $tpe "]`s using the introsort algorithm."]
-                #[doc = ""]
-                #[doc = "# Example"]
-                #[doc = ""]
-                #[doc = "```"]
-                #[doc = "use compile_time_sort::" [<sort_ $tpe _slice_slice>] ";"]
-                #[doc = ""]
-                #[doc = "const SORTED_ARRAY: [&[" $tpe "]; 3] = {"]
-                #[doc = "    let mut arr: [&[" $tpe "]; 3] = [&[" $tpe "::MAX, 1 as " $tpe "], &[" $tpe "::MAX, " $tpe "::MIN], &[ 3 as " $tpe "]];"]
-                #[doc = "    " [<sort_ $tpe _slice_slice>] "(&mut arr);"]
-                #[doc = "    arr"]
-                #[doc = "};"]
-                #[doc = ""]
-                #[doc = "assert!(SORTED_ARRAY.is_sorted());"]
-                #[doc = "```"]
                 pub const fn [<sort_ $tpe _slice_slice>](slice: &mut [&[$tpe]]) {
                     if let Some(nz) = NonZeroUsize::new(slice.len()) {
                         if nz.get() <= 1 {
@@ -727,6 +704,7 @@ impl_const_introsort! {
 #[cfg(feature = "nested")]
 impl_const_introsort! {
     [char],
+    [bool],
     [i8],
     [u16], [i16],
     [u32], [i32],
