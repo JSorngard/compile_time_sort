@@ -2,6 +2,10 @@
 
 This file contains all changes to the crate since version v0.1.0.
 
+## [1.4.1] - 2026-04-11
+
+- Documentation improvements.
+
 ## [1.4.0] - 2026-04-11
 
 - Add sorting of slices and arrays of slices of booleans behind the `nested` feature.
