@@ -2,7 +2,7 @@
 
 This file contains all changes to the crate since version v0.1.0.
 
-## [Unreleased: 1.3.0]
+## [1.3.0] - 2026-04-11
 
 - Add functions that sort slices and arrays of byte slices and strings.
 - Add functions that sort slices and arrays of slices of primitives behind the `nested` feature.
