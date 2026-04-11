@@ -49,6 +49,20 @@
 //!
 //! `nested`: enables the functions that sort slices of slices and arrays of slices.
 
+// This crate is implemented mainly through macros. This is used to copy-paste the implementation
+// of the sorting algorithms many times, once for each type, as we can not use const generics due to MSRV.
+// `impl_const_introsort!` is tha macro that expands to the sorting implementation, but it needs a prerequisites
+// in order for the generated code to compile. There must be const functions that implement various const comparisons
+// available in the callers scope. The macro `impl_default_const_compare!` creates that needed functions for any type
+// that already has const comparison operators, other types must be implemented manually.
+//
+// This almost works. Unfortunately there are some types that need special handling, and those are the zero-sized types
+// (string slices and other slices) as well as types that don't have an Ord impl (floats).
+//
+// A new macro is made to generate const comparison functions for zero-sized types (`impl_default_const_slice_compare!`), and string slices are then
+// compared using the functions for byte slices. Floats have a `total_cmp` function which unfortunately isn't const as of time of writing.
+// That function has been manually implemented to be const in this library, and then floats have const comparison function implemented in terms of those.
+
 #![no_std]
 #![forbid(unsafe_code)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
