@@ -44,13 +44,31 @@
 //!
 //! assert_eq!(SORTED_ARRAY, [i32::MIN, -2, 0, 0, 5]);
 //! ```
+//!
+//! # Features
+//!
+//! `nested`: enables the functions that sort slices of slices and arrays of slices.
+
+// This crate is implemented mainly through macros. This is used to copy-paste the implementation
+// of the sorting algorithms many times, once for each type, as we can not use const generics due to MSRV.
+// `impl_const_introsort!` is tha macro that expands to the sorting implementation, but it needs a prerequisites
+// in order for the generated code to compile. There must be const functions that implement various const comparisons
+// available in the callers scope. The macro `impl_default_const_compare!` creates that needed functions for any type
+// that already has const comparison operators, other types must be implemented manually.
+//
+// This almost works. Unfortunately there are some types that need special handling, and those are the zero-sized types
+// (string slices and other slices) as well as types that don't have an Ord impl (floats).
+//
+// A new macro is made to generate const comparison functions for zero-sized types (`impl_default_const_slice_compare!`), and string slices are then
+// compared using the functions for byte slices. Floats have a `total_cmp` function which unfortunately isn't const as of time of writing.
+// That function has been manually implemented to be const in this library, and then floats have const comparison function implemented in terms of those.
 
 #![no_std]
 #![forbid(unsafe_code)]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 // This is added because of https://github.com/rust-lang/rust-clippy/issues/16450#issuecomment-3794847429
 #![allow(clippy::incompatible_msrv)]
 
-#[rustversion::since(1.83.0)]
 use core::cmp::Ordering;
 use core::num::NonZeroUsize;
 
@@ -182,6 +200,89 @@ const fn less_or_equal_f64(a: f64, b: f64) -> bool {
 #[inline]
 const fn less_than_f64(a: f64, b: f64) -> bool {
     matches!(total_cmp_f64(a, b), Ordering::Less)
+}
+
+/// This macro implements lexicographic ordering of slices of the given types.
+macro_rules! impl_default_const_slice_compare {
+    ($($tpe:ty),+) => {
+        $(
+            paste::paste! {
+                const fn [<compare_ $tpe _slices>](a: &[$tpe], b: &[$tpe]) -> Ordering {
+                    let mut i = 0;
+                    while i < a.len() && i < b.len() {
+                        if [<less_than_ $tpe>](a[i], b[i]) {
+                            return Ordering::Less;
+                        } else if [<greater_than_ $tpe>](a[i], b[i]) {
+                            return Ordering::Greater;
+                        }
+                        i += 1;
+                    }
+                    if a.len() < b.len() {
+                        Ordering::Less
+                    } else if a.len() == b.len() {
+                        Ordering::Equal
+                    } else {
+                        Ordering::Greater
+                    }
+                }
+
+                #[allow(unused)]
+                #[inline]
+                const fn [<greater_than_ $tpe _slice>](a: &[$tpe], b: &[$tpe]) -> bool {
+                    matches!([<compare_ $tpe _slices>](a, b), Ordering::Greater)
+                }
+
+                #[allow(unused)]
+                #[inline]
+                const fn [<less_or_equal_ $tpe _slice>](a: &[$tpe], b: &[$tpe]) -> bool {
+                    matches!([<compare_ $tpe _slices>](a, b), Ordering::Less | Ordering::Equal)
+                }
+
+                #[allow(unused)]
+                #[inline]
+                const fn [<less_than_ $tpe _slice>](a: &[$tpe], b: &[$tpe]) -> bool {
+                    matches!([<compare_ $tpe _slices>](a, b), Ordering::Less)
+                }
+            }
+        )+
+    };
+}
+
+impl_default_const_slice_compare! {
+    u8
+}
+
+#[cfg(feature = "nested")]
+impl_default_const_slice_compare! {
+    char,
+    i8,
+    u16, i16,
+    u32, i32,
+    u64, i64,
+    u128, i128,
+    usize, isize
+}
+
+#[cfg(feature = "nested")]
+#[rustversion::since(1.83.0)]
+impl_default_const_slice_compare! {
+    f32, f64
+}
+
+const fn compare_str_slices(a: &str, b: &str) -> Ordering {
+    compare_u8_slices(a.as_bytes(), b.as_bytes())
+}
+
+const fn greater_than_str(a: &str, b: &str) -> bool {
+    matches!(compare_str_slices(a, b), Ordering::Greater)
+}
+
+const fn less_or_equal_str(a: &str, b: &str) -> bool {
+    matches!(compare_str_slices(a, b), Ordering::Less | Ordering::Equal)
+}
+
+const fn less_than_str(a: &str, b: &str) -> bool {
+    matches!(compare_str_slices(a, b), Ordering::Less)
 }
 
 // endregion: comparison wrappers
@@ -465,7 +566,70 @@ macro_rules! const_slice_heapsort {
 
 /// Defines the public const introsort implementations for the given list of types.
 /// One function that sorts slices and one function that sorts arrays for each type.
+///
+/// The macro has two arms, one for defining functions for types, and one for defining functions for slices of types.
 macro_rules! impl_const_introsort {
+    ($([$tpe:ident]),+) => {
+        $(
+            paste::paste! {
+                #[rustversion::since(1.83.0)]
+                const_slice_introsort!{&[$tpe], [<introsort_ $tpe _slice_slice>], [<insertion_sort_ $tpe _slice_slice>], [<heapsort_ $tpe _slice_slice>], [<max_heapify_ $tpe _slice_slice>], [<less_or_equal_ $tpe _slice>], [<greater_than_ $tpe _slice>]}
+
+                const_array_introsort!{&[$tpe], [<introsort_ $tpe _slice_array>], [<partition_ $tpe _slice_array>], [<insertion_sort_ $tpe _slice_array>], [<heapsort_ $tpe _slice_array>], [<max_heapify_ $tpe _slice_array>], [<greater_than_ $tpe _slice>], [<less_than_ $tpe _slice>]}
+
+                #[doc = "Sorts the given array of `&[" $tpe "]`s using the introsort algorithm."]
+                #[doc = ""]
+                #[doc = "# Example"]
+                #[doc = ""]
+                #[doc = "```"]
+                #[doc = "use compile_time_sort::" [<into_sorted_ $tpe _slice_array>] ";"]
+                #[doc = ""]
+                #[doc = "const SORTED_ARRAY: [&[" $tpe "]; 3] = " [<into_sorted_ $tpe _slice_array>] "([&[" $tpe "::MAX, 1 as " $tpe "], &[" $tpe "::MAX, " $tpe "::MIN], &[ 3 as " $tpe "]]);"]
+                #[doc = ""]
+                #[doc = "assert!(SORTED_ARRAY.is_sorted());"]
+                #[doc = "```"]
+                pub const fn [<into_sorted_ $tpe _slice_array>]<const N: usize>(array: [&[$tpe]; N]) -> [&[$tpe]; N] {
+                    match NonZeroUsize::new(N) {
+                        Some(nz) => {
+                            if nz.get() == 1 {
+                                return array;
+                            }
+                            let max_depth = 2*ilog2(nz);
+                            [<introsort_ $tpe _slice_array>](array, max_depth, 0, N)
+                        }
+                        None => array
+                    }
+                }
+
+                #[rustversion::since(1.83.0)]
+                #[doc = "Sorts the given slice of `&[" $tpe "]`s using the introsort algorithm."]
+                #[doc = ""]
+                #[doc = "# Example"]
+                #[doc = ""]
+                #[doc = "```"]
+                #[doc = "use compile_time_sort::" [<sort_ $tpe _slice_slice>] ";"]
+                #[doc = ""]
+                #[doc = "const SORTED_ARRAY: [&[" $tpe "]; 3] = {"]
+                #[doc = "    let mut arr: [&[" $tpe "]; 3] = [&[" $tpe "::MAX, 1 as " $tpe "], &[" $tpe "::MAX, " $tpe "::MIN], &[ 3 as " $tpe "]];"]
+                #[doc = "    " [<sort_ $tpe _slice_slice>] "(&mut arr);"]
+                #[doc = "    arr"]
+                #[doc = "};"]
+                #[doc = ""]
+                #[doc = "assert!(SORTED_ARRAY.is_sorted());"]
+                #[doc = "```"]
+                pub const fn [<sort_ $tpe _slice_slice>](slice: &mut [&[$tpe]]) {
+                    if let Some(nz) = NonZeroUsize::new(slice.len()) {
+                        if nz.get() <= 1 {
+                            return;
+                        }
+
+                        let max_depth = 2*ilog2(nz);
+                        [<introsort_ $tpe _slice_slice>](slice, max_depth);
+                    }
+                }
+            }
+        )+
+    };
     ($($tpe:ty),+) => {
         $(
             paste::paste! {
@@ -554,6 +718,59 @@ impl_const_introsort! {
     u64, i64,
     u128, i128,
     usize, isize
+}
+
+impl_const_introsort! {
+    [u8]
+}
+
+#[cfg(feature = "nested")]
+impl_const_introsort! {
+    [char],
+    [i8],
+    [u16], [i16],
+    [u32], [i32],
+    [u64], [i64],
+    [u128], [i128],
+    [usize], [isize]
+}
+
+#[cfg(feature = "nested")]
+#[rustversion::since(1.83.0)]
+impl_const_introsort! {
+    [f32], [f64]
+}
+
+#[rustversion::since(1.83.0)]
+const_slice_introsort! {&str, introsort_str_slice, insertion_sort_str_slice, heapsort_str_slice, max_heapify_str_slice, less_or_equal_str, greater_than_str}
+
+const_array_introsort! {&str, introsort_str_array, partition_str_array, insertion_sort_str_array, heapsort_str_array, max_heapify_str_array, greater_than_str, less_than_str}
+
+/// Sorts the given array of `str`s using the introsort algorithm.
+pub const fn into_sorted_str_array<const N: usize>(array: [&str; N]) -> [&str; N] {
+    match NonZeroUsize::new(N) {
+        Some(nz) => {
+            if nz.get() == 1 {
+                return array;
+            }
+            let max_depth = 2 * ilog2(nz);
+            introsort_str_array(array, max_depth, 0, N)
+        }
+        None => array,
+    }
+}
+
+#[rustversion::since(1.83.0)]
+/// Sorts the given slice of `str`s using the introsort algorithm.
+pub const fn sort_str_slice(slice: &mut [&str]) {
+    if let Some(nz) = NonZeroUsize::new(slice.len()) {
+        if nz.get() <= 1 {
+            return;
+        }
+
+        let max_depth = 2 * ilog2(nz);
+        introsort_str_slice(slice, max_depth);
+    }
 }
 
 #[rustversion::since(1.83.0)]

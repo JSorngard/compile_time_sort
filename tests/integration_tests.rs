@@ -8,16 +8,33 @@ use rand::{rngs::SmallRng, Rng, SeedableRng};
 use compile_time_sort::{
     into_sorted_bool_array, into_sorted_char_array, into_sorted_f32_array, into_sorted_f64_array,
     into_sorted_i128_array, into_sorted_i16_array, into_sorted_i32_array, into_sorted_i64_array,
-    into_sorted_i8_array, into_sorted_isize_array, into_sorted_u128_array, into_sorted_u16_array,
-    into_sorted_u32_array, into_sorted_u64_array, into_sorted_u8_array, into_sorted_usize_array,
-    sort_f32_slice, sort_f64_slice,
+    into_sorted_i8_array, into_sorted_isize_array, into_sorted_str_array, into_sorted_u128_array,
+    into_sorted_u16_array, into_sorted_u32_array, into_sorted_u64_array, into_sorted_u8_array,
+    into_sorted_u8_slice_array, into_sorted_usize_array, sort_f32_slice, sort_f64_slice,
+};
+
+#[cfg(feature = "nested")]
+use compile_time_sort::{
+    into_sorted_i128_slice_array, into_sorted_i16_slice_array, into_sorted_i32_slice_array,
+    into_sorted_i64_slice_array, into_sorted_i8_slice_array, into_sorted_isize_slice_array,
+    into_sorted_u128_slice_array, into_sorted_u16_slice_array, into_sorted_u32_slice_array,
+    into_sorted_u64_slice_array, into_sorted_usize_slice_array,
 };
 
 #[rustversion::since(1.83.0)]
 use compile_time_sort::{
     sort_bool_slice, sort_char_slice, sort_i128_slice, sort_i16_slice, sort_i32_slice,
-    sort_i64_slice, sort_i8_slice, sort_isize_slice, sort_u128_slice, sort_u16_slice,
-    sort_u32_slice, sort_u64_slice, sort_u8_slice, sort_usize_slice,
+    sort_i64_slice, sort_i8_slice, sort_isize_slice, sort_str_slice, sort_u128_slice,
+    sort_u16_slice, sort_u32_slice, sort_u64_slice, sort_u8_slice, sort_u8_slice_slice,
+    sort_usize_slice,
+};
+
+#[cfg(feature = "nested")]
+#[rustversion::since(1.83.0)]
+use compile_time_sort::{
+    sort_i128_slice_slice, sort_i16_slice_slice, sort_i32_slice_slice, sort_i64_slice_slice,
+    sort_i8_slice_slice, sort_isize_slice_slice, sort_u128_slice_slice, sort_u16_slice_slice,
+    sort_u32_slice_slice, sort_u64_slice_slice, sort_usize_slice_slice,
 };
 
 use paste::paste;
@@ -210,6 +227,97 @@ quickcheck_slice_sort! {
     bool
 }
 
+macro_rules! test_unsigned_slices {
+    ($($tpe:ty),+) => {
+        $(
+            paste! {
+                #[test]
+                fn [<test_sort_ $tpe _slice_array>]() {
+                    const ARR: [&[$tpe]; 4] = [&[0, 1], &[0, 0], &[1, 0], &[1, 1]];
+                    const SORTED_ARR: [&[$tpe]; 4] = [<into_sorted_ $tpe _slice_array>](ARR);
+
+                    assert!(SORTED_ARR.is_sorted());
+                }
+
+                #[rustversion::since(1.83.0)]
+                #[test]
+                fn [<test_sort_ $tpe _slice_slice>]() {
+                     const SORTED_ARR: [&[$tpe]; 4] = {
+                        let mut arr: [&[$tpe]; 4] = [&[0, 1], &[0, 0], &[1, 0], &[1, 1]];
+                        [<sort_ $tpe _slice_slice>](&mut arr);
+                        arr
+                    };
+
+                    assert!(SORTED_ARR.is_sorted());
+                }
+            }
+        )+
+    };
+}
+
+#[cfg(feature = "nested")]
+macro_rules! test_signed_slices {
+    ($($tpe:ty),+) => {
+        $(
+            paste! {
+                #[test]
+                fn [<test_sort_ $tpe _slice_array_with_negatives>]() {
+                    const ARR: [&[$tpe]; 8] = [&[0, 1], &[0, 0], &[1, 0], &[1, 1], &[0, -1], &[0, 0], &[-1, 0], &[-1, -1]];
+                    const SORTED_ARR: [&[$tpe]; 8] = [<into_sorted_ $tpe _slice_array>](ARR);
+
+                    assert!(SORTED_ARR.is_sorted());
+                }
+
+                #[rustversion::since(1.83.0)]
+                #[test]
+                fn [<test_sort_ $tpe _slice_slice_with_negatives>]() {
+                     const SORTED_ARR: [&[$tpe]; 8] = {
+                        let mut arr: [&[$tpe]; 8] = [&[0, 1], &[0, 0], &[1, 0], &[1, 1], &[0, -1], &[0, 0], &[-1, 0], &[-1, -1]];
+                        [<sort_ $tpe _slice_slice>](&mut arr);
+                        arr
+                    };
+
+                    assert!(SORTED_ARR.is_sorted());
+                }
+            }
+        )+
+
+        test_unsigned_slices! { $($tpe),+ }
+    };
+}
+
+test_unsigned_slices! { u8 }
+
+#[cfg(feature = "nested")]
+test_unsigned_slices! {
+    u16, u32, u64, u128, usize
+}
+
+#[cfg(feature = "nested")]
+test_signed_slices! {
+    i8, i16, i32, i64, i128, isize
+}
+
+#[test]
+fn test_sort_str_array() {
+    const ARR: [&str; 4] = ["abc", "abd", "aaaaa", "l"];
+    const SORTED_ARR: [&str; 4] = into_sorted_str_array(ARR);
+
+    assert!(SORTED_ARR.is_sorted());
+}
+
+#[rustversion::since(1.83.0)]
+#[test]
+fn test_sort_str_slice() {
+    const SORTED_ARR: [&str; 4] = {
+        let mut arr: [&str; 4] = ["abc", "abd", "aaaaa", "l"];
+        sort_str_slice(&mut arr);
+        arr
+    };
+
+    assert!(SORTED_ARR.is_sorted());
+}
+
 #[test]
 fn test_sort_bool() {
     const ARR: [bool; 4] = [false, true, false, true];
@@ -355,6 +463,7 @@ fn test_f64_sort_slice() {
     assert!(all_same.is_sorted());
 }
 
+#[rustversion::since(1.83.0)]
 quickcheck! {
     fn quickcheck_f32_slice(vec: Vec<f32>) -> bool {
         let mut vec = vec;
