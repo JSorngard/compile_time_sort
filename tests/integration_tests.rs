@@ -6,28 +6,28 @@ use quickcheck::quickcheck;
 use rand::{rngs::SmallRng, Rng, SeedableRng};
 
 use compile_time_sort::{
-    into_sorted_bool_array, into_sorted_bool_slice_array, into_sorted_char_array,
-    into_sorted_f32_array, into_sorted_f64_array, into_sorted_i128_array, into_sorted_i16_array,
-    into_sorted_i32_array, into_sorted_i64_array, into_sorted_i8_array, into_sorted_isize_array,
-    into_sorted_str_array, into_sorted_u128_array, into_sorted_u16_array, into_sorted_u32_array,
-    into_sorted_u64_array, into_sorted_u8_array, into_sorted_u8_slice_array,
-    into_sorted_usize_array, sort_bool_slice_slice, sort_f32_slice, sort_f64_slice,
+    into_sorted_bool_array, into_sorted_char_array, into_sorted_f32_array, into_sorted_f64_array,
+    into_sorted_i128_array, into_sorted_i16_array, into_sorted_i32_array, into_sorted_i64_array,
+    into_sorted_i8_array, into_sorted_isize_array, into_sorted_str_array, into_sorted_u128_array,
+    into_sorted_u16_array, into_sorted_u32_array, into_sorted_u64_array, into_sorted_u8_array,
+    into_sorted_u8_slice_array, into_sorted_usize_array,
 };
 
 #[cfg(feature = "nested")]
 use compile_time_sort::{
-    into_sorted_i128_slice_array, into_sorted_i16_slice_array, into_sorted_i32_slice_array,
-    into_sorted_i64_slice_array, into_sorted_i8_slice_array, into_sorted_isize_slice_array,
-    into_sorted_u128_slice_array, into_sorted_u16_slice_array, into_sorted_u32_slice_array,
-    into_sorted_u64_slice_array, into_sorted_usize_slice_array,
+    into_sorted_bool_slice_array, into_sorted_i128_slice_array, into_sorted_i16_slice_array,
+    into_sorted_i32_slice_array, into_sorted_i64_slice_array, into_sorted_i8_slice_array,
+    into_sorted_isize_slice_array, into_sorted_u128_slice_array, into_sorted_u16_slice_array,
+    into_sorted_u32_slice_array, into_sorted_u64_slice_array, into_sorted_usize_slice_array,
+    sort_bool_slice_slice,
 };
 
 #[rustversion::since(1.83.0)]
 use compile_time_sort::{
-    sort_bool_slice, sort_char_slice, sort_i128_slice, sort_i16_slice, sort_i32_slice,
-    sort_i64_slice, sort_i8_slice, sort_isize_slice, sort_str_slice, sort_u128_slice,
-    sort_u16_slice, sort_u32_slice, sort_u64_slice, sort_u8_slice, sort_u8_slice_slice,
-    sort_usize_slice,
+    sort_bool_slice, sort_char_slice, sort_f32_slice, sort_f64_slice, sort_i128_slice,
+    sort_i16_slice, sort_i32_slice, sort_i64_slice, sort_i8_slice, sort_isize_slice,
+    sort_str_slice, sort_u128_slice, sort_u16_slice, sort_u32_slice, sort_u64_slice, sort_u8_slice,
+    sort_u8_slice_slice, sort_usize_slice,
 };
 
 #[cfg(feature = "nested")]
