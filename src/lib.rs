@@ -51,9 +51,9 @@
 
 #![no_std]
 #![forbid(unsafe_code)]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 // This is added because of https://github.com/rust-lang/rust-clippy/issues/16450#issuecomment-3794847429
 #![allow(clippy::incompatible_msrv)]
-#![cfg_attr(docsrs, feature(doc_cfg))]
 
 use core::cmp::Ordering;
 use core::num::NonZeroUsize;
