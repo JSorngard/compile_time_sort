@@ -282,7 +282,7 @@ macro_rules! test_unsigned_slices {
                     assert!(SORTED_ARR.is_sorted());
                 }
 
-                 #[rustversion::since(1.83.0)]
+                #[rustversion::since(1.83.0)]
                 #[test]
                 fn [<test_sort_long_identical_ $tpe _slice_slice>]() {
                     const SORTED_ARR: [&[$tpe]; 500] = {
