@@ -36,10 +36,6 @@
 use core::cmp::Ordering;
 use core::num::NonZeroUsize;
 
-#[cfg(doctest)]
-#[doc = include_str!("../README.md")]
-struct ReadMeDocTests;
-
 /// If the array/slice is smaller than this size insertion sort will be used.
 const INSERTION_SIZE: usize = 16;
 
