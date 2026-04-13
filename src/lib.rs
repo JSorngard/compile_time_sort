@@ -15,7 +15,7 @@
 
 // This crate is implemented mainly through macros. This is used to copy-paste the implementation
 // of the sorting algorithms many times, once for each type, as we can not use const generics due to MSRV.
-// `impl_const_introsort!` is tha macro that expands to the sorting implementation, but it needs a prerequisites
+// `impl_const_introsort!` is the macro that expands to the sorting implementation, but it needs a prerequisites
 // in order for the generated code to compile. There must be const functions that implement various const comparisons
 // available in the callers scope. The macro `impl_default_const_compare!` creates that needed functions for any type
 // that already has const comparison operators, other types must be implemented manually.
