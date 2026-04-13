@@ -1,49 +1,13 @@
 // Copyright 2024-2026 Johanna Sörngård
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-//! # Description
-//!
-//! This small crate provides functions for sorting arrays and slices of primitives in `const` contexts.
-//!
-//! Arrays and slices of `bool`s, `u8`s, and `i8`s are sorted with counting sort while other types
-//! are sorted with introsort.
-//!
-//! This implementation is usable on Rust version 1.56.0, before the [`const_trait_impl`](https://github.com/rust-lang/rust/issues/143874) feature is stabilized.
-//! This means that it unfortunately can not be generic,
-//! and so there are separate functions for every primitive type.
-//!
-//! Functions with the naming convention `into_sorted_*_array` take an array by value,
-//! and functions with the naming convention `sort_*_slice` take a mutable reference to a slice.
-//!
-//! The functions that sort slices by reference are only available on Rust versions 1.83 and above, as are the functions that sort floats as they need [`{float}::to_bits`](f32::to_bits)
-//! to be `const` in order to generate a total ordering in accordance with [`{float}::total_cmp`](f32::total_cmp).
-//!
-//! # Examples
-//!
-//! Sort an array by value:
-//!
-//! ```
-//! use compile_time_sort::into_sorted_i32_array;
-//!
-//! const ARRAY: [i32; 5] = [-3, 3, 2, i32::MAX, 0];
-//! const SORTED_ARRAY: [i32; 5] = into_sorted_i32_array(ARRAY);
-//!
-//! assert_eq!(SORTED_ARRAY, [-3, 0, 2, 3, i32::MAX]);
-//! ```
-//!
-//! Sort by reference:
-//!
-//! ```
-//! use compile_time_sort::sort_i32_slice;
-//!
-//! const SORTED_ARRAY: [i32; 5] = {
-//!     let mut arr = [5, i32::MIN, 0, -2, 0];
-//!     sort_i32_slice(&mut arr);
-//!     arr
-//! };
-//!
-//! assert_eq!(SORTED_ARRAY, [i32::MIN, -2, 0, 0, 5]);
-//! ```
+// These Markdown ideas are taken from https://linebender.org/blog/doc-include.
+//
+// This style is used in the readme itself to hide specific parts of it when rendered on docs.rs.
+//! <style>
+//! .rustdoc-hidden { display: none; }
+//! </style>
+#![doc = include_str!("../README.md")]
 //!
 //! # Features
 //!
