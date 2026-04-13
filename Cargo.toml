@@ -1,7 +1,7 @@
 [package]
 name = "compile_time_sort"
 version = "1.5.0"
-edition = "2018"
+edition = "2021"
 description = "Sort arrays and slices of primitives in const contexts."
 keywords = ["const", "sort", "const-sort", "sorting"]
 categories = ["algorithms", "no-std", "no-std::no-alloc"]
