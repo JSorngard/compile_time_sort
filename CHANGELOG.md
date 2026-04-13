@@ -2,7 +2,7 @@
 
 This file contains all changes to the crate since version v0.1.0.
 
-## [Unreleased]
+## [1.5.0]
 
 - Update dev-dependencies.
 - Raise the MSRV to 1.56.0.
