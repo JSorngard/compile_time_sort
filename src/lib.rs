@@ -8,7 +8,7 @@
 //! Arrays and slices of `bool`s, `u8`s, and `i8`s are sorted with counting sort while other types
 //! are sorted with introsort.
 //!
-//! This implementation is usable on Rust version 1.54.0, before the [`const_trait_impl`](https://github.com/rust-lang/rust/issues/143874) feature is stabilized.
+//! This implementation is usable on Rust version 1.56.0, before the [`const_trait_impl`](https://github.com/rust-lang/rust/issues/143874) feature is stabilized.
 //! This means that it unfortunately can not be generic,
 //! and so there are separate functions for every primitive type.
 //!
