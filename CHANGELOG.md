@@ -2,6 +2,12 @@
 
 This file contains all changes to the crate since version v0.1.0.
 
+## [Unreleased]
+
+- Update dev-dependencies.
+- Raise the MSRV to 1.56.0.
+- Use Rust edition 2021.
+
 ## [1.4.1] - 2026-04-11
 
 - Documentation improvements.
