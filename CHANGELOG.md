@@ -2,6 +2,10 @@
 
 This file contains all changes to the crate since version v0.1.0.
 
+## [1.5.1] - 2026-04-17
+
+- Update `rand` to version 0.8.6.
+
 ## [1.5.0] - 2026-04-13
 
 - Update dev-dependencies.
