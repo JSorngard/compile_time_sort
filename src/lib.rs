@@ -964,7 +964,7 @@ pub const fn sort_bool_slice(slice: &mut [bool]) {
 /// ```
 /// use compile_time_sort::into_sorted_bool_array;
 ///
-/// const SORTED_ARRAY: [bool; 2] = into_sorted_bool_array([true, false]);
+/// const SORTED_ARRAY: [bool; 4] = into_sorted_bool_array([true, false, true, false]);
 ///
 /// assert!(SORTED_ARRAY.is_sorted());
 /// ```
