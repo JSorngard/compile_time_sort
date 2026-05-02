@@ -2,6 +2,29 @@
 
 This file contains all changes to the crate since version v0.1.0.
 
+## [1.5.1] - 2026-04-17
+
+- Update `rand` to version 0.8.6.
+
+## [1.5.0] - 2026-04-13
+
+- Update dev-dependencies.
+- Raise the MSRV to 1.56.0.
+- Use Rust edition 2021.
+
+## [1.4.1] - 2026-04-11
+
+- Documentation improvements.
+
+## [1.4.0] - 2026-04-11
+
+- Add sorting of slices and arrays of slices of booleans behind the `nested` feature.
+
+## [1.3.0] - 2026-04-11
+
+- Add functions that sort slices and arrays of byte slices and strings.
+- Add functions that sort slices and arrays of slices of primitives behind the `nested` feature.
+
 ## [1.2.4] - 2026-04-06
 
 - Update crate docs.

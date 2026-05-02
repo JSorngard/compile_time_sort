@@ -8,10 +8,10 @@
 
 This small crate provides functions for sorting arrays and slices of primitives in `const` contexts.
 
-Arrays and slices of `bool`s, `u8`s, and `i8`s are sorted with counting sort while other types
-are sorted with introsort.
+Arrays and slices of `bool`s, `u8`s, and `i8`s are sorted with [counting sort](https://en.wikipedia.org/wiki/Counting_sort) while other types
+are sorted with [introsort](https://en.wikipedia.org/wiki/Introsort).
 
-This implementation is usable on Rust version 1.54.0,
+This implementation is usable on Rust version 1.56.0,
 before the [`const_trait_impl`](https://github.com/rust-lang/rust/issues/143874) feature is stabilized.
 This means that it unfortunately can not be generic,
 and so there are separate functions for every primitive type.
@@ -50,6 +50,8 @@ const SORTED_ARRAY: [i32; 5] = {
 assert_eq!(SORTED_ARRAY, [i32::MIN, -2, 0, 0, 5]);
 ```
 
+<div class = "rustdoc-hidden">
+
 <br>
 
 ### License
@@ -66,3 +68,5 @@ Unless you explicitly state otherwise, any contribution intentionally submitted
 for inclusion in the work by you, as defined in the Apache-2.0 license, shall be
 dual licensed as above, without any additional terms or conditions.
 </sub>
+
+</div>
