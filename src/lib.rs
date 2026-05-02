@@ -922,8 +922,8 @@ const_array_insertion_sort!(u8, insertion_sort_u8_array, greater_than_u8);
 /// ```
 /// use compile_time_sort::sort_bool_slice;
 ///
-/// const ARRAY: [bool; 2] = [true, false];
-/// const SORTED_ARRAY: [bool; 2] = {
+/// const ARRAY: [bool; 4] = [true, false, true, false];
+/// const SORTED_ARRAY: [bool; 4] = {
 ///     let mut arr = ARRAY;
 ///     sort_bool_slice(&mut arr);
 ///     arr
