@@ -23,7 +23,7 @@
 // This almost works. Unfortunately there are some types that need special handling, and those are the dynamically sized types
 // (string slices and other slices) as well as types that don't have an Ord impl (floats).
 //
-// A new macro is made to generate const comparison functions for zero-sized types (`impl_default_const_slice_compare!`), and string slices are then
+// A new macro is made to generate const comparison functions for dynamically sized types (`impl_default_const_slice_compare!`), and string slices are then
 // compared using the functions for byte slices. Floats have a `total_cmp` function which unfortunately isn't const as of time of writing.
 // That function has been manually implemented to be const in this library, and then floats have const comparison function implemented in terms of those.
 
