@@ -20,7 +20,7 @@
 // available in the callers scope. The macro `impl_default_const_compare!` creates that needed functions for any type
 // that already has const comparison operators, other types must be implemented manually.
 //
-// This almost works. Unfortunately there are some types that need special handling, and those are the zero-sized types
+// This almost works. Unfortunately there are some types that need special handling, and those are the dynamically sized types
 // (string slices and other slices) as well as types that don't have an Ord impl (floats).
 //
 // A new macro is made to generate const comparison functions for zero-sized types (`impl_default_const_slice_compare!`), and string slices are then
