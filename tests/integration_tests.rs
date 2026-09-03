@@ -556,11 +556,37 @@ fn test_macro_sort() {
 
     assert!(SORTED_LONG.is_sorted());
 
-    const SORTED_BY_SLICE: [Test; 3] = {
+    const SORTED_SLICE_SHORT: [Test; 3] = {
         let mut arr = [Test(3), Test(0), Test(1)];
         const_sort_slice_by!(&mut arr, |a: Test, b| { a.0 <= b.0 });
         arr
     };
 
-    assert!(SORTED_BY_SLICE.is_sorted());
+    assert!(SORTED_SLICE_SHORT.is_sorted());
+
+    const SORTED_SLICE_LONG: [Test; 17] = {
+        let mut arr = [
+            Test(0),
+            Test(0),
+            Test(0),
+            Test(0),
+            Test(0),
+            Test(3),
+            Test(3),
+            Test(3),
+            Test(1),
+            Test(1),
+            Test(1),
+            Test(1),
+            Test(1),
+            Test(1),
+            Test(1),
+            Test(1),
+            Test(1),
+        ];
+        const_sort_slice_by!(&mut arr, |a: Test, b| { a.0 <= b.0 });
+        arr
+    };
+
+    assert!(SORTED_SLICE_LONG.is_sorted());
 }

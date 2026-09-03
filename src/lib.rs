@@ -213,6 +213,10 @@ macro_rules! const_sort_array_by {
 /// ```
 /// use compile_time_sort::const_sort_slice_by;
 ///
+/// // The `derive` on this type is only utilized in the assertion at the bottom
+/// // of this example to check that the sorting succeeded.
+/// // It is not needed for the macro to function.
+/// #[derive(PartialOrd, PartialEq)]
 /// struct Test(u8);
 ///
 /// const SORTED: [Test; 3] = {
@@ -220,6 +224,8 @@ macro_rules! const_sort_array_by {
 ///     const_sort_slice_by!(&mut arr, |a: Test, b| { a.0 <= b.0 });
 ///     arr
 /// };
+///
+/// assert!(SORTED.is_sorted());
 /// ```
 #[macro_export]
 macro_rules! const_sort_slice_by {
