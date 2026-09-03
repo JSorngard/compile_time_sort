@@ -391,11 +391,11 @@ macro_rules! const_sort_array_by {
                 let l = 2 * i + 1;
                 let r = l + 1;
 
-                if l < n && are_in_sorted_order(&array[largest], &array[l]) {
+                if l < n && !are_in_sorted_order(&array[l], &array[largest]) {
                     largest = l;
                 }
 
-                if r < n && are_in_sorted_order(&array[largest], &array[r]) {
+                if r < n && !are_in_sorted_order(&array[r], &array[largest]) {
                     largest = r;
                 }
 
@@ -440,7 +440,7 @@ macro_rules! const_sort_array_by {
                 let mut i = 1;
                 while i < N {
                     let mut j = i;
-                    while j > 0 && are_in_sorted_order(&array[j], &array[j - 1]) {
+                    while j > 0 && !are_in_sorted_order(&array[j - 1], &array[j]) {
                         array.swap(j, j - 1);
                         j -= 1;
                     }
