@@ -328,140 +328,138 @@ macro_rules! const_slice_introsort {
 /// ```
 #[macro_export]
 macro_rules! const_sort_array_by {
-    ($to_be_sorted:ident: [$element_type:ty; $array_size:expr], |$a:ident, $b:ident| $are_in_sorted_order:block) => {
-        {
-            const fn are_in_sorted_order($a: &$element_type, $b: &$element_type) -> bool {
-                $are_in_sorted_order
-            }
+    ($to_be_sorted:ident: [$element_type:ty; $array_size:expr], |$a:ident, $b:ident| $are_in_sorted_order:block) => {{
+        const fn are_in_sorted_order($a: &$element_type, $b: &$element_type) -> bool {
+            $are_in_sorted_order
+        }
 
-            const fn intro_sort<const N: usize>(
-                array: [$element_type; N],
-                recursion_depth: u32,
-                left: usize,
-                right: usize,
-            ) -> [$element_type; N] {
-                let len = right - left;
-                if len <= 1 {
-                    array
-                } else if len <= $crate::INSERTION_SIZE {
-                    insertion_sort(array)
-                } else if recursion_depth == 0 {
-                    heap_sort(array)
-                } else {
-                    let (pivot_index, mut array) = partition(array, left, right);
-                    array = intro_sort(array, recursion_depth - 1, left, pivot_index);
-                    array = intro_sort(array, recursion_depth - 1, pivot_index + 1, right);
-                    array
-                }
-            }
-
-            const fn partition<const N: usize>(
-                mut arr: [$element_type; N],
-                left: usize,
-                right: usize,
-            ) -> (usize, [$element_type; N]) {
-                let len = right - left;
-                let pivot_index = left + len / 2;
-                let last_index = right - 1;
-
-                arr.swap(pivot_index, last_index);
-
-                let mut store_index = left;
-                let mut i = left;
-                while i < last_index {
-                    if are_in_sorted_order(&arr[i], &arr[last_index]) {
-                        arr.swap(i, store_index);
-                        store_index += 1;
-                    }
-                    i += 1;
-                }
-                arr.swap(store_index, last_index);
-
-                (store_index, arr)
-            }
-
-
-            const fn heapify<const N: usize>(
-                mut array: [$element_type; N],
-                n: usize,
-                i: usize,
-            ) -> [$element_type; N] {
-                let mut largest = i;
-
-                let l = 2 * i + 1;
-                let r = l + 1;
-
-                if l < n && !are_in_sorted_order(&array[l], &array[largest]) {
-                    largest = l;
-                }
-
-                if r < n && !are_in_sorted_order(&array[r], &array[largest]) {
-                    largest = r;
-                }
-
-                if largest != i {
-                    array.swap(i, largest);
-                    array = heapify(array, n, largest);
-                }
-
+        const fn intro_sort<const N: usize>(
+            array: [$element_type; N],
+            recursion_depth: u32,
+            left: usize,
+            right: usize,
+        ) -> [$element_type; N] {
+            let len = right - left;
+            if len <= 1 {
                 array
-            }
-
-            const fn heap_sort<const N: usize>(mut array: [$element_type; N]) -> [$element_type; N] {
-                if N <= 1 {
-                    return array;
-                }
-
-                let mut i = N / 2 - 1;
-                while i > 0 {
-                    array = heapify(array, N, i);
-                    i -= 1;
-                }
-                // This call is ok since we know `i` is never negative.
-                // We know this because we return early when `N` < 2, which means `i` >= 0.
-                array = heapify(array, N, i);
-
-                let mut i = N - 1;
-                while i > 0 {
-                    array.swap(0, i);
-                    array = heapify(array, i, 0);
-                    i -= 1;
-                }
-
+            } else if len <= $crate::INSERTION_SIZE {
+                insertion_sort(array)
+            } else if recursion_depth == 0 {
+                heap_sort(array)
+            } else {
+                let (pivot_index, mut array) = partition(array, left, right);
+                array = intro_sort(array, recursion_depth - 1, left, pivot_index);
+                array = intro_sort(array, recursion_depth - 1, pivot_index + 1, right);
                 array
-            }
-
-
-            const fn insertion_sort<const N: usize>(mut array: [$element_type; N]) -> [$element_type; N] {
-                if N <= 1 {
-                    return array;
-                }
-
-                let mut i = 1;
-                while i < N {
-                    let mut j = i;
-                    while j > 0 && !are_in_sorted_order(&array[j - 1], &array[j]) {
-                        array.swap(j, j - 1);
-                        j -= 1;
-                    }
-                    i += 1;
-                }
-
-                array
-            }
-
-            match ::core::num::NonZeroUsize::new($array_size) {
-                Some(nz) => {
-                    if nz.get() == 1 {
-                        $to_be_sorted;
-                    }
-                    let max_depth = 2*$crate::ilog2(nz);
-                    intro_sort($to_be_sorted, max_depth, 0, $array_size)
-                }
-                None => $to_be_sorted
             }
         }
-    };
+
+        const fn partition<const N: usize>(
+            mut arr: [$element_type; N],
+            left: usize,
+            right: usize,
+        ) -> (usize, [$element_type; N]) {
+            let len = right - left;
+            let pivot_index = left + len / 2;
+            let last_index = right - 1;
+
+            arr.swap(pivot_index, last_index);
+
+            let mut store_index = left;
+            let mut i = left;
+            while i < last_index {
+                if are_in_sorted_order(&arr[i], &arr[last_index]) {
+                    arr.swap(i, store_index);
+                    store_index += 1;
+                }
+                i += 1;
+            }
+            arr.swap(store_index, last_index);
+
+            (store_index, arr)
+        }
+
+        const fn heapify<const N: usize>(
+            mut array: [$element_type; N],
+            n: usize,
+            i: usize,
+        ) -> [$element_type; N] {
+            let mut largest = i;
+
+            let l = 2 * i + 1;
+            let r = l + 1;
+
+            if l < n && !are_in_sorted_order(&array[l], &array[largest]) {
+                largest = l;
+            }
+
+            if r < n && !are_in_sorted_order(&array[r], &array[largest]) {
+                largest = r;
+            }
+
+            if largest != i {
+                array.swap(i, largest);
+                array = heapify(array, n, largest);
+            }
+
+            array
+        }
+
+        const fn heap_sort<const N: usize>(mut array: [$element_type; N]) -> [$element_type; N] {
+            if N <= 1 {
+                return array;
+            }
+
+            let mut i = N / 2 - 1;
+            while i > 0 {
+                array = heapify(array, N, i);
+                i -= 1;
+            }
+            // This call is ok since we know `i` is never negative.
+            // We know this because we return early when `N` < 2, which means `i` >= 0.
+            array = heapify(array, N, i);
+
+            let mut i = N - 1;
+            while i > 0 {
+                array.swap(0, i);
+                array = heapify(array, i, 0);
+                i -= 1;
+            }
+
+            array
+        }
+
+        const fn insertion_sort<const N: usize>(
+            mut array: [$element_type; N],
+        ) -> [$element_type; N] {
+            if N <= 1 {
+                return array;
+            }
+
+            let mut i = 1;
+            while i < N {
+                let mut j = i;
+                while j > 0 && !are_in_sorted_order(&array[j - 1], &array[j]) {
+                    array.swap(j, j - 1);
+                    j -= 1;
+                }
+                i += 1;
+            }
+
+            array
+        }
+
+        match ::core::num::NonZeroUsize::new($array_size) {
+            Some(nz) => {
+                if nz.get() == 1 {
+                    $to_be_sorted;
+                }
+                let max_depth = 2 * $crate::ilog2(nz);
+                intro_sort($to_be_sorted, max_depth, 0, $array_size)
+            }
+            None => $to_be_sorted,
+        }
+    }};
 }
 
 /// Defines a `const` function with the given name that sorts an array of the given type with the introsort algorithm
