@@ -38,7 +38,7 @@ pub const INSERTION_SIZE: usize = 16;
 /// Basic usage:
 ///
 /// ```
-/// use compile_time_sort::const_sort_array_by;
+/// use compile_time_sort::into_sorted_array_by;
 ///
 /// // The `derive` on this type is only utilized in the assertion at the bottom
 /// // of this example to check that the sorting succeeded.
@@ -47,12 +47,12 @@ pub const INSERTION_SIZE: usize = 16;
 /// struct Foo(u8);
 ///
 /// const UNSORTED: [Foo; 3] = [Foo(3), Foo(0), Foo(1)];
-/// const SORTED: [Foo; 3] = const_sort_array_by!(UNSORTED, |a: Foo, b| { a.0 <= b.0 } );
+/// const SORTED: [Foo; 3] = into_sorted_array_by!(UNSORTED, |a: Foo, b| { a.0 <= b.0 } );
 ///
 /// assert!(SORTED.is_sorted());
 /// ```
 #[macro_export]
-macro_rules! const_sort_array_by {
+macro_rules! into_sorted_array_by {
     ($to_be_sorted:expr, |$a:ident: $element_type:ty, $b:ident| $are_in_sorted_order:block) => {{
         const fn are_in_sorted_order($a: &$element_type, $b: &$element_type) -> bool {
             $are_in_sorted_order
@@ -197,7 +197,7 @@ macro_rules! const_sort_array_by {
 /// Basic usage:
 ///
 /// ```
-/// use compile_time_sort::const_sort_slice_by;
+/// use compile_time_sort::sort_slice_by;
 ///
 /// // The `derive` on this type is only utilized in the assertion at the bottom
 /// // of this example to check that the sorting succeeded.
@@ -207,14 +207,14 @@ macro_rules! const_sort_array_by {
 ///
 /// const SORTED: [Test; 3] = {
 ///     let mut arr = [Test(1), Test(2), Test(0)];
-///     const_sort_slice_by!(&mut arr, |a: Test, b| { a.0 <= b.0 });
+///     sort_slice_by!(&mut arr, |a: Test, b| { a.0 <= b.0 });
 ///     arr
 /// };
 ///
 /// assert!(SORTED.is_sorted());
 /// ```
 #[macro_export]
-macro_rules! const_sort_slice_by {
+macro_rules! sort_slice_by {
     ($to_be_sorted:expr, |$a:ident: $element_type:ty, $b:ident| $are_in_sorted_order:block) => {{
         const fn are_in_sorted_order($a: &$element_type, $b: &$element_type) -> bool {
             $are_in_sorted_order

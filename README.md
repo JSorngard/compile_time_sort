@@ -20,26 +20,35 @@ and they can also sometimes use more optimal sorting algorithms (like how `bool`
 Sort an array by value:
 
 ```rust
-use compile_time_sort::into_sorted_i32_array;
+use compile_time_sort::into_sorted_array_by;
 
-const ARRAY: [i32; 5] = [-3, 3, 2, i32::MAX, 0];
-const SORTED_ARRAY: [i32; 5] = into_sorted_i32_array(ARRAY);
+// The `derive` on this type is only utilized in the assertion at the bottom
+// of this example to check that the sorting succeeded.
+// It is not needed for the macro to function.
+#[derive(PartialOrd, PartialEq)]
+struct ExampleStruct(u8);
 
-assert_eq!(SORTED_ARRAY, [-3, 0, 2, 3, i32::MAX]);
+const ARRAY: [ExampleStruct; 3] = [ExampleStruct(3), ExampleStruct(1), ExampleStruct(2)];
+const SORTED_ARRAY: [ExampleStruct; 3] = into_sorted_array_by!(ARRAY, |a: ExampleStruct, b| { a.0 <= b.0 });
+
+assert!(SORTED_ARRAY.is_sorted());
 ```
 
 Sort by reference:
 
 ```rust
-use compile_time_sort::sort_i32_slice;
+use compile_time_sort::sort_slice_by;
 
-const SORTED_ARRAY: [i32; 5] = {
-    let mut arr = [5, i32::MIN, 0, -2, 0];
-    sort_i32_slice(&mut arr);
+#[derive(PartialOrd, PartialEq)]
+struct ExampleStruct(u8);
+
+const SORTED_ARRAY: [ExampleStruct; 3] = {
+    let mut arr =  [ExampleStruct(3), ExampleStruct(1), ExampleStruct(2)];
+    sort_slice_by!(&mut arr, |a: ExampleStruct, b| { a.0 <= b.0 });
     arr
 };
 
-assert_eq!(SORTED_ARRAY, [i32::MIN, -2, 0, 0, 5]);
+assert!(SORTED_ARRAY.is_sorted());
 ```
 
 <div class = "rustdoc-hidden">
