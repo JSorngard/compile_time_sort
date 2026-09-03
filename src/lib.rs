@@ -322,13 +322,13 @@ macro_rules! const_slice_introsort {
 /// struct Foo(u8);
 ///
 /// const UNSORTED: [Foo; 3] = [Foo(3), Foo(0), Foo(1)];
-/// const SORTED: [Foo; 3] = const_sort_array_by!(UNSORTED: [Foo; 3], |a, b| { a.0 <= b.0 } );
+/// const SORTED: [Foo; 3] = const_sort_array_by!(UNSORTED, Foo, |a, b| { a.0 <= b.0 } );
 ///
 /// assert!(SORTED.is_sorted());
 /// ```
 #[macro_export]
 macro_rules! const_sort_array_by {
-    ($to_be_sorted:ident: [$element_type:ty; $array_size:expr], |$a:ident, $b:ident| $are_in_sorted_order:block) => {{
+    ($to_be_sorted:expr, $element_type:ty, |$a:ident, $b:ident| $are_in_sorted_order:block) => {{
         const fn are_in_sorted_order($a: &$element_type, $b: &$element_type) -> bool {
             $are_in_sorted_order
         }
@@ -449,13 +449,13 @@ macro_rules! const_sort_array_by {
             array
         }
 
-        match ::core::num::NonZeroUsize::new($array_size) {
+        match ::core::num::NonZeroUsize::new($to_be_sorted.len()) {
             Some(nz) => {
                 if nz.get() == 1 {
                     $to_be_sorted;
                 }
                 let max_depth = 2 * $crate::ilog2(nz);
-                intro_sort($to_be_sorted, max_depth, 0, $array_size)
+                intro_sort($to_be_sorted, max_depth, 0, $to_be_sorted.len())
             }
             None => $to_be_sorted,
         }
