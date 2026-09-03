@@ -4,7 +4,7 @@ This file contains all changes to the crate since version v0.1.0.
 
 ## [1.6.0]
 
-- Add the macro `const_sort_array_by!`, which can sort arrays of custom types.
+- Add the macros `const_sort_array_by!` and `const_sort_slice_by!`, which can sort arrays and slices of custom types.
 - Update the `codecov` action to version 7.
 
 ## [1.5.1] - 2026-04-17
