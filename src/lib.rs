@@ -341,8 +341,6 @@ macro_rules! const_sort_slice_by {
     }};
 }
 
-
-
 #[doc(hidden)]
 /// Implementation of the `ilog2` function that becomes available in Rust 1.67.0.
 pub const fn ilog2(n: NonZeroUsize) -> u32 {
@@ -359,8 +357,6 @@ pub const fn ilog2(n: NonZeroUsize) -> u32 {
     }
     i
 }
-
-
 
 // endregion: counting sort implementations
 
