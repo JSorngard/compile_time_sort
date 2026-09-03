@@ -304,7 +304,7 @@ macro_rules! const_slice_introsort {
 }
 
 #[rustversion::since(1.85.0)]
-/// Sorts the given array with the given comparator.
+/// Sorts the given array with the given closure.
 ///
 /// Only available on Rust version 1.85.0 and later.
 ///
@@ -322,25 +322,24 @@ macro_rules! const_slice_introsort {
 /// struct Foo(u8);
 ///
 /// const UNSORTED: [Foo; 3] = [Foo(3), Foo(0), Foo(1)];
-///
-/// const SORTED: [Foo; 3] = const_sort_array_by!(UNSORTED: [Foo; 3], |a, b| { a.0 <= b.0 });
+/// const SORTED: [Foo; 3] = const_sort_array_by!(UNSORTED: [Foo; 3], |a, b| { a.0 <= b.0 } );
 ///
 /// assert!(SORTED.is_sorted());
 /// ```
 #[macro_export]
 macro_rules! const_sort_array_by {
-    ($to_be_sorted:ident: [$tpe:ty; $N:expr], |$a:ident, $b:ident| $less_than:block) => {
+    ($to_be_sorted:ident: [$element_type:ty; $array_size:expr], |$a:ident, $b:ident| $are_in_sorted_order:block) => {
         {
-            const fn less_than($a: &$tpe, $b: &$tpe) -> bool {
-                $less_than
+            const fn are_in_sorted_order($a: &$element_type, $b: &$element_type) -> bool {
+                $are_in_sorted_order
             }
 
             const fn intro_sort<const N: usize>(
-                array: [$tpe; N],
+                array: [$element_type; N],
                 recursion_depth: u32,
                 left: usize,
                 right: usize,
-            ) -> [$tpe; N] {
+            ) -> [$element_type; N] {
                 let len = right - left;
                 if len <= 1 {
                     array
@@ -357,10 +356,10 @@ macro_rules! const_sort_array_by {
             }
 
             const fn partition<const N: usize>(
-                mut arr: [$tpe; N],
+                mut arr: [$element_type; N],
                 left: usize,
                 right: usize,
-            ) -> (usize, [$tpe; N]) {
+            ) -> (usize, [$element_type; N]) {
                 let len = right - left;
                 let pivot_index = left + len / 2;
                 let last_index = right - 1;
@@ -370,7 +369,7 @@ macro_rules! const_sort_array_by {
                 let mut store_index = left;
                 let mut i = left;
                 while i < last_index {
-                    if less_than(&arr[i], &arr[last_index]) {
+                    if are_in_sorted_order(&arr[i], &arr[last_index]) {
                         arr.swap(i, store_index);
                         store_index += 1;
                     }
@@ -383,20 +382,20 @@ macro_rules! const_sort_array_by {
 
 
             const fn heapify<const N: usize>(
-                mut array: [$tpe; N],
+                mut array: [$element_type; N],
                 n: usize,
                 i: usize,
-            ) -> [$tpe; N] {
+            ) -> [$element_type; N] {
                 let mut largest = i;
 
                 let l = 2 * i + 1;
                 let r = l + 1;
 
-                if l < n && less_than(&array[largest], &array[l]) {
+                if l < n && are_in_sorted_order(&array[largest], &array[l]) {
                     largest = l;
                 }
 
-                if r < n && less_than(&array[largest], &array[r]) {
+                if r < n && are_in_sorted_order(&array[largest], &array[r]) {
                     largest = r;
                 }
 
@@ -408,7 +407,7 @@ macro_rules! const_sort_array_by {
                 array
             }
 
-            const fn heap_sort<const N: usize>(mut array: [$tpe; N]) -> [$tpe; N] {
+            const fn heap_sort<const N: usize>(mut array: [$element_type; N]) -> [$element_type; N] {
                 if N <= 1 {
                     return array;
                 }
@@ -433,7 +432,7 @@ macro_rules! const_sort_array_by {
             }
 
 
-            const fn insertion_sort<const N: usize>(mut array: [$tpe; N]) -> [$tpe; N] {
+            const fn insertion_sort<const N: usize>(mut array: [$element_type; N]) -> [$element_type; N] {
                 if N <= 1 {
                     return array;
                 }
@@ -441,7 +440,7 @@ macro_rules! const_sort_array_by {
                 let mut i = 1;
                 while i < N {
                     let mut j = i;
-                    while j > 0 && less_than(&array[j], &array[j - 1]) {
+                    while j > 0 && are_in_sorted_order(&array[j], &array[j - 1]) {
                         array.swap(j, j - 1);
                         j -= 1;
                     }
@@ -451,13 +450,13 @@ macro_rules! const_sort_array_by {
                 array
             }
 
-            match ::core::num::NonZeroUsize::new($N) {
+            match ::core::num::NonZeroUsize::new($array_size) {
                 Some(nz) => {
                     if nz.get() == 1 {
                         $to_be_sorted;
                     }
                     let max_depth = 2*$crate::ilog2(nz);
-                    intro_sort($to_be_sorted, max_depth, 0, $N)
+                    intro_sort($to_be_sorted, max_depth, 0, $array_size)
                 }
                 None => $to_be_sorted
             }
