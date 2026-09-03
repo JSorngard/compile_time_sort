@@ -303,9 +303,14 @@ macro_rules! const_slice_introsort {
     };
 }
 
+#[rustversion::since(1.85.0)]
 /// Sorts the given array with the given comparator.
 ///
+/// Only available on Rust version 1.85.0 and later.
+///
 /// # Example
+///
+/// Basic usage:
 ///
 /// ```
 /// use compile_time_sort::const_sort_array_by;
