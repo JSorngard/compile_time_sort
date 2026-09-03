@@ -1,5 +1,7 @@
 //! This module defines the sorting functions written in the macro in the main crate file again,
 //! for each primitive. The goal is to push the MSRV of this part of the crate down as far as possible.
+//!
+//! This part of the crate is older and not as polished, sorry!
 
 use core::cmp::Ordering;
 use core::num::NonZeroUsize;
