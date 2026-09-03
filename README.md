@@ -6,22 +6,14 @@
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/JSorngard/compile_time_sort/rust.yml?logo=github&label=CI)](https://github.com/JSorngard/compile_time_sort/actions/workflows/rust.yml)
 [![Code Coverage](https://codecov.io/gh/JSorngard/compile_time_sort/graph/badge.svg?token=F61FO63ZKW)](https://codecov.io/gh/JSorngard/compile_time_sort)
 
-This small crate provides functions for sorting arrays and slices of primitives in `const` contexts.
+This small crate provides macros for sorting arrays and slices of any type in `const` contexts with [introsort](https://en.wikipedia.org/wiki/Introsort).
 
-Arrays and slices of `bool`s, `u8`s, and `i8`s are sorted with [counting sort](https://en.wikipedia.org/wiki/Counting_sort) while other types
-are sorted with [introsort](https://en.wikipedia.org/wiki/Introsort).
+This implementation is usable on Rust version 1.85.0, before the [`const_trait_impl`](https://github.com/rust-lang/rust/issues/143874) feature is stabilized.
 
-This implementation is usable on Rust version 1.56.0,
-before the [`const_trait_impl`](https://github.com/rust-lang/rust/issues/143874) feature is stabilized.
-This means that it unfortunately can not be generic,
-and so there are separate functions for every primitive type.
+The crate also provides `const` functions for sorting arrays and slices of primitives, usable already on Rust version 1.56.0 (except for floats, which need 1.83).
 
-Functions with the naming convention `into_sorted_*_array` take an array by value,
-and functions with the naming convention `sort_*_slice` take a mutable reference to a slice.
-
-The functions that sort slices by reference are only available on Rust versions 1.83 and above,
-as are the functions that sort floats as they need [`{float}::to_bits`](https://doc.rust-lang.org/1.89.0/core/primitive.f32.html#method.to_bits)
-to be `const` in order to generate a total ordering in accordance with [`{float}::total_cmp`](https://doc.rust-lang.org/1.89.0/core/primitive.f32.html#method.total_cmp).
+These functions do exactly the same thing as the macros, but they have been added as their own separate thing to let the crate sort primitives on even earlier Rust versions,
+and they can also sometimes use more optimal sorting algorithms (like how `bool`s, `u8`, and `i8`s are sorted with [counting sort](https://en.wikipedia.org/wiki/Counting_sort).
 
 ## Examples
 
