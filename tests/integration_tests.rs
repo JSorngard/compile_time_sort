@@ -4,7 +4,6 @@
 #[rustversion::since(1.83.0)]
 use quickcheck::quickcheck;
 use rand::{rngs::SmallRng, Rng, SeedableRng};
-use core::cmp::Ordering;
 
 use compile_time_sort::{const_sort_array_by, into_sorted_bool_array, into_sorted_char_array, into_sorted_f32_array, into_sorted_f64_array, into_sorted_i128_array, into_sorted_i16_array, into_sorted_i32_array, into_sorted_i64_array, into_sorted_i8_array, into_sorted_isize_array, into_sorted_str_array, into_sorted_u128_array, into_sorted_u16_array, into_sorted_u32_array, into_sorted_u64_array, into_sorted_u8_array, into_sorted_u8_slice_array, into_sorted_usize_array};
 
@@ -518,16 +517,13 @@ quickcheck! {
 
 #[test]
 fn test_macro_sort() {
-    #[derive(Debug, Copy, Clone, PartialOrd, Ord, PartialEq, Eq)]
+    #[derive(PartialOrd, PartialEq)]
     struct Test(u8);
 
     const UNSORTED: [Test; 3] = [Test(3), Test(0), Test(1)];
     const SORTED: [Test; 3] = {
-        const_sort_array_by!(UNSORTED: [Test; 3], |a, b| {if a.0 < b.0 { Ordering::Less } else if a.0 == b.0 { Ordering::Equal } else { Ordering::Greater } })
+        const_sort_array_by!(UNSORTED: [Test; 3], |a, b| { a.0 <= b.0 })
     };
 
-    let mut sorted = UNSORTED;
-    sorted.sort();
-
-    assert_eq!(SORTED, sorted);
+    assert!(SORTED.is_sorted());
 }

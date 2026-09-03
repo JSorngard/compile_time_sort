@@ -303,21 +303,31 @@ macro_rules! const_slice_introsort {
     };
 }
 
+/// Sorts the given array with the given comparator.
+///
+/// # Example
+///
+/// ```
+/// use compile_time_sort::const_sort_array_by;
+///
+/// // The `derive` on this type is only utilized in the assertion at the bottom
+/// // of this example to check that the sorting succeeded.
+/// // It is not needed for the macro to function.
+/// #[derive(PartialOrd, PartialEq)]
+/// struct Foo(u8);
+///
+/// const UNSORTED: [Foo; 3] = [Foo(3), Foo(0), Foo(1)];
+///
+/// const SORTED: [Foo; 3] = const_sort_array_by!(UNSORTED: [Foo; 3], |a, b| { a.0 <= b.0 });
+///
+/// assert!(SORTED.is_sorted());
+/// ```
 #[macro_export]
 macro_rules! const_sort_array_by {
-    ($to_be_sorted:ident: [$tpe:ty; $N:expr], |$a:ident, $b:ident| $compare:block) => {
+    ($to_be_sorted:ident: [$tpe:ty; $N:expr], |$a:ident, $b:ident| $less_than:block) => {
         {
-
-            const fn compare($a: &$tpe, $b: &$tpe) -> Ordering {
-                $compare
-            }
-
-            const fn less_than(a: &$tpe, b: &$tpe) -> bool {
-                matches!(compare(a, b), Ordering::Less)
-            }
-
-            const fn greater_than(a: &$tpe, b: &$tpe) -> bool {
-                matches!(compare(a, b), Ordering::Greater)
+            const fn less_than($a: &$tpe, $b: &$tpe) -> bool {
+                $less_than
             }
 
             const fn intro_sort<const N: usize>(
@@ -377,11 +387,11 @@ macro_rules! const_sort_array_by {
                 let l = 2 * i + 1;
                 let r = l + 1;
 
-                if l < n && greater_than(&array[l], &array[largest]) {
+                if l < n && less_than(&array[largest], &array[l]) {
                     largest = l;
                 }
 
-                if r < n && greater_than(&array[r], &array[largest]) {
+                if r < n && less_than(&array[largest], &array[r]) {
                     largest = r;
                 }
 
@@ -426,7 +436,7 @@ macro_rules! const_sort_array_by {
                 let mut i = 1;
                 while i < N {
                     let mut j = i;
-                    while j > 0 && greater_than(&array[j - 1], &array[j]) {
+                    while j > 0 && less_than(&array[j], &array[j - 1]) {
                         array.swap(j, j - 1);
                         j -= 1;
                     }
