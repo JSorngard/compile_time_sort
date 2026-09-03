@@ -527,7 +527,31 @@ fn test_macro_sort() {
     struct Test(u8);
 
     const UNSORTED: [Test; 3] = [Test(3), Test(0), Test(1)];
-    const SORTED: [Test; 3] = { const_sort_array_by!(UNSORTED: [Test; 3], |a, b| { a.0 <= b.0 }) };
+    const SORTED: [Test; 3] = const_sort_array_by!(UNSORTED: [Test; 3], |a, b| { a.0 <= b.0 });
 
     assert!(SORTED.is_sorted());
+
+    const UNSORTED_LONG: [Test; 17] = [
+        Test(0),
+        Test(0),
+        Test(0),
+        Test(0),
+        Test(0),
+        Test(3),
+        Test(3),
+        Test(3),
+        Test(1),
+        Test(1),
+        Test(1),
+        Test(1),
+        Test(1),
+        Test(1),
+        Test(1),
+        Test(1),
+        Test(1),
+    ];
+    const SORTED_LONG: [Test; 17] =
+        const_sort_array_by!(UNSORTED_LONG: [Test; 17], |a, b| { a.0 <= b.0 });
+
+    assert!(SORTED_LONG.is_sorted());
 }
