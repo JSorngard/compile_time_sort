@@ -10,7 +10,10 @@ This small crate provides macros for sorting arrays and slices of any type in `c
 
 This implementation is usable on Rust version 1.85.0, before the [`const_trait_impl`](https://github.com/rust-lang/rust/issues/143874) feature is stabilized.
 
-The crate also provides `const` functions for sorting arrays and slices of primitives, usable already on Rust version 1.56.0 (except for floats, which need 1.83).
+The crate also provides `const` functions for sorting arrays and slices of primitives which are available on earlier Rust versions.
+The functions that sort arrays are usable already on Rust version 1.56.0,
+except the ones that sort arrays of floats, which need 1.83.0.
+The functions that sort slices also need 1.83.0.
 
 These functions do exactly the same thing as the macros, but they have been added as their own separate thing to let the crate sort primitives on even earlier Rust versions,
 and they can also sometimes use more optimal sorting algorithms (like how `bool`s, `u8`, and `i8`s are sorted with [counting sort](https://en.wikipedia.org/wiki/Counting_sort).
@@ -28,10 +31,14 @@ use compile_time_sort::into_sorted_array_by;
 #[derive(PartialOrd, PartialEq)]
 struct ExampleStruct(u8);
 
-const ARRAY: [ExampleStruct; 3] = [ExampleStruct(3), ExampleStruct(1), ExampleStruct(2)];
-const SORTED_ARRAY: [ExampleStruct; 3] = into_sorted_array_by!(ARRAY, |a: ExampleStruct, b| { a.0 <= b.0 });
+const UNSORTED: [ExampleStruct; 3] = [ExampleStruct(3), ExampleStruct(1), ExampleStruct(2)];
 
-assert!(SORTED_ARRAY.is_sorted());
+const SORTED: [ExampleStruct; 3] = into_sorted_array_by!(
+    UNSORTED,
+    |a: ExampleStruct, b| { a.0 <= b.0 }
+);
+
+assert!(SORTED.is_sorted());
 ```
 
 Sort by reference:
@@ -42,13 +49,13 @@ use compile_time_sort::sort_slice_by;
 #[derive(PartialOrd, PartialEq)]
 struct ExampleStruct(u8);
 
-const SORTED_ARRAY: [ExampleStruct; 3] = {
+const SORTED: [ExampleStruct; 3] = {
     let mut arr =  [ExampleStruct(3), ExampleStruct(1), ExampleStruct(2)];
     sort_slice_by!(&mut arr, |a: ExampleStruct, b| { a.0 <= b.0 });
     arr
 };
 
-assert!(SORTED_ARRAY.is_sorted());
+assert!(SORTED.is_sorted());
 ```
 
 <div class = "rustdoc-hidden">

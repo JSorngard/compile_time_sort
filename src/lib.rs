@@ -11,7 +11,7 @@
 //!
 //! # Features
 //!
-//! `nested`: enables the functions that sort slices of slices and arrays of slices.
+//! `nested`: enables the functions that sort slices of slices and arrays of slices of primitives.
 
 #![no_std]
 #![forbid(unsafe_code)]
