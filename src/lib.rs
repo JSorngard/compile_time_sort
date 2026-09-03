@@ -322,13 +322,13 @@ macro_rules! const_slice_introsort {
 /// struct Foo(u8);
 ///
 /// const UNSORTED: [Foo; 3] = [Foo(3), Foo(0), Foo(1)];
-/// const SORTED: [Foo; 3] = const_sort_array_by!(UNSORTED, Foo, |a, b| { a.0 <= b.0 } );
+/// const SORTED: [Foo; 3] = const_sort_array_by!(UNSORTED, |a: Foo, b| { a.0 <= b.0 } );
 ///
 /// assert!(SORTED.is_sorted());
 /// ```
 #[macro_export]
 macro_rules! const_sort_array_by {
-    ($to_be_sorted:expr, $element_type:ty, |$a:ident, $b:ident| $are_in_sorted_order:block) => {{
+    ($to_be_sorted:expr, |$a:ident: $element_type:ty, $b:ident| $are_in_sorted_order:block) => {{
         const fn are_in_sorted_order($a: &$element_type, $b: &$element_type) -> bool {
             $are_in_sorted_order
         }
