@@ -462,6 +462,146 @@ macro_rules! const_sort_array_by {
     }};
 }
 
+#[rustversion::since(1.85.0)]
+/// Sorts the given slice with the given closure.
+///
+/// Only available on Rust version 1.85.0 and later.
+///
+/// # Example
+///
+/// Basic usage:
+///
+/// ```
+/// use compile_time_sort::const_sort_slice_by;
+///
+/// struct Test(u8);
+///
+/// const SORTED: [Test; 3] = {
+///     let mut arr = [Test(1), Test(2), Test(0)];
+///     const_sort_slice_by!(&mut arr, |a: Test, b| { a.0 <= b.0 });
+///     arr
+/// };
+/// ```
+#[macro_export]
+macro_rules! const_sort_slice_by {
+    ($to_be_sorted:expr, |$a:ident: $element_type:ty, $b:ident| $are_in_sorted_order:block) => {{
+        const fn are_in_sorted_order($a: &$element_type, $b: &$element_type) -> bool {
+            $are_in_sorted_order
+        }
+
+        const fn intro_sort(slice: &mut [$element_type], recursion_depth: u32) {
+            if slice.len() <= 1 {
+            } else if slice.len() <= $crate::INSERTION_SIZE {
+                insertion_sort(slice);
+            } else if recursion_depth == 0 {
+                heap_sort(slice);
+            } else {
+                let (pivot, rest) = slice
+                    .split_first_mut()
+                    .expect("slice is not empty, as verified above");
+
+                let mut left = 0;
+                let mut right = rest.len() - 1;
+                while left <= right {
+                    if are_in_sorted_order(&rest[left], pivot) {
+                        left += 1;
+                    } else if !are_in_sorted_order(&rest[right], pivot) {
+                        if right == 0 {
+                            break;
+                        }
+                        right -= 1;
+                    } else {
+                        rest.swap(left, right);
+                        left += 1;
+                        if right == 0 {
+                            break;
+                        }
+                        right -= 1;
+                    }
+                }
+
+                slice.swap(0, left);
+
+                let (left, right) = slice.split_at_mut(left);
+                intro_sort(left, recursion_depth - 1);
+                if let Some((_pivot, right)) = right.split_first_mut() {
+                    intro_sort(right, recursion_depth - 1);
+                }
+            }
+        }
+
+        const fn insertion_sort(slice: &mut [$element_type]) {
+            let n = slice.len();
+            if n <= 1 {
+                return;
+            }
+
+            let mut i = 1;
+            while i < n {
+                let mut j = i;
+                while j > 0 && !are_in_sorted_order(&slice[j - 1], &slice[j]) {
+                    slice.swap(j - 1, j);
+                    j -= 1;
+                }
+                i += 1;
+            }
+        }
+
+        const fn heapify(slice: &mut [$element_type], n: usize, i: usize) {
+            let mut largest = i;
+
+            let l = 2 * i + 1;
+            let r = l + 1;
+
+            if l < n && !are_in_sorted_order(&slice[l], &slice[largest]) {
+                largest = l;
+            }
+
+            if r < n && !are_in_sorted_order(&slice[r], &slice[largest]) {
+                largest = r;
+            }
+
+            if largest != i {
+                slice.swap(i, largest);
+
+                heapify(slice, n, largest);
+            }
+        }
+
+        const fn heap_sort(slice: &mut [$element_type]) {
+            let n = slice.len();
+
+            if n <= 1 {
+                return;
+            }
+
+            let mut i = n / 2 - 1;
+            while i > 0 {
+                heapify(slice, n, i);
+                i -= 1;
+            }
+            // This call is ok since we know `i` is never negative.
+            // We know this because we return early when `n` < 2, which means `i` >= 0.
+            heapify(slice, n, i);
+
+            let mut i = n - 1;
+            while i > 0 {
+                slice.swap(0, i);
+
+                heapify(slice, i, 0);
+                i -= 1;
+            }
+        }
+
+        if let Some(nz) = ::core::num::NonZeroUsize::new($to_be_sorted.len()) {
+            if nz.get() > 1 {
+                let max_depth = 2 * $crate::ilog2(nz);
+                intro_sort($to_be_sorted, max_depth);
+            }
+        }
+    }};
+}
+
 /// Defines a `const` function with the given name that sorts an array of the given type with the introsort algorithm
 /// for large arrays and switches to the insertion sort algorithm when the array is small.
 macro_rules! const_array_introsort {
