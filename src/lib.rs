@@ -29,31 +29,10 @@ pub use primitives::*;
 pub const INSERTION_SIZE: usize = 16;
 
 #[rustversion::since(1.85.0)]
-/// Sorts the given array with the given closure.
-///
-/// Only available on Rust version 1.85.0 and later.
-///
-/// # Example
-///
-/// Basic usage:
-///
-/// ```
-/// use compile_time_sort::into_sorted_array_by;
-///
-/// // The `derive` on this type is only utilized in the assertion at the bottom
-/// // of this example to check that the sorting succeeded.
-/// // It is not needed for the macro to function.
-/// #[derive(PartialOrd, PartialEq)]
-/// struct Foo(u8);
-///
-/// const UNSORTED: [Foo; 3] = [Foo(3), Foo(0), Foo(1)];
-/// const SORTED: [Foo; 3] = into_sorted_array_by!(UNSORTED, |a: Foo, b| { a.0 <= b.0 } );
-///
-/// assert!(SORTED.is_sorted());
-/// ```
+#[doc(hidden)]
 #[macro_export]
-macro_rules! into_sorted_array_by {
-    ($to_be_sorted:expr, |$a:ident: $element_type:ty, $b:ident| $are_in_sorted_order:block) => {{
+macro_rules! def_const_array_sort_by {
+    ($element_type:ty, |$a:ident, $b:ident| $are_in_sorted_order:block) => {
         const fn are_in_sorted_order($a: &$element_type, $b: &$element_type) -> bool {
             $are_in_sorted_order
         }
@@ -173,6 +152,36 @@ macro_rules! into_sorted_array_by {
 
             array
         }
+    };
+}
+
+#[rustversion::since(1.85.0)]
+/// Sorts the given array with the given closure.
+///
+/// Only available on Rust version 1.85.0 and later.
+///
+/// # Example
+///
+/// Basic usage:
+///
+/// ```
+/// use compile_time_sort::into_sorted_array_by;
+///
+/// // The `derive` on this type is only utilized in the assertion at the bottom
+/// // of this example to check that the sorting succeeded.
+/// // It is not needed for the macro to function.
+/// #[derive(PartialOrd, PartialEq)]
+/// struct Foo(u8);
+///
+/// const UNSORTED: [Foo; 3] = [Foo(3), Foo(0), Foo(1)];
+/// const SORTED: [Foo; 3] = into_sorted_array_by!(UNSORTED, |a: Foo, b| { a.0 <= b.0 } );
+///
+/// assert!(SORTED.is_sorted());
+/// ```
+#[macro_export]
+macro_rules! into_sorted_array_by {
+    ($to_be_sorted:expr, |$a:ident: $element_type:ty, $b:ident| $are_in_sorted_order:block) => {{
+        $crate::def_const_array_sort_by! {$element_type, |$a, $b| $are_in_sorted_order}
 
         match ::core::num::NonZeroUsize::new($to_be_sorted.len()) {
             Some(nz) => {
@@ -188,39 +197,15 @@ macro_rules! into_sorted_array_by {
 }
 
 #[rustversion::since(1.85.0)]
-/// Sorts the given slice with the given closure.
-///
-/// Only available on Rust version 1.85.0 and later.
-///
-/// # Example
-///
-/// Basic usage:
-///
-/// ```
-/// use compile_time_sort::sort_slice_by;
-///
-/// // The `derive` on this type is only utilized in the assertion at the bottom
-/// // of this example to check that the sorting succeeded.
-/// // It is not needed for the macro to function.
-/// #[derive(PartialOrd, PartialEq)]
-/// struct Test(u8);
-///
-/// const SORTED: [Test; 3] = {
-///     let mut arr = [Test(1), Test(2), Test(0)];
-///     sort_slice_by!(&mut arr, |a: Test, b| { a.0 <= b.0 });
-///     arr
-/// };
-///
-/// assert!(SORTED.is_sorted());
-/// ```
+#[doc(hidden)]
 #[macro_export]
-macro_rules! sort_slice_by {
-    ($to_be_sorted:expr, |$a:ident: $element_type:ty, $b:ident| $are_in_sorted_order:block) => {{
+macro_rules! def_const_slice_sort_by {
+    ($element_type:ty, |$a:ident, $b:ident| $are_in_sorted_order:block) => {
         const fn are_in_sorted_order($a: &$element_type, $b: &$element_type) -> bool {
             $are_in_sorted_order
         }
 
-        const fn intro_sort(slice: &mut [$element_type], recursion_depth: u32) {
+        pub const fn intro_sort(slice: &mut [$element_type], recursion_depth: u32) {
             if slice.len() <= 1 {
             } else if slice.len() <= $crate::INSERTION_SIZE {
                 insertion_sort(slice);
@@ -323,7 +308,39 @@ macro_rules! sort_slice_by {
                 i -= 1;
             }
         }
+    };
+}
 
+#[rustversion::since(1.85.0)]
+/// Sorts the given slice with the given closure.
+///
+/// Only available on Rust version 1.85.0 and later.
+///
+/// # Example
+///
+/// Basic usage:
+///
+/// ```
+/// use compile_time_sort::sort_slice_by;
+///
+/// // The `derive` on this type is only utilized in the assertion at the bottom
+/// // of this example to check that the sorting succeeded.
+/// // It is not needed for the macro to function.
+/// #[derive(PartialOrd, PartialEq)]
+/// struct Test(u8);
+///
+/// const SORTED: [Test; 3] = {
+///     let mut arr = [Test(1), Test(2), Test(0)];
+///     sort_slice_by!(&mut arr, |a: Test, b| { a.0 <= b.0 });
+///     arr
+/// };
+///
+/// assert!(SORTED.is_sorted());
+/// ```
+#[macro_export]
+macro_rules! sort_slice_by {
+    ($to_be_sorted:expr, |$a:ident: $element_type:ty, $b:ident| $are_in_sorted_order:block) => {{
+        $crate::def_const_slice_sort_by! {$element_type, |$a, $b| $are_in_sorted_order}
         if let Some(nz) = ::core::num::NonZeroUsize::new($to_be_sorted.len()) {
             if nz.get() > 1 {
                 let max_depth = 2 * $crate::ilog2(nz);
