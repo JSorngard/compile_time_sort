@@ -16,7 +16,7 @@ except the ones that sort arrays of floats, which need 1.83.0.
 The functions that sort slices also need 1.83.0.
 
 These functions do exactly the same thing as the macros, but they have been added as their own separate thing to let the crate sort primitives on even earlier Rust versions,
-and they can also sometimes use more optimal sorting algorithms (like how `bool`s, `u8`, and `i8`s are sorted with [counting sort](https://en.wikipedia.org/wiki/Counting_sort).
+and they can also sometimes use more optimal sorting algorithms (like how `bool`s, `u8`s, and `i8`s are sorted with [counting sort](https://en.wikipedia.org/wiki/Counting_sort)).
 
 ## Examples
 
