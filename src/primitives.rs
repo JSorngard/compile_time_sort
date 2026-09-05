@@ -960,3 +960,5 @@ pub const fn into_sorted_bool_array<const N: usize>(mut array: [bool; N]) -> [bo
 
     array
 }
+
+// endregion: counting sort implementations
