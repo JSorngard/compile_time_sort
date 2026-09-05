@@ -47,13 +47,13 @@ pub use primitives::*;
 /// struct Foo(u8);
 ///
 /// const UNSORTED: [Foo; 3] = [Foo(3), Foo(0), Foo(1)];
-/// const SORTED: [Foo; 3] = into_sorted_array_by!(UNSORTED, |a: Foo, b| { a.0 <= b.0 } );
+/// const SORTED: [Foo; 3] = into_sorted_array_by!(UNSORTED, |a: &Foo, b| { a.0 <= b.0 } );
 ///
 /// assert!(SORTED.is_sorted());
 /// ```
 #[macro_export]
 macro_rules! into_sorted_array_by {
-    ($to_be_sorted:expr, |$a:ident: $element_type:ty, $b:ident| $are_in_sorted_order:block) => {{
+    ($to_be_sorted:expr, |$a:ident: &$element_type:ty, $b:ident| $are_in_sorted_order:block) => {{
         const fn are_in_sorted_order($a: &$element_type, $b: &$element_type) -> bool {
             $are_in_sorted_order
         }
@@ -207,7 +207,7 @@ macro_rules! into_sorted_array_by {
 ///
 /// const SORTED: [Test; 3] = {
 ///     let mut arr = [Test(1), Test(2), Test(0)];
-///     sort_slice_by!(&mut arr, |a: Test, b| { a.0 <= b.0 });
+///     sort_slice_by!(&mut arr, |a: &Test, b| { a.0 <= b.0 });
 ///     arr
 /// };
 ///
@@ -215,7 +215,7 @@ macro_rules! into_sorted_array_by {
 /// ```
 #[macro_export]
 macro_rules! sort_slice_by {
-    ($to_be_sorted:expr, |$a:ident: $element_type:ty, $b:ident| $are_in_sorted_order:block) => {{
+    ($to_be_sorted:expr, |$a:ident: &$element_type:ty, $b:ident| $are_in_sorted_order:block) => {{
         const fn are_in_sorted_order($a: &$element_type, $b: &$element_type) -> bool {
             $are_in_sorted_order
         }

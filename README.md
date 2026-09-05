@@ -35,7 +35,7 @@ const UNSORTED: [ExampleStruct; 3] = [ExampleStruct(3), ExampleStruct(1), Exampl
 
 const SORTED: [ExampleStruct; 3] = into_sorted_array_by!(
     UNSORTED,
-    |a: ExampleStruct, b| { a.0 <= b.0 }
+    |a: &ExampleStruct, b| { a.0 <= b.0 }
 );
 
 assert!(SORTED.is_sorted());
@@ -51,7 +51,7 @@ struct ExampleStruct(u8);
 
 const SORTED: [ExampleStruct; 3] = {
     let mut arr =  [ExampleStruct(3), ExampleStruct(1), ExampleStruct(2)];
-    sort_slice_by!(&mut arr, |a: ExampleStruct, b| { a.0 <= b.0 });
+    sort_slice_by!(&mut arr, |a: &ExampleStruct, b| { a.0 <= b.0 });
     arr
 };
 

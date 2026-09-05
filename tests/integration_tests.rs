@@ -527,7 +527,7 @@ fn test_macro_sort() {
     struct Test(u8);
 
     const UNSORTED: [Test; 3] = [Test(3), Test(0), Test(1)];
-    const SORTED: [Test; 3] = into_sorted_array_by!(UNSORTED, |c: Test, d| { c.0 <= d.0 });
+    const SORTED: [Test; 3] = into_sorted_array_by!(UNSORTED, |c: &Test, d| { c.0 <= d.0 });
 
     assert!(SORTED.is_sorted());
 
@@ -551,13 +551,13 @@ fn test_macro_sort() {
         Test(1),
     ];
     const SORTED_LONG: [Test; 17] =
-        into_sorted_array_by!(UNSORTED_LONG, |a: Test, b| { a.0 <= b.0 });
+        into_sorted_array_by!(UNSORTED_LONG, |a: &Test, b| { a.0 <= b.0 });
 
     assert!(SORTED_LONG.is_sorted());
 
     const SORTED_SLICE_SHORT: [Test; 3] = {
         let mut arr = [Test(3), Test(0), Test(1)];
-        sort_slice_by!(&mut arr, |a: Test, b| { a.0 <= b.0 });
+        sort_slice_by!(&mut arr, |a: &Test, b| { a.0 <= b.0 });
         arr
     };
 
@@ -583,7 +583,7 @@ fn test_macro_sort() {
             Test(1),
             Test(1),
         ];
-        sort_slice_by!(&mut arr, |a: Test, b| { a.0 <= b.0 });
+        sort_slice_by!(&mut arr, |a: &Test, b| { a.0 <= b.0 });
         arr
     };
 
