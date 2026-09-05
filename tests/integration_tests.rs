@@ -6,11 +6,11 @@ use quickcheck::quickcheck;
 use rand::{rngs::SmallRng, Rng, SeedableRng};
 
 use compile_time_sort::{
-    into_sorted_bool_array, into_sorted_char_array, into_sorted_f32_array, into_sorted_f64_array,
-    into_sorted_i128_array, into_sorted_i16_array, into_sorted_i32_array, into_sorted_i64_array,
-    into_sorted_i8_array, into_sorted_isize_array, into_sorted_str_array, into_sorted_u128_array,
-    into_sorted_u16_array, into_sorted_u32_array, into_sorted_u64_array, into_sorted_u8_array,
-    into_sorted_u8_slice_array, into_sorted_usize_array,
+    into_sorted_array_by, into_sorted_bool_array, into_sorted_char_array, into_sorted_f32_array,
+    into_sorted_f64_array, into_sorted_i128_array, into_sorted_i16_array, into_sorted_i32_array,
+    into_sorted_i64_array, into_sorted_i8_array, into_sorted_isize_array, into_sorted_str_array,
+    into_sorted_u128_array, into_sorted_u16_array, into_sorted_u32_array, into_sorted_u64_array,
+    into_sorted_u8_array, into_sorted_u8_slice_array, into_sorted_usize_array, sort_slice_by,
 };
 
 #[cfg(feature = "nested")]
@@ -519,4 +519,73 @@ quickcheck! {
         sort_f64_slice(&mut vec);
         vec.is_sorted_by(|a, b| matches!(a.total_cmp(&b), std::cmp::Ordering::Less | std::cmp::Ordering::Equal))
     }
+}
+
+#[test]
+fn test_macro_sort() {
+    #[derive(PartialOrd, PartialEq)]
+    struct Test(u8);
+
+    const UNSORTED: [Test; 3] = [Test(3), Test(0), Test(1)];
+    const SORTED: [Test; 3] = into_sorted_array_by!(UNSORTED, |c: &Test, d| { c.0 <= d.0 });
+
+    assert!(SORTED.is_sorted());
+
+    const UNSORTED_LONG: [Test; 17] = [
+        Test(0),
+        Test(0),
+        Test(0),
+        Test(0),
+        Test(0),
+        Test(3),
+        Test(3),
+        Test(3),
+        Test(1),
+        Test(1),
+        Test(1),
+        Test(1),
+        Test(1),
+        Test(1),
+        Test(1),
+        Test(1),
+        Test(1),
+    ];
+    const SORTED_LONG: [Test; 17] =
+        into_sorted_array_by!(UNSORTED_LONG, |a: &Test, b| { a.0 <= b.0 });
+
+    assert!(SORTED_LONG.is_sorted());
+
+    const SORTED_SLICE_SHORT: [Test; 3] = {
+        let mut arr = [Test(3), Test(0), Test(1)];
+        sort_slice_by!(&mut arr, |a: &Test, b| { a.0 <= b.0 });
+        arr
+    };
+
+    assert!(SORTED_SLICE_SHORT.is_sorted());
+
+    const SORTED_SLICE_LONG: [Test; 17] = {
+        let mut arr = [
+            Test(0),
+            Test(0),
+            Test(0),
+            Test(0),
+            Test(0),
+            Test(3),
+            Test(3),
+            Test(3),
+            Test(1),
+            Test(1),
+            Test(1),
+            Test(1),
+            Test(1),
+            Test(1),
+            Test(1),
+            Test(1),
+            Test(1),
+        ];
+        sort_slice_by!(&mut arr, |a: &Test, b| { a.0 <= b.0 });
+        arr
+    };
+
+    assert!(SORTED_SLICE_LONG.is_sorted());
 }

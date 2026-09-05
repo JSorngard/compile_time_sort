@@ -20,7 +20,7 @@ rand = { version = "0.8.6", default-features = false, features = ["small_rng"] }
 quickcheck = { version = "=1.0.3", default-features = false }
 
 [features]
-# Enables sorting of slices and arrays of slices.
+# Enables sorting of slices of slices and arrays of slices of primitives.
 nested = []
 
 [package.metadata.docs.rs]

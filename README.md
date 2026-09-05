@@ -6,48 +6,56 @@
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/JSorngard/compile_time_sort/rust.yml?logo=github&label=CI)](https://github.com/JSorngard/compile_time_sort/actions/workflows/rust.yml)
 [![Code Coverage](https://codecov.io/gh/JSorngard/compile_time_sort/graph/badge.svg?token=F61FO63ZKW)](https://codecov.io/gh/JSorngard/compile_time_sort)
 
-This small crate provides functions for sorting arrays and slices of primitives in `const` contexts.
+This small crate provides macros for sorting arrays and slices of any type in `const` contexts with [introsort](https://en.wikipedia.org/wiki/Introsort).
 
-Arrays and slices of `bool`s, `u8`s, and `i8`s are sorted with [counting sort](https://en.wikipedia.org/wiki/Counting_sort) while other types
-are sorted with [introsort](https://en.wikipedia.org/wiki/Introsort).
+This implementation is usable on Rust version 1.85.0, before the [`const_trait_impl`](https://github.com/rust-lang/rust/issues/143874) feature is stabilized.
 
-This implementation is usable on Rust version 1.56.0,
-before the [`const_trait_impl`](https://github.com/rust-lang/rust/issues/143874) feature is stabilized.
-This means that it unfortunately can not be generic,
-and so there are separate functions for every primitive type.
+The crate also provides `const` functions for sorting arrays and slices of primitives which are available on earlier Rust versions.
+The functions that sort arrays are usable already on Rust version 1.56.0,
+except the ones that sort arrays of floats, which need 1.83.0.
+The functions that sort slices also need 1.83.0.
 
-Functions with the naming convention `into_sorted_*_array` take an array by value,
-and functions with the naming convention `sort_*_slice` take a mutable reference to a slice.
-
-The functions that sort slices by reference are only available on Rust versions 1.83 and above,
-as are the functions that sort floats as they need [`{float}::to_bits`](https://doc.rust-lang.org/1.89.0/core/primitive.f32.html#method.to_bits)
-to be `const` in order to generate a total ordering in accordance with [`{float}::total_cmp`](https://doc.rust-lang.org/1.89.0/core/primitive.f32.html#method.total_cmp).
+These functions do exactly the same thing as the macros, but they have been added as their own separate thing to let the crate sort primitives on even earlier Rust versions,
+and they can also sometimes use more optimal sorting algorithms (like how `bool`s, `u8`s, and `i8`s are sorted with [counting sort](https://en.wikipedia.org/wiki/Counting_sort)).
 
 ## Examples
 
 Sort an array by value:
 
 ```rust
-use compile_time_sort::into_sorted_i32_array;
+use compile_time_sort::into_sorted_array_by;
 
-const ARRAY: [i32; 5] = [-3, 3, 2, i32::MAX, 0];
-const SORTED_ARRAY: [i32; 5] = into_sorted_i32_array(ARRAY);
+// The `derive` on this type is only utilized in the assertion at the bottom
+// of this example to check that the sorting succeeded.
+// It is not needed for the macro to function.
+#[derive(PartialOrd, PartialEq)]
+struct ExampleStruct(u8);
 
-assert_eq!(SORTED_ARRAY, [-3, 0, 2, 3, i32::MAX]);
+const UNSORTED: [ExampleStruct; 3] = [ExampleStruct(3), ExampleStruct(1), ExampleStruct(2)];
+
+const SORTED: [ExampleStruct; 3] = into_sorted_array_by!(
+    UNSORTED,
+    |a: &ExampleStruct, b| { a.0 <= b.0 }
+);
+
+assert!(SORTED.is_sorted());
 ```
 
 Sort by reference:
 
 ```rust
-use compile_time_sort::sort_i32_slice;
+use compile_time_sort::sort_slice_by;
 
-const SORTED_ARRAY: [i32; 5] = {
-    let mut arr = [5, i32::MIN, 0, -2, 0];
-    sort_i32_slice(&mut arr);
+#[derive(PartialOrd, PartialEq)]
+struct ExampleStruct(u8);
+
+const SORTED: [ExampleStruct; 3] = {
+    let mut arr =  [ExampleStruct(3), ExampleStruct(1), ExampleStruct(2)];
+    sort_slice_by!(&mut arr, |a: &ExampleStruct, b| { a.0 <= b.0 });
     arr
 };
 
-assert_eq!(SORTED_ARRAY, [i32::MIN, -2, 0, 0, 5]);
+assert!(SORTED.is_sorted());
 ```
 
 <div class = "rustdoc-hidden">
