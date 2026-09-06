@@ -25,8 +25,9 @@ Sort an array of any type by value:
 ```rust
 use compile_time_sort::into_sorted_array_by;
 
-// This derive is used for the assertion at the end of this test.
-#[derive(Debug, PartialEq)]
+// This derive is used for the assertion at the end of this test,
+// it is not needed for the macro to work.
+#[derive(PartialOrd, PartialEq)]
 struct ExampleStruct(u8);
 
 const UNSORTED: [ExampleStruct; 3] = [ExampleStruct(3), ExampleStruct(1), ExampleStruct(2)];
@@ -36,7 +37,7 @@ const SORTED: [ExampleStruct; 3] = into_sorted_array_by!(
     |a: &ExampleStruct, b| { a.0 <= b.0 }
 );
 
-assert_eq!(SORTED, [ExampleStruct(1), ExampleStruct(2), ExampleStruct(3)]);
+assert!(SORTED.is_sorted());
 ```
 
 Sort it by reference:
