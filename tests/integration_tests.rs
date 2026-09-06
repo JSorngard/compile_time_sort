@@ -521,6 +521,31 @@ quickcheck! {
     }
 }
 
+#[rustversion::since(1.85.0)]
+#[derive(PartialEq, PartialOrd, Debug, Clone, Copy)]
+struct Foo {
+    i: i32,
+    f: f32,
+}
+
+impl quickcheck::Arbitrary for Foo {
+    fn arbitrary(g: &mut quickcheck::Gen) -> Self {
+        Foo {
+            i: i32::arbitrary(g),
+            f: f32::arbitrary(g),
+        }
+    }
+}
+
+#[rustversion::since(1.85.0)]
+quickcheck! {
+    fn quickcheck_foo_slice(vec: Vec<Foo>) -> bool {
+        let mut vec = vec;
+        sort_slice_by!(&mut vec, |a: &Foo, b| { a.i <= b.i });
+        vec.is_sorted_by_key(|foo| foo.i)
+    }
+}
+
 #[test]
 fn test_macro_sort() {
     #[derive(PartialOrd, PartialEq)]
