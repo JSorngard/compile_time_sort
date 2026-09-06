@@ -4,7 +4,6 @@
 [![Docs.rs Documentation](https://img.shields.io/badge/docs.rs-compile__time__sort-66c2a5?logo=docs.rs)](https://docs.rs/compile_time_sort/latest/compile_time_sort/)
 [![Github Repository Link](https://img.shields.io/badge/github-JSorngard%2Fcompile__time__sort-8da0cb?logo=github)](https://github.com/JSorngard/compile_time_sort)
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/JSorngard/compile_time_sort/rust.yml?logo=github&label=CI)](https://github.com/JSorngard/compile_time_sort/actions/workflows/rust.yml)
-[![Code Coverage](https://codecov.io/gh/JSorngard/compile_time_sort/graph/badge.svg?token=F61FO63ZKW)](https://codecov.io/gh/JSorngard/compile_time_sort)
 
 This small crate provides macros for sorting arrays and slices of any type in `const` contexts with [introsort](https://en.wikipedia.org/wiki/Introsort).
 
