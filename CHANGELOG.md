@@ -6,6 +6,7 @@ This file contains all changes to the crate since version v0.1.0.
 
 - Add the macros `into_sorted_array_by!` and `sort_slice_by!`, which can sort arrays and slices of custom types.
 - Update the `codecov` action to version 7.
+- Update transitive dev-dependencies.
 
 ## [1.5.1] - 2026-04-17
 
