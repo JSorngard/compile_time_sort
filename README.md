@@ -20,15 +20,13 @@ and they can also sometimes use more optimal sorting algorithms (like how `bool`
 
 ## Examples
 
-Sort an array by value:
+Sort an array of any type by value:
 
 ```rust
 use compile_time_sort::into_sorted_array_by;
 
-// The `derive` on this type is only utilized in the assertion at the bottom
-// of this example to check that the sorting succeeded.
-// It is not needed for the macro to function.
-#[derive(PartialOrd, PartialEq)]
+// This derive is used for the assertion at the end of this test.
+#[derive(Debug, PartialEq)]
 struct ExampleStruct(u8);
 
 const UNSORTED: [ExampleStruct; 3] = [ExampleStruct(3), ExampleStruct(1), ExampleStruct(2)];
@@ -38,10 +36,10 @@ const SORTED: [ExampleStruct; 3] = into_sorted_array_by!(
     |a: &ExampleStruct, b| { a.0 <= b.0 }
 );
 
-assert!(SORTED.is_sorted());
+assert_eq!(SORTED, [ExampleStruct(1), ExampleStruct(2), ExampleStruct(3)]);
 ```
 
-Sort by reference:
+Sort it by reference:
 
 ```rust
 use compile_time_sort::sort_slice_by;

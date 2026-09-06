@@ -40,16 +40,14 @@ pub use primitives::*;
 /// ```
 /// use compile_time_sort::into_sorted_array_by;
 ///
-/// // The `derive` on this type is only utilized in the assertion at the bottom
-/// // of this example to check that the sorting succeeded.
-/// // It is not needed for the macro to function.
-/// #[derive(PartialOrd, PartialEq)]
+/// // This derive is used for the assertion at the end of this test.
+/// #[derive(Debug, PartialEq)]
 /// struct Foo(u8);
 ///
 /// const UNSORTED: [Foo; 3] = [Foo(3), Foo(0), Foo(1)];
 /// const SORTED: [Foo; 3] = into_sorted_array_by!(UNSORTED, |a: &Foo, b| { a.0 <= b.0 } );
 ///
-/// assert!(SORTED.is_sorted());
+/// assert_eq!(SORTED, [Foo(0), Foo(1), Foo(3)]);
 /// ```
 #[macro_export]
 macro_rules! into_sorted_array_by {
@@ -199,10 +197,8 @@ macro_rules! into_sorted_array_by {
 /// ```
 /// use compile_time_sort::sort_slice_by;
 ///
-/// // The `derive` on this type is only utilized in the assertion at the bottom
-/// // of this example to check that the sorting succeeded.
-/// // It is not needed for the macro to function.
-/// #[derive(PartialOrd, PartialEq)]
+/// // This derive is only used by the assertion at the end of this test.
+/// #[derive(Debug, PartialEq)]
 /// struct Test(u8);
 ///
 /// const SORTED: [Test; 3] = {
@@ -211,7 +207,7 @@ macro_rules! into_sorted_array_by {
 ///     arr
 /// };
 ///
-/// assert!(SORTED.is_sorted());
+/// assert_eq!(SORTED, [Test(0), Test(1), Test(2)]);
 /// ```
 #[macro_export]
 macro_rules! sort_slice_by {
