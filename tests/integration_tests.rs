@@ -528,6 +528,7 @@ struct Foo {
     f: f32,
 }
 
+#[rustversion::since(1.85.0)]
 impl quickcheck::Arbitrary for Foo {
     fn arbitrary(g: &mut quickcheck::Gen) -> Self {
         Foo {
