@@ -948,13 +948,13 @@ pub const fn into_sorted_bool_array<const N: usize>(mut array: [bool; N]) -> [bo
     }
 
     i = 0;
+    while i < N && falses > 0 {
+        array[i] = false;
+        falses -= 1;
+        i += 1;
+    }
     while i < N {
-        if falses > 0 {
-            array[i] = false;
-            falses -= 1;
-        } else {
-            array[i] = true;
-        }
+        array[i] = true;
         i += 1;
     }
 
