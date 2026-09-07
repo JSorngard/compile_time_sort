@@ -367,6 +367,16 @@ fn test_sort_bool() {
     const SORTED_ARR: [bool; 4] = into_sorted_bool_array(ARR);
 
     assert_eq!(SORTED_ARR, [false, false, true, true]);
+
+    const ARR2: [bool; 10] = [false; 10];
+    const SORTED_ARR2: [bool; 10] = into_sorted_bool_array(ARR2);
+
+    assert_eq!(SORTED_ARR2, ARR2);
+
+    const ARR3: [bool; 10] = [true; 10];
+    const SORTED_ARR3: [bool; 10] = into_sorted_bool_array(ARR3);
+
+    assert_eq!(SORTED_ARR3, ARR3);
 }
 
 #[test]
